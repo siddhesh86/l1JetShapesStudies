@@ -38,12 +38,12 @@ def getHists1DYRange(histos_lits):
     else:        yMin *= 1.3
         
     return yMin, yMax;    
-
+ 
 #def plotHistos1DAndRatioPlot(h_list, legend, canvas, sSaveAs, hRatio_list = []):
 def plotHistos1DAndRatioPlot(h_list, hRatio_list , legend, canvas, sSaveAs, drawOption="PE", pad1SetLogY=False, yRange=[], setLogX=False):
-    print "type(h_list[0]): {} ".format(type(h_list[0]))
+    print("type(h_list[0]): {} ".format(type(h_list[0])))
     # yRange=[yMinPad1, yMaxPad1,   yMinPad2, yMaxPad2]
-    print "plotHistos1DAndRatioPlot():: h_list ({}), hRatio_list ({}) ".format(len(h_list), len(hRatio_list))
+    print("plotHistos1DAndRatioPlot():: h_list ({}), hRatio_list ({}) ".format(len(h_list), len(hRatio_list)))
     for ih in range(0,len(h_list)):
         h = h_list[ih]
         #print "hist %s: %g " % (h.GetName(), h.GetBinContent(5))
@@ -63,7 +63,7 @@ def plotHistos1DAndRatioPlot(h_list, hRatio_list , legend, canvas, sSaveAs, draw
             hRatio_list.append(hRatio)
         else:
             if (len(h_list) - 1) != len(hRatio_list):
-                print "plotHistos1DAndRatioPlot():: (len(h_list) - 1) != len(hRatio_list) \t *** ERROR ***"
+                print("plotHistos1DAndRatioPlot():: (len(h_list) - 1) != len(hRatio_list) \t *** ERROR ***")
                 exit(0)
 
     drawOption0 = drawOption1 = drawOption
@@ -97,7 +97,7 @@ def plotHistos1DAndRatioPlot(h_list, hRatio_list , legend, canvas, sSaveAs, draw
     ymin = ymax = yRatiomin = yRatiomax = None
     if len(yRange) < 2: ymin, ymax           = getHists1DYRange(h_list)
     if len(yRange) < 4: yRatiomin, yRatiomax = getHists1DYRange(hRatio_list)
-    print "plotHistos1DAndRatioPlot:: ymin {}, ymax {}, yRatiomin {}, yRatiomax {}".format(ymin, ymax, yRatiomin, yRatiomax)
+    print("plotHistos1DAndRatioPlot:: ymin {}, ymax {}, yRatiomin {}, yRatiomax {}".format(ymin, ymax, yRatiomin, yRatiomax))
     if len(yRange) < 4 and yRatiomin < 0: yRatiomin = 0
     for ih in range(0,len(h_list)):
         pad1.cd()
@@ -156,6 +156,57 @@ def plotHistos1DAndRatioPlot(h_list, hRatio_list , legend, canvas, sSaveAs, draw
     return canvas
 
 
+
+def plotHistos1D(h_list, legend, canvas, sSaveAs, drawOption="PE", pad1SetLogY=False, yRange=[], setLogX=False):
+    print("type(h_list[0]): {} ".format(type(h_list[0])))
+    # yRange=[yMinPad1, yMaxPad1,   yMinPad2, yMaxPad2]
+    print("plotHistos1D():: h_list ({}) ".format(len(h_list)))
+    for ih in range(0,len(h_list)):
+        h = h_list[ih]
+        #print "hist %s: %g " % (h.GetName(), h.GetBinContent(5))
+        
+
+    drawOption0 = drawOption1 = drawOption
+    if 'TGraph' in str(type(h_list[0])): drawOption1 = drawOption1.replace('A','') # don't use option 'A' for grpoh ploting on the same canvas
+    
+    canvas.cd()
+    pad1 = R.TPad("pad1","pad1",0,0, 1,1)
+    if pad1SetLogY: pad1.SetLogy()
+    if setLogX: pad1.SetLogx()
+    pad1.Draw()
+    pad1.SetGridx()
+    pad1.SetGridy()
+    
+    pad1.SetBottomMargin(0.1);
+    
+    pad1.SetRightMargin(0.05);
+    pad1.SetLeftMargin(0.13);
+
+    ymin = ymax = yRatiomin = yRatiomax = None
+    if len(yRange) < 2: ymin, ymax           = getHists1DYRange(h_list)
+    print("plotHistos1D:: ymin {}, ymax {}".format(ymin, ymax))
+    for ih in range(0,len(h_list)):
+        pad1.cd()
+        h = h_list[ih]
+        if (ih == 0):
+            if len(yRange) >= 2: h.GetYaxis().SetRangeUser(yRange[0], yRange[1]) 
+            else:                h.GetYaxis().SetRangeUser(ymin, ymax)     
+            h.Draw("%s" % (drawOption0))
+            #print "hist %s - 1: %g " % (h.GetName(), h.GetBinContent(5))
+        else:
+            h.Draw("same %s" % (drawOption1))
+            #print "hist %s - 2: %g " % (h.GetName(), h.GetBinContent(5))
+
+   
+    pad1.cd()
+    legend.Draw()
+    canvas.Update()
+    canvas.SaveAs(sSaveAs)
+    #input("Enter something")
+    return canvas
+
+
+
 def cloneHistogram(histo, sSubstringForCloneName):
     h = histo.Clone("%s_%s" % (histo.GetName(), sSubstringForCloneName))
     return h
@@ -163,7 +214,7 @@ def cloneHistogram(histo, sSubstringForCloneName):
 
 def DivideGraphAsymmErr(grN, grD):
     if grN.GetN() != grD.GetN():
-        print "DivideGraphAsymmErr():: grN.GetN() ({}) != grD.GetN() ({}) \t *** ERROR *** \n".format(grN.GetN(), grD.GetN())
+        print("DivideGraphAsymmErr():: grN.GetN() ({}) != grD.GetN() ({}) \t *** ERROR *** \n".format(grN.GetN(), grD.GetN()))
         #input("\nEnter anything")
         return None
     
@@ -178,7 +229,7 @@ def DivideGraphAsymmErr(grN, grD):
         xD = grD.GetPointX(iPt);   yD = grD.GetPointY(iPt);
         '''
         if (grN.GetPoint(iPt, xN, yN) == -1) or (grD.GetPoint(iPt, xD, yD) == -1):
-            print "DivideGraphAsymmErr():: error in reading graph point {} \t *** ERROR *** \n".format(iPt)
+            print("DivideGraphAsymmErr():: error in reading graph point {} \t *** ERROR *** \n".format(iPt))
             return
         '''
         
@@ -249,18 +300,33 @@ def run(resPtBin):
     
     #
     #
-    in_fileNames = ["L1T_JetMET_Res_def_2018_SingleMu_nVts_Lt25_and_Gt50_v10.root"]; sInFileVersion = "_wLUTGenModeTrue_PFA1pRun3ContainPhaseNSm2_L1TauMatchedToPFJet_v10_set3"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_JetMET_Res_def_2018_SingleMu_nVts_Lt25_and_Gt50_v10.root"]; sInFileVersion = "_wLUTGenModeTrue_PFA1pRun3ContainPhaseNSm2_L1TauMatchedToPFJet_v10_set3"; # need "set1" or "set2" or "set3" string in sInFileVersion
     # 'run_TrgEffi'
     #in_fileNames = ["L1T_JetMET_Res_def_2018_SingleMu_nVts_Lt25_and_Gt50_wCalibJetByHand_calibSFAtPU50to100_Pt25to35_v11.root"]; sInFileVersion = "_wLUTGenModeTrue_PFA1pRun3ContainPhaseNSm2_L1TauMatchedToPFJet_v11_set3"; # need "set1" or "set2" or "set3" string in sInFileVersion
     # 'run_TrgRate'
     #in_fileNames = ["L1T_JetMET_Res_def_2018_ZeroBias_nVts_Lt25_and_Gt50_wCalibJetByHand_calibSFAtPU50to100_PFPt25to35_v11.root"]; sInFileVersion = "_wLUTGenModeTrue_PFA1pRun3ContainPhaseNSm2_L1TauMatchedToPFJet_v11_set3"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_JetMET_Res_def_2018_ZeroBias_nVts_Lt25_and_Gt50_wCalibJetByHand_calibSFAtPU50to100_PFPt25to35_v12.root"]; sInFileVersion = "_wLUTGenModeTrue_PFA1pRun3ContainPhaseNSm2_L1TauMatchedToPFJet_v12_set3"; # need "set1" or "set2" or "set3" string in sInFileVersion
 
+    #in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_hadded.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_set1"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_hadded_ResWrtGenJPt.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_set1"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_wCalibJetByHand_CalibScaleFactor_Regressed_to_log_GenJetpT_hadded.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_wCalibJetByHand_CalibScaleFactor_Regressed_to_log_GenJetpT_set1"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_wCalibJetByHand_CalibSF_Regressed_to_log_GenJetpT_hadded.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_wCalibJetByHand_CalibSF_Regressed_to_log_GenJetpT_set1"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_wCalibJetByHand_CalibSF_Regressed_to_log_L1JetpT_DividedBylog_GenJetpT_hadded.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_wCalibJetByHand_CalibSF_Regressed_to_log_L1JetpT_DividedBylog_GenJetpT_PULowAndHighset1"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_wCalibJetByHand_CalibSF_RegressedTo_log_GenJetPt_v5_hadded.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_wCalibJetByHand_CalibSF_RegressedTo_log_GenJetPt_v5_PULowAndHigh_set1_v2"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_wCalibJetByHand_CalibSF_RegressedTo_log_L1JetPt_DividedBylog_GenJetPt_v5_hadded.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_wCalibJetByHand_CalibSF_RegressedTo_log_L1JetPt_DividedBylog_GenJetPt_v5_PULowAndHigh_set1_v2"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_wCalibJetByHand_CalibSF_RegressedTo_log_GenJetPt_v5_hadded.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_wCalibJetByHand_CalibSF_RegressedTo_log_GenJetPt_v5_PUAll_set1_v2"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_wCalibJetByHand_CalibSF_RegressedTo_log_GenJetPt_v5_hadded_new.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_wCalibJetByHand_CalibSF_RegressedTo_log_GenJetPt_v5_PUAll_set1_v4"; # need "set1" or "set2" or "set3" string in sInFileVersion
+    #in_fileNames = ["L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_wCalibJetByHand_CalibSF_RegressedTo_log_GenJetPt_v5_hadded_new.root"]; sInFileVersion = "_HCALL2Calib_stage1_PFA1p_nVtxAll_Run3_QCD_Pt15to7000_wCalibJetByHand_CalibSF_RegressedTo_log_GenJetPt_v5_PULowAndHigh_set1_v4"; # need "set1" or "set2" or "set3" string in sInFileVersion
     
-    sInFileTags  = ["PFA2", "PFA1p"]
+    JetsMatchedToL1Jets = "GenJet" # "PFJet" "GenJet"
+    
+    #sInFileTags  = ["PFA2", "PFA1p"]
+    sInFileTags  = ["PFA1p"]
     
     #JetShapes = ['9x9', '8x9', '7x9', '6x9', '5x9', '4x9', '3x9']
     #JetShapes = ['9x9', '8x9', '7x9', '6x9', '5x9', '4x9', '3x9', '3x9_plus_0.5_times_9x9']
-    JetShapes = ['Default'] + ['9x9', '8x9', '7x9', '6x9', '5x9', '4x9', '3x9', '3x9_plus_0.5_times_9x9']    
+    #JetShapes = ['Default'] + ['9x9', '8x9', '7x9', '6x9', '5x9', '4x9', '3x9', '3x9_plus_0.5_times_9x9']
+    JetShapes = ['Default'] + ['9x9']    
 
     # now pasing as main() function argument
     #resPtBin = ["medPt"] # "medPt"  "PtAllBins"
@@ -323,31 +389,34 @@ def run(resPtBin):
     '''
 
     JetShapesAndPUSs = OrderedDict([
-       ('Default', OrderedDict([
-            ("Raw",                   "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_Raw_HBEF_%s_0" % (resPtBin)),
-            ("RawPUS",                "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_HBEF_%s_0" % (resPtBin)),
-            ("L1 jets",               "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_L1JDefault_HBEF_%s_0" % (resPtBin)),
-        ])),        
+#       ('Default', OrderedDict([
+#            ("Raw",                   "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_Raw_HBEF_%s_0" % (resPtBin)),
+#            ("RawPUS",                "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_HBEF_%s_0" % (resPtBin)),
+#            ("L1 jets",               "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_L1JDefault_HBEF_%s_0" % (resPtBin)),
+#        ])),        
         
         ('9x9', OrderedDict([
-            ("RawPUS_phiRingDefault", "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiDefault_HBEF_%s_0" % (resPtBin)),
+            ("RawPUS",                        "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_HBEF_%s_0" % (resPtBin)),
+            ("RawPUS_phiRingDefault",         "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiDefault_HBEF_%s_0" % (resPtBin)),
+            ("RawPUS woCalib",                "h_jet_byHand_res_woLayer2Calib_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_HBEF_%s_0" % (resPtBin)),
+            ("RawPUS_phiRingDefault woCalib", "h_jet_byHand_res_woLayer2Calib_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiDefault_HBEF_%s_0" % (resPtBin)),
             #("RawPUS_phiRingMin4",    "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiRingSide4_HBEF_%s_0" % (resPtBin))
         ])),
 
-        ('3x9', OrderedDict([
-            ("RawPUS_phiRingDefault", "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiDefault_HBEF_%s_0" % (resPtBin)),
+#        ('3x9', OrderedDict([
+#            ("RawPUS_phiRingDefault", "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiDefault_HBEF_%s_0" % (resPtBin)),
 #            ("RawPUS_phiRingMin4",    "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiRingSide4_HBEF_%s_0" % (resPtBin))
-        ])),
+#        ])),
         
-        ('3x9_plus_0.5_times_9x9', OrderedDict([
-            ("RawPUS_phiRingDefault", "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiDefault_HBEF_%s_0" % (resPtBin)),
+#        ('3x9_plus_0.5_times_9x9', OrderedDict([
+#            ("RawPUS_phiRingDefault", "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiDefault_HBEF_%s_0" % (resPtBin)),
 #            ("RawPUS_phiRingMin4",    "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawPUS_phiRingSide4_HBEF_%s_0" % (resPtBin))
-        ])),
+#        ])),
 
-       ('L1TauDefault', OrderedDict([
-            ("Et",                   "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_Et_HBEF_%s_0" % (resPtBin)),
-            ("RawEt",                "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawEt_HBEF_%s_0" % (resPtBin)),
-        ])),        
+#       ('L1TauDefault', OrderedDict([
+#            ("Et",                   "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_Et_HBEF_%s_0" % (resPtBin)),
+#            ("RawEt",                "h_jet_byHand_res_vs_iEta_vs_nVtx$JETSHAPE_RawEt_HBEF_%s_0" % (resPtBin)),
+#        ])),        
          
         
     ])    
@@ -417,7 +486,7 @@ def run(resPtBin):
     #// Run3 LHC parameters for normalizing rates
     instLumi = 2e34; #// Hz/cm^2, https://indico.cern.ch/event/880508/contributions/3720014/attachments/1980197/3297287/CMS-Week_20200203_LHCStatus_Schaumann_v2.pdf
     mbXSec   = 6.92e-26; #// cm^2, minimum bias cross section from Run2: https://twiki.cern.ch/twiki/bin/view/CMS/PileupJSONFileforData#Recommended_cross_section
-    axisRange_EtTrsh_forTrgRates = [10, 50] # [50, 100]
+    axisRange_EtTrsh_forTrgRates = [10, 80] # [50, 100]
 
     JetShapesAndPUSs_histoName_TrgEffi_1 = OrderedDict([
        ('Default', OrderedDict([
@@ -480,15 +549,18 @@ def run(resPtBin):
     nPVRanges = OrderedDict([
         #("lowPU",  [ 1,  25]),
         #("nVtx #in [1, 25]",  [ 1,  25]),
-        ("PU1to25",  [ 1,  25]),
+        #("PU1to25",  [ 1,  25]),
         #"medPU":  [50,  54],
         #("highPU", [50, 100]), # [55, 100]
         #("nVtx #in [50, 100]", [50, 100]), # [55, 100]
-        ("PU50to100", [50, 100]), # [55, 100]
+        #("PU50to100", [50, 100]), # [55, 100]
+        ("PUAll", [0, 100]), # [55, 100]
+        #("PU0to15", [0, 15]),
+        #("PU65to80", [65, 80]),
     ])
 
     #JetShapesAndPUSs_Denom_forRatioPlot = ['Default', "RawPUS", "nVtx #in [1, 25]"] # dict key names used to refer histogram to be used as a denominator histogram in ratio plot
-    JetShapesAndPUSs_Denom_forRatioPlot = ["PU1to25"] # dict key names used to refer histogram to be used as a denominator histogram in ratio plot
+    JetShapesAndPUSs_Denom_forRatioPlot = list(nPVRanges.keys()) # ["PUAll"] # ["PU0to15"] # ["PU1to25"] # dict key names used to refer histogram to be used as a denominator histogram in ratio plot
 
     JetShapesAndPUSs_Denom_forRatioPlot_forTrgRates = None
     if JetShapesAndPUSs_histoName_TrgRates == JetShapesAndPUSs_histoName_TrgRates_1:
@@ -518,7 +590,25 @@ def run(resPtBin):
 
 
 
-    
+    CalTpCalibHistos_et = OrderedDict([
+        ('Unpacked TP ECAL et',     'h_ECAP_TP_et_vs_iEta_vs_nVts_unp_0'),
+        ('Unpacked TP ECAL compEt', 'h_ECAP_TP_compEt_vs_iEta_vs_nVts_unp_0'),
+        
+        ('Unpacked TP HCAL et',     'h_HCAP_TP_et_vs_iEta_vs_nVts_unp_0'),
+        ('Unpacked TP HCAL compEt', 'h_HCAP_TP_compEt_vs_iEta_vs_nVts_unp_0'),
+        #
+        #
+        ('Emulated TP ECAL et',     'h_ECAP_TP_et_vs_iEta_vs_nVts_emu_0'),
+        ('Emulated TP ECAL compEt', 'h_ECAP_TP_compEt_vs_iEta_vs_nVts_emu_0'),
+        
+        ('Emulated TP HCAL et',     'h_HCAP_TP_et_vs_iEta_vs_nVts_emu_0'),
+        ('Emulated TP HCAL compEt', 'h_HCAP_TP_compEt_vs_iEta_vs_nVts_emu_0'),        
+    ])    
+
+    nPVRanges_forCalTpCalibHistos = OrderedDict([
+        ("PU50to100", [50, 100]), 
+    ])
+   
 
     
     run_list =  [
@@ -533,8 +623,10 @@ def run(resPtBin):
         
         #'run_TrgRates'
         #'run_TrgEffi'
-
+        
         #'run_res_vs_tauJets'
+
+        #'run_CalTpCalib'
     ]
 
     
@@ -618,10 +710,10 @@ def run(resPtBin):
         inFileName  = in_fileNames[iInFile]
         sInFileTag  = sInFileTags[iInFile]            
         
-        print "inFileName: {}".format(inFileName); sys.stdout.flush()
+        print("inFileName: {}".format(inFileName)); sys.stdout.flush()
         fIn = R.TFile(inFileName)
         if not fIn.IsOpen():
-            print "Input file %s couldn't open." % (inFileName)
+            print("Input file %s couldn't open." % (inFileName))
             return
         inFiles.append(fIn)
     
@@ -635,7 +727,7 @@ def run(resPtBin):
             jetShape1 = jetShape
             if jetShape == 'Default':  jetShape1 = ""
             else:                      jetShape1 = "_%s" % (jetShape)
-            print "  jetShape1: {}".format(jetShape1)
+            print("  jetShape1: {}".format(jetShape1))
         
             for plot1DName in ['res', 'PU', 'PUByRawPt']: # ['jet_byHand_res_vs_iEta', 'jet_byHand_PU_vs_iEta', 'jet_byHand_PUByRawPt_vs_iEta']
                 for l1Mode in l1Modes:
@@ -653,7 +745,7 @@ def run(resPtBin):
                             resType = resType.replace('res', plot1DName)
                             resType = resType.replace('$JETSHAPE', jetShape1)
                             res_histoName = "%s_%s" % (resType, l1Mode)
-                            print "res histo: %s" % (res_histoName); sys.stdout.flush()
+                            print("res histo: %s" % (res_histoName)); sys.stdout.flush()
                             h2D = fIn.Get(res_histoName)
                             hres2D[iInFile][res_histoName] = h2D
                             #hres2D.append(fIn.Get(res_histoName))
@@ -707,12 +799,12 @@ def run(resPtBin):
 
                                 # Don't consider PU_RAW histograms to decide yaxis range as PU_RAW histograms are filled with '0' entries  
                                 if plot1DName != 'res' and '_Raw_' in resType:
-                                    print "Skip h_group.append: plot1DName {}, resType {}".format(plot1DName, resType)
+                                    print("Skip h_group.append: plot1DName {}, resType {}".format(plot1DName, resType))
                                     continue
 
                                 h = hres1D[iInFile][res_histoName][eta]
                                 h_group.append(h)
-                                print "h_append: iInFile {}, res_histoName {}, eta {}".format(iInFile, res_histoName, eta)
+                                print("h_append: iInFile {}, res_histoName {}, eta {}".format(iInFile, res_histoName, eta))
 
                             for iResType in range(len(resTypes)):
                                 resType = resTypes[iResType]
@@ -744,7 +836,7 @@ def run(resPtBin):
                                 c5.cd()
                                 if iResType == 0:
                                     ymin, ymax = getHists1DYRange(h_group)
-                                    print "ymin {}, ymax {}, h_group ({}) : {}".format(ymin, ymax, len(h_group), h_group)
+                                    print("ymin {}, ymax {}, h_group ({}) : {}".format(ymin, ymax, len(h_group), h_group))
                                     h.GetYaxis().SetRangeUser(0, ymax * 1.3)
                                     h.Draw()
                                 else:
@@ -778,7 +870,7 @@ def run(resPtBin):
             jetShape1 = jetShape
             if jetShape == 'Default':  jetShape1 = ""
             else:                      jetShape1 = "_%s" % (jetShape)
-            print "  jetShape1: {}".format(jetShape1)
+            print("  jetShape1: {}".format(jetShape1))
         
             #for plot1DName in ['res', 'PU', 'PUByRawPt']: # ['jet_byHand_res_vs_iEta', 'jet_byHand_PU_vs_iEta', 'jet_byHand_PUByRawPt_vs_iEta']
             for plot1DName in ['res']: # ['jet_byHand_res_vs_iEta', 'jet_byHand_PU_vs_iEta', 'jet_byHand_PUByRawPt_vs_iEta']
@@ -831,7 +923,7 @@ def run(resPtBin):
                             # Don't consider PU_RAW histograms to decide yaxis range as PU_RAW histograms are filled with '0' entries 
                             if   plot1DName != 'res' and '_Raw_' in resType: continue 
 
-                            print "res histo: %s" % (res_histoName); sys.stdout.flush()
+                            print("res histo: %s" % (res_histoName)); sys.stdout.flush()
                             hres2D = fIn.Get(res_histoName)
                             sNameTmp = "%s_InFile%d" % (res_histoName, iInFile)
                             hres2D.SetNameTitle(sNameTmp, sNameTmp)
@@ -839,7 +931,7 @@ def run(resPtBin):
                                 hres2D.GetXaxis().SetTitle("i#eta")
                             else:
                                 hres2D.GetXaxis().SetTitle("|i#eta|")
-                            print "res_histoName new: {}".format(hres2D.GetName()); sys.stdout.flush()
+                            print("res_histoName new: {}".format(hres2D.GetName())); sys.stdout.flush()
 
                             yaxisName = ""
                             if   plot1DName == 'res':
@@ -915,7 +1007,7 @@ def run(resPtBin):
                             if iInFile == 0:
                                 legend.AddEntry(hres2D_2, sResLegend[iResType], "le")
                                 #legend.AddEntry(hDummy, sResLegend[iResType], "le")
-                                print "    legend {}: {}, histo: {}".format(iResType, sResLegend[iResType], hres2D_2.GetName())
+                                print("    legend {}: {}, histo: {}".format(iResType, sResLegend[iResType], hres2D_2.GetName()))
                             
                             hres2D_MeanPlus1 = hres2D_1.Clone("%s_MeanPlus1" % (sNameTmp))
                             hres2D_MeanPlus1.SetNameTitle("%s_MeanPlus1" % (sNameTmp), "%s_MeanPlus1" % (sNameTmp))
@@ -940,16 +1032,16 @@ def run(resPtBin):
                             iHisto += 1
 
                             h_dict = h1D_1_OD
-                            print "h1D_3_OD::"
+                            print("h1D_3_OD::")
                             for sInFileTag in h_dict.keys():
-                                print "    h1D_3_OD[%s]" % (sInFileTag)
+                                print("    h1D_3_OD[%s]" % (sInFileTag))
                                 for res_histoName in h_dict[sInFileTag].keys():
                                     h = h_dict[sInFileTag][res_histoName]
-                                    print "    h1D_3_OD[%s][%s]: %s, %g" % \
+                                    print("    h1D_3_OD[%s][%s]: %s, %g" % \
                                         (sInFileTag, res_histoName, h.GetName(),
-                                         h.GetBinContent(5) )
+                                         h.GetBinContent(5) ))
                                     
-                        print "shRatio_Denom: {}".format(shRatio_Denom)
+                        print("shRatio_Denom: {}".format(shRatio_Denom))
                         for iResType in range(len(resTypes)):
                             resType = resTypes[iResType]
                             resType = resType.replace('res', plot1DName)
@@ -991,14 +1083,14 @@ def run(resPtBin):
                     c3.SaveAs("%s/jetByHand_%s_%s_%s_sigma_1.png" % (sDir1, l1Mode, resPtBin, plotName))
                     '''
                     h_dict = h1D_1_OD
-                    print "h_dict:: h1D_1_OD - 2"
+                    print("h_dict:: h1D_1_OD - 2")
                     for sInFileTag in h_dict.keys():
-                        print "    h_dict[%s]" % (sInFileTag)
+                        print("    h_dict[%s]" % (sInFileTag))
                         for res_histoName in h_dict[sInFileTag].keys():
                             h = h_dict[sInFileTag][res_histoName]
-                            print "    h_dict[%s][%s]: %s, %g" % \
+                            print("    h_dict[%s][%s]: %s, %g" % \
                                 (sInFileTag, res_histoName, h.GetName(),
-                                 h.GetBinContent(5) )
+                                 h.GetBinContent(5) ))
                     
                     h1D_1_list = []
                     h1D_2_list = []
@@ -1029,14 +1121,14 @@ def run(resPtBin):
 
 
                     h_dict = h1D_1_OD
-                    print "h_dict:: h1D_1_OD - 3"
+                    print("h_dict:: h1D_1_OD - 3")
                     for sInFileTag in h_dict.keys():
-                        print "    h_dict[%s]" % (sInFileTag)
+                        print("    h_dict[%s]" % (sInFileTag))
                         for res_histoName in h_dict[sInFileTag].keys():
                             h = h_dict[sInFileTag][res_histoName]
-                            print "    h_dict[%s][%s]: %s, %g" % \
+                            print("    h_dict[%s][%s]: %s, %g" % \
                                 (sInFileTag, res_histoName, h.GetName(),
-                                 h.GetBinContent(5) )
+                                 h.GetBinContent(5) ))
                             
                             
                     sDir1 = "plots%s/JetShape%s/%s_wPFJet%s" % (sInFileVersion, jetShape1, plot1DName,resPtBin)
@@ -1076,7 +1168,7 @@ def run(resPtBin):
             jetShape1 = jetShape
             if jetShape == 'Default':  jetShape1 = ""
             else:                      jetShape1 = "_%s" % (jetShape)
-            print "  jetShape1: {}".format(jetShape1)
+            print("  jetShape1: {}".format(jetShape1))
         
             c4 = R.TCanvas("c4","c4",650,500)
 
@@ -1118,7 +1210,7 @@ def run(resPtBin):
                                 effi_histoName = "%s_%s" % (effiType, l1Mode)
                                 effi_histoName = effi_histoName.replace("IETA", str(iEta))
                                 effi_histoName = effi_histoName.replace("PTBIN", iPt)
-                                print "effi histo: %s" % (effi_histoName); sys.stdout.flush()
+                                print("effi histo: %s" % (effi_histoName)); sys.stdout.flush()
                                 heffi1D.append( fIn.Get(effi_histoName) )
                                 sNameTmp = "%s_InFile%d" % (effi_histoName, iInFile)
                                 heffi1D[-1].SetTitle("%s;E_{T}(offline jet) [GeV]; Efficiency" % (sNameTmp))
@@ -1151,7 +1243,7 @@ def run(resPtBin):
                         c4.SaveAs("%s/jetByHand_%s_%s_%s_Effi.png" % (sDir1, l1Mode,str(iEta),iPt))
 
             #sTmp = input("enter something")
-            print "here15 "; sys.stdout.flush()
+            print("here15 "); sys.stdout.flush()
 
     
 
@@ -1192,12 +1284,12 @@ def run(resPtBin):
                         # Don't consider PU_RAW histograms to decide yaxis range as PU_RAW histograms are filled with '0' entries 
                         if   plot1DName != 'res' and '_Raw_' in resType: continue 
 
-                        print "res histo: %s" % (res_histoName); sys.stdout.flush()
+                        print("res histo: %s" % (res_histoName)); sys.stdout.flush()
                         h2D = (fIn.Get(res_histoName))
                         sNameTmp = "%s_InFile%d" % (res_histoName, iInFile)
                         h2D.SetNameTitle(sNameTmp, sNameTmp)
                         h2D.GetXaxis().SetTitle("iEta")
-                        print "res_histoName new: {}".format(h2D.GetName()); sys.stdout.flush()
+                        print("res_histoName new: {}".format(h2D.GetName())); sys.stdout.flush()
 
                         yaxisName = ""
                         if   plot1DName == 'res':
@@ -1355,7 +1447,7 @@ def run(resPtBin):
                         # Don't consider PU_RAW histograms to decide yaxis range as PU_RAW histograms are filled with '0' entries 
                         if   plot1DName != 'res' and '_Raw_' in resType: continue 
 
-                        print "res histo: %s" % (res_histoName); sys.stdout.flush()
+                        print("res histo: %s" % (res_histoName)); sys.stdout.flush()
                         h2D = (fIn.Get(res_histoName))
                         sNameTmp = "%s_InFile%d" % (res_histoName, iInFile)
                         h2D.SetNameTitle(sNameTmp, sNameTmp)
@@ -1363,7 +1455,7 @@ def run(resPtBin):
                             h2D.GetXaxis().SetTitle("iEta")
                         else:
                             h2D.GetXaxis().SetTitle("|i#eta|")
-                        print "res_histoName new: {}".format(h2D.GetName()); sys.stdout.flush()
+                        print("res_histoName new: {}".format(h2D.GetName())); sys.stdout.flush()
 
                         yaxisName = ""
                         if   plot1DName == 'res':
@@ -1594,7 +1686,7 @@ def run(resPtBin):
                     h2 = h2D.ProjectionY("%s_ProjY_2"%(h2D.GetName()), kBin_nPVRanges["medPU"][0],  kBin_nPVRanges["medPU"][1])
                 h3 = h2D.ProjectionY("%s_ProjY_3"%(h2D.GetName()), kBin_nPVRanges["highPU"][0], kBin_nPVRanges["highPU"][1])
                 #print "iEta {}, sHistoName {}, kBin_nPV_Median {}, ".format(iEta, sHistoName, kBin_nPV_Median)
-                print "iEta {}, sHistoName {},   kBin_nPVRanges {}".format(iEta, sHistoName, kBin_nPVRanges)
+                print("iEta {}, sHistoName {},   kBin_nPVRanges {}".format(iEta, sHistoName, kBin_nPVRanges))
                 h1.Rebin(2)
                 if "medPU" in nPVRanges.keys(): h2.Rebin(2)
                 h3.Rebin(2)
@@ -1674,6 +1766,9 @@ def run(resPtBin):
 
             
     if 'run_res_vs_jetShapeAndPUS' in run_list:
+        plotRes1DDistributions = True
+        
+        
         c1 = R.TCanvas("c1","c1",500,400)
         #c2 = R.TCanvas("c2","c2",1200,600)
         #c3 = R.TCanvas("c3","c3",1200,600)
@@ -1686,9 +1781,9 @@ def run(resPtBin):
         
         
         for JetShape, JetPUSs in JetShapesAndPUSs.items():
-            print "JetShape {}, JetPUS {}".format(JetShape, JetPUSs)
+            print("JetShape {}, JetPUS {}".format(JetShape, JetPUSs))
             for JetPUSName, JetPUSHistName in JetPUSs.items():
-                print "    JetShape {}, JetPUSName {}, JetPUSHistName {}".format(JetShape, JetPUSName, JetPUSHistName)
+                print("    JetShape {}, JetPUSName {}, JetPUSHistName {}".format(JetShape, JetPUSName, JetPUSHistName))
             
         #exit(0)
         
@@ -1708,6 +1803,7 @@ def run(resPtBin):
                 hRatiores2D_dict    = OrderedDict()
                 hRatioresMean_dict  = OrderedDict()
                 hRatioresSigma_dict = OrderedDict()
+                hres1D_dict = OrderedDict()
                 hRatioEffectiveResolution_dict = OrderedDict()
                 for iInFile in range(len(in_fileNames)):
                     fIn         = inFiles[iInFile]
@@ -1724,6 +1820,7 @@ def run(resPtBin):
                     hRatioresMean_dict[sInFileTag] = OrderedDict()
                     hRatioresSigma_dict[sInFileTag] = OrderedDict()
                     hRatioEffectiveResolution_dict[sInFileTag] = OrderedDict()
+                    hres1D_dict[sInFileTag] = OrderedDict()
                     shRatio_Denom_JetShape = None
                     iPURange = 0
                     hTmps = []
@@ -1749,7 +1846,7 @@ def run(resPtBin):
                             resType = resType.replace('res', plot1DName)
                             resType = resType.replace('$JETSHAPE', jetShape1)
                             res_histoName = "%s_%s" % (resType, l1Mode)
-                            print "res histo: %s" % (res_histoName); sys.stdout.flush()
+                            print("res histo: %s" % (res_histoName)); sys.stdout.flush()
                             h3D = (fIn.Get(res_histoName))
                             #sNameTmp0 = "%s_InFile%d" % (res_histoName, iInFile)
                             sNameTmp0 = "%s_%s" % (res_histoName, sInFileTags[iInFile])
@@ -1762,7 +1859,7 @@ def run(resPtBin):
                                 kBin_PURangeMax = h3D.GetYaxis().FindBin(PURange[1])
                                 kBin_iEtaMin    = 1
                                 kBin_iEtaMax    = h3D.GetNbinsX()
-                                print "H3D {}, PURangeName: {}, PURange {}".format(h3D.GetName(), PURangeName, PURange)
+                                print("H3D {}, PURangeName: {}, PURange {}".format(h3D.GetName(), PURangeName, PURange))
                                 #h2D = h3D.ProjectionZ("%s_%s" % (h3D.GetName(), PURangeName), kBin_iEtaMin,kBin_iEtaMax, kBin_PURangeMin,kBin_PURangeMax)
                                 h3D.GetYaxis().SetRange(kBin_PURangeMin, kBin_PURangeMax)
                                 h2D = h3D.Project3D("zx") # 1st lable gets plot along y-axis
@@ -1775,13 +1872,13 @@ def run(resPtBin):
                                     h2D.GetXaxis().SetTitle("iEta")
                                 else:
                                     h2D.GetXaxis().SetTitle("|i#eta|")
-                                print "res_histoName new: {}".format(h2D.GetName()); sys.stdout.flush()
+                                print("res_histoName new: {}".format(h2D.GetName())); sys.stdout.flush()
 
                                 yaxisName = ""
                                 if   plot1DName == 'res':
-                                    yaxisName_mean  = "#mu(L1T/PF - 1)"
-                                    yaxisName_sigma = "#sigma(L1T/PF - 1)"
-                                    yaxisName_sigmaByMean = "#frac{#sigma(L1T/PF - 1)}{#mu(L1T/PF - 1) + 1}"
+                                    yaxisName_mean  = "#mu(L1T/%s - 1)"  % (JetsMatchedToL1Jets)
+                                    yaxisName_sigma = "#sigma(L1T/%s - 1)" % (JetsMatchedToL1Jets)
+                                    yaxisName_sigmaByMean = "#frac{#sigma(L1T/%s - 1)}{#mu(L1T/%s - 1) + 1}" % (JetsMatchedToL1Jets, JetsMatchedToL1Jets)
                                     fGaus.SetRange(-1.4, 2.5)
                                     axisRange_mean  = [-0.8, 1]
                                     axisRange_sigma = [0.1, 0.9]
@@ -1830,7 +1927,7 @@ def run(resPtBin):
                                 c4_1.cd()
                                 h2D_MeanPlus1    = h2D_1.Clone("%s_MeanPlus1" % (sNameTmp))
                                 h2D_SF_PFJByL1TJ = h2D_1.Clone("%s_SF_PFJByL1TJ" % (sNameTmp))
-                                h2D_SF_PFJByL1TJ.GetYaxis().SetTitle("#frac{1}{#mu(L1T/PF - 1) + 1}")
+                                h2D_SF_PFJByL1TJ.GetYaxis().SetTitle("#frac{1}{#mu(L1T/%s - 1) + 1}" % (JetsMatchedToL1Jets))
                                 for iBin in range(1, h2D_MeanPlus1.GetNbinsX()+1):
                                     binContent    = h2D_MeanPlus1.GetBinContent(iBin)
                                     binError      = h2D_MeanPlus1.GetBinError(iBin)
@@ -1840,7 +1937,7 @@ def run(resPtBin):
                                     h2D_MeanPlus1.SetBinContent(iBin,    MeanPlus1)
                                     h2D_SF_PFJByL1TJ.SetBinContent(iBin, binContent_SF)
                                     h2D_SF_PFJByL1TJ.SetBinError(iBin,   binError_SF)
-                                print "h2D_SF_PFJByL1TJ: {}".format(h2D_SF_PFJByL1TJ.GetName())    
+                                print("h2D_SF_PFJByL1TJ: {}".format(h2D_SF_PFJByL1TJ.GetName())    )
                                 hEffectiveResolution = h2D_2.Clone("%s_EffectiveResolution" % (sNameTmp))
                                 hEffectiveResolution.Divide(h2D_2, h2D_MeanPlus1)
                                 hEffectiveResolution.GetYaxis().SetTitle(yaxisName_sigmaByMean)
@@ -1854,6 +1951,21 @@ def run(resPtBin):
                                 hresSigma_dict[sInFileTag][jetShape_PUS_PUrange] = h2D_2
                                 hEffectiveResolution_dict[sInFileTag][jetShape_PUS_PUrange] = hEffectiveResolution
 
+                                if plotRes1DDistributions:
+                                    hres1D_dict[sInFileTag][jetShape_PUS_PUrange] = OrderedDict()
+                                    for idxEtaBin in range(1,h2D.GetNbinsX()+1):
+                                        Eta = int( h2D.GetXaxis().GetBinCenter(idxEtaBin) )
+
+                                        hres = h2D.ProjectionY("%s_ProjY_%d" % (h2D.GetName(), Eta), idxEtaBin, idxEtaBin)
+                                        hres.GetXaxis().SetTitle("(L1T/%s - 1)" % (JetsMatchedToL1Jets))
+                                        hres.GetYaxis().SetTitle("Entries")
+                                        hres.SetLineColor(colors[iResType])
+                                        hres.SetMarkerColor(colors[iResType])
+                                        hres.SetMarkerStyle(markers[iPURange])
+                                        hres.SetMarkerSize(0.7)
+
+                                        hres1D_dict[sInFileTag][jetShape_PUS_PUrange][Eta] = hres
+                                        
                                 # make ratio plot of "highPU / lowPU"
                                 if PURangeName not in JetShapesAndPUSs_Denom_forRatioPlot: # JetShapesAndPUSs_Denom_forRatioPlot contains label for denomintor histogram
                                     jetShape_PUS_PUrange_forRatioPlot = "%s_%s_%s" % (jetShape,JetPUSName,JetShapesAndPUSs_Denom_forRatioPlot[0])
@@ -1944,11 +2056,11 @@ def run(resPtBin):
                         '''
                     
                     
-                    print "here1"
-                    print "iInFile: {}".format(iInFile)
-                    print "sInFileTags[iInFile]: {}".format(sInFileTags[iInFile])
-                    print "sResLegend_selected: {}".format(sResLegend_selected)
-                    sDir1 = "plots%s/CompareDiffJetShapesAndPUS/%s/%s/%s" % (sInFileVersion, plot1DName, resPtBin, sInFileTags[iInFile])
+                    print("here1")
+                    print("iInFile: {}".format(iInFile))
+                    print("sInFileTags[iInFile]: {}".format(sInFileTags[iInFile]))
+                    print("sResLegend_selected: {}".format(sResLegend_selected))
+                    sDir1 = "plots%s/CompareDiffJetShapesAndPUS/%s/%s%s/%s" % (sInFileVersion, plot1DName, JetsMatchedToL1Jets,resPtBin, sInFileTags[iInFile])
                     if not os.path.exists(sDir1):
                         os.makedirs(sDir1)                                
                     c2_1 = plotHistos1DAndRatioPlot(hresMean_list, hRatioresMean_list, legend, c2_1, sSaveAs="%s/DiffJetShapesAndPUS_%s_%s_mean.png" % (sDir1, l1Mode, plotName))
@@ -1961,7 +2073,21 @@ def run(resPtBin):
                     '''
                     #c2_1.SaveAs("%s/DiffJetShapes_%s_%s_mean.png" % (sDir1, l1Mode, plotName))
                     #c3_1.SaveAs("%s/DiffJetShapes_%s_%s_sigma.png" % (sDir1, l1Mode, plotName))
-        
+
+                    if plotRes1DDistributions:
+                        jetShape_PUS_PUrange_tmpFirst = list(hres1D_dict[sInFileTag])[0]
+                        for iEta in hres1D_dict[sInFileTag][jetShape_PUS_PUrange_tmpFirst].keys():
+                            hres1D_list = []
+                            for jetShape_PUS_PUrange in hres1D_dict[sInFileTag].keys():
+                                hres1D_list.append( hres1D_dict[sInFileTag][jetShape_PUS_PUrange][iEta] )
+
+                            legend.SetHeader("iEta=%d"%(iEta),"C");
+                            sDir1 = "plots%s/CompareDiffJetShapesAndPUS/%s/%s%s/%s/res1D" % (sInFileVersion, plot1DName, JetsMatchedToL1Jets,resPtBin, sInFileTags[iInFile])
+                            if not os.path.exists(sDir1):
+                                os.makedirs(sDir1)     
+                            c1 = plotHistos1D(hres1D_list, legend, c1, sSaveAs="%s/DiffJetShapesAndPUS_%s_%s_iEta%d.png" % (sDir1, l1Mode, plotName, iEta))
+                            
+                        # plotHistos1D(h_list, legend, canvas, sSaveAs, drawOption="PE", pad1SetLogY=False, yRange=[], setLogX=False):
         
         fOpL1JetEnergySF.Close()            
 
@@ -1985,19 +2111,19 @@ def run(resPtBin):
             sInFileTag  = sInFileTags[iInFile]
             
             if 'ZeroBias' not in in_fileNames[iInFile]:
-                print "i/p file {} for trigger rate plots is not ZeroBias dataset ????? *** ERROR ??? ***".format(in_fileNames[iInFile])
+                print("i/p file {} for trigger rate plots is not ZeroBias dataset ????? *** ERROR ??? ***".format(in_fileNames[iInFile]))
                 return
             
             # read histograms for nTotalEvents
             hnTotalEvents = fIn.Get(sHistoName_nTotalEvents_forTrgRates)
             if not hnTotalEvents:
-                print "Histogram {} doesn't exist in {} \t\t *** ERROR ***".format(sHistoName_nTotalEvents_forTrgRates, in_fileNames[iInFile])
+                print("Histogram {} doesn't exist in {} \t\t *** ERROR ***".format(sHistoName_nTotalEvents_forTrgRates, in_fileNames[iInFile]))
                 continue
             
             nTotalEvents = hnTotalEvents.GetBinContent(1)            
-            print "{}: nTotalEvents: {}".format(in_fileNames[iInFile], nTotalEvents)
+            print("{}: nTotalEvents: {}".format(in_fileNames[iInFile], nTotalEvents))
             norm_TrgRates = instLumi * mbXSec / nTotalEvents
-            print "instLumi {}, mbXSec {}, nTotalEvents {}, norm_TrgRates {}".format(instLumi, mbXSec, nTotalEvents, norm_TrgRates)
+            print("instLumi {}, mbXSec {}, nTotalEvents {}, norm_TrgRates {}".format(instLumi, mbXSec, nTotalEvents, norm_TrgRates))
             
             
             
@@ -2030,7 +2156,7 @@ def run(resPtBin):
                                     resType = resType.replace('$ETACAT', eta_cat)
                                     resType = resType.replace(TrgRates_Types[0], TrgRate_Type)
                                     res_histoName = "%s_%s" % (resType, l1Mode)
-                                    print "res histo: %s" % (res_histoName); sys.stdout.flush()
+                                    print("res histo: %s" % (res_histoName)); sys.stdout.flush()
                                     h2D = (fIn.Get(res_histoName))
                                     #sNameTmp0 = "%s_InFile%d" % (res_histoName, iInFile)
                                     sNameTmp0 = "%s_%s" % (res_histoName, sInFileTags[iInFile])
@@ -2136,7 +2262,7 @@ def run(resPtBin):
             sInFileTag  = sInFileTags[iInFile]
             
             if 'SingleMu' not in in_fileNames[iInFile]:
-                print "i/p file {} for trigger efficiency plots is not SingleMu dataset ????? *** ERROR ??? ***".format(in_fileNames[iInFile])
+                print("i/p file {} for trigger efficiency plots is not SingleMu dataset ????? *** ERROR ??? ***".format(in_fileNames[iInFile]))
                 return
                        
             
@@ -2172,7 +2298,7 @@ def run(resPtBin):
                                     res_histoName = "%s_%s" % (resType, l1Mode)
                                     res_histoName_den = res_histoName.replace('num', 'den')
 
-                                    print "res histo_num: %s \t histo_num: %s" % (res_histoName, res_histoName_den); sys.stdout.flush()
+                                    print("res histo_num: %s \t histo_num: %s" % (res_histoName, res_histoName_den)); sys.stdout.flush()
                                     h2D_num = (fIn.Get(res_histoName))
                                     sNameTmp0 = "%s_%s" % (res_histoName, sInFileTags[iInFile])
                                     h2D_num.SetNameTitle(sNameTmp0, sNameTmp0)
@@ -2239,7 +2365,7 @@ def run(resPtBin):
 
                                     sJetShapeAndPUS_current = "%s_%s" % (jetShape, JetPUSName)
                                     sJetShapeAndPUS_Denom = "%s_%s" % (JetShapesAndPUSs_Denom_forRatioPlot_forTrgRates[0], JetShapesAndPUSs_Denom_forRatioPlot_forTrgRates[1])
-                                    print "sJetShapeAndPUS_current {}, sJetShapeAndPUS_Denom {}".format(sJetShapeAndPUS_current, sJetShapeAndPUS_Denom)
+                                    print("sJetShapeAndPUS_current {}, sJetShapeAndPUS_Denom {}".format(sJetShapeAndPUS_current, sJetShapeAndPUS_Denom))
                                     h_OD[sJetShapeAndPUS_current] = h1D
 
                                     # legend
@@ -2372,11 +2498,11 @@ def run(resPtBin):
                         resType = JetPUSHistName
                         resType = resType.replace('res', plot1DName)
                         res_histoName = "%s_%s" % (resType, l1Mode)
-                        print "res histo: %s" % (res_histoName); sys.stdout.flush()
+                        print("res histo: %s" % (res_histoName)); sys.stdout.flush()
                         h3D = (fIn.Get(res_histoName))
                         #sNameTmp0 = "%s_InFile%d" % (res_histoName, iInFile)
                         sNameTmp0 = "%s_%s" % (res_histoName, sInFileTags[iInFile])
-                        print "h3D {}, sNameTmp0 {}".format(h3D, sNameTmp0)
+                        print("h3D {}, sNameTmp0 {}".format(h3D, sNameTmp0))
                         h3D.SetNameTitle(sNameTmp0, sNameTmp0)
 
                         iPURange = 0
@@ -2386,15 +2512,15 @@ def run(resPtBin):
                             kBin_PURangeMax = h3D.GetYaxis().FindBin(PURange[1])
                             kBin_iEtaMin    = 1
                             kBin_iEtaMax    = h3D.GetNbinsX()
-                            print "H3D {}, PURangeName: {}, PURange {}".format(h3D.GetName(), PURangeName, PURange)
+                            print("H3D {}, PURangeName: {}, PURange {}".format(h3D.GetName(), PURangeName, PURange))
                             #h2D = h3D.ProjectionZ("%s_%s" % (h3D.GetName(), PURangeName), kBin_iEtaMin,kBin_iEtaMax, kBin_PURangeMin,kBin_PURangeMax)
-                            print "H3D: GetEntries {}, Xaxis: {}, {}, {}, Yaxis: {}, {}, {}, Zaxis: {}, {}, {},".format(
+                            print("H3D: GetEntries {}, Xaxis: {}, {}, {}, Yaxis: {}, {}, {}, Zaxis: {}, {}, {},".format(
                                 h3D.GetEntries(),
                                 h3D.GetXaxis().GetNbins(),h3D.GetXaxis().GetXmin(),h3D.GetXaxis().GetXmin(),
                                 h3D.GetYaxis().GetNbins(),h3D.GetYaxis().GetXmin(),h3D.GetYaxis().GetXmin(),
                                 h3D.GetZaxis().GetNbins(),h3D.GetZaxis().GetXmin(),h3D.GetZaxis().GetXmin(),
                                 
-                            )
+                            ))
                             
                             h3D.GetYaxis().SetRange(kBin_PURangeMin, kBin_PURangeMax)
                             h2D = h3D.Project3D("zx") # 1st lable gets plot along y-axis
@@ -2410,7 +2536,7 @@ def run(resPtBin):
                                 h2D.GetXaxis().SetTitle("iEta")
                             else:
                                 h2D.GetXaxis().SetTitle("|i#eta|")
-                            print "res_histoName new: {}".format(h2D.GetName()); sys.stdout.flush()
+                            print("res_histoName new: {}".format(h2D.GetName())); sys.stdout.flush()
 
                             yaxisName = ""
                             if   plot1DName == 'res':
@@ -2475,7 +2601,7 @@ def run(resPtBin):
                                 h2D_MeanPlus1.SetBinContent(iBin,    MeanPlus1)
                                 h2D_SF_PFJByL1TJ.SetBinContent(iBin, binContent_SF)
                                 h2D_SF_PFJByL1TJ.SetBinError(iBin,   binError_SF)
-                            print "h2D_SF_PFJByL1TJ: {}".format(h2D_SF_PFJByL1TJ.GetName())    
+                            print("h2D_SF_PFJByL1TJ: {}".format(h2D_SF_PFJByL1TJ.GetName())    )
                             hEffectiveResolution = h2D_2.Clone("%s_EffectiveResolution" % (sNameTmp))
                             hEffectiveResolution.Divide(h2D_2, h2D_MeanPlus1)
                             hEffectiveResolution.GetYaxis().SetTitle(yaxisName_sigmaByMean)
@@ -2585,10 +2711,10 @@ def run(resPtBin):
                         '''
                     
                     
-                    print "here1"
-                    print "iInFile: {}".format(iInFile)
-                    print "sInFileTags[iInFile]: {}".format(sInFileTags[iInFile])
-                    print "sResLegend_selected: {}".format(sResLegend_selected)
+                    print("here1")
+                    print("iInFile: {}".format(iInFile))
+                    print("sInFileTags[iInFile]: {}".format(sInFileTags[iInFile]))
+                    print("sResLegend_selected: {}".format(sResLegend_selected))
                     sDir1 = "plots%s/CompareDiffJetShapesAndPUS/%s/%s/%s" % (sInFileVersion, plot1DName, resPtBin, sInFileTags[iInFile])
                     if not os.path.exists(sDir1):
                         os.makedirs(sDir1)                                
@@ -2612,26 +2738,138 @@ def run(resPtBin):
 
 
 
+    if 'run_CalTpCalib' in run_list:
+        c1 = R.TCanvas("c1","c1",500,400)
+        c2 = R.TCanvas("c2","c2",500,400)
+        #c3 = R.TCanvas("c3","c3",1200,600)
+        #c2_1 = R.TCanvas("c2_1","c2_1",canvasDims_iEta[0],canvasDims_iEta[1])
+        #c3_1 = R.TCanvas("c3_1","c3_1",canvasDims_iEta[0],canvasDims_iEta[1])
+        #c4_1 = R.TCanvas("c4_1","c4_1",canvasDims_iEta[0],canvasDims_iEta[1])
 
 
 
 
 
+        for iInFile in range(len(in_fileNames)):
+            fIn         = inFiles[iInFile]
+            sInFileTag  = sInFileTags[iInFile]                 
 
 
 
+            for calibHistoTag, calibHistoName in CalTpCalibHistos_et.items():
+                print("histo %s: %s" % (calibHistoTag, calibHistoName)); sys.stdout.flush()
+                res_histoName = calibHistoName
+                h3D = (fIn.Get(res_histoName))
+                sNameTmp0 = res_histoName  #"%s_%s" % (res_histoName, sInFileTags[iInFile])
 
+                for PURangeName, PURange in nPVRanges_forCalTpCalibHistos.items():
+                    # h3D histogram:: X-axis: iEta, Y-axis: nVts, Z-axis: resolution
+                    kBin_PURangeMin = h3D.GetYaxis().FindBin(PURange[0])
+                    kBin_PURangeMax = h3D.GetYaxis().FindBin(PURange[1])
+                    kBin_iEtaMin    = 1
+                    kBin_iEtaMax    = h3D.GetNbinsX()
+                    print("H3D {}, PURangeName: {}, PURange {}".format(h3D.GetName(), PURangeName, PURange))
+                    #h2D = h3D.ProjectionZ("%s_%s" % (h3D.GetName(), PURangeName), kBin_iEtaMin,kBin_iEtaMax, kBin_PURangeMin,kBin_PURangeMax)
+                    print("H3D: {},   GetEntries {}, Xaxis: {}, {}, {}, Yaxis: {}, {}, {}, Zaxis: {}, {}, {},".format(
+                        h3D.GetName(),
+                        h3D.GetEntries(),
+                        h3D.GetXaxis().GetNbins(),h3D.GetXaxis().GetXmin(),h3D.GetXaxis().GetXmax(),
+                        h3D.GetYaxis().GetNbins(),h3D.GetYaxis().GetXmin(),h3D.GetYaxis().GetXmax(),
+                        h3D.GetZaxis().GetNbins(),h3D.GetZaxis().GetXmin(),h3D.GetZaxis().GetXmax()
+                    ))
 
+                    h3D.GetYaxis().SetRange(kBin_PURangeMin, kBin_PURangeMax)
+                    h2D = h3D.Project3D("zx") # 1st lable gets plot along y-axis
+                    sNameTmp = "%s_%s" % (sNameTmp0, PURangeName)
+                    h2D.SetNameTitle(sNameTmp, sNameTmp)
+                    
+                    print("h2D: {},   GetEntries {}, Xaxis: {}, {}, {}, Yaxis: {}, {}, {}".format(
+                        h2D.GetName(),
+                        h2D.GetEntries(),
+                        h2D.GetXaxis().GetNbins(),h2D.GetXaxis().GetXmin(),h2D.GetXaxis().GetXmax(),
+                        h2D.GetYaxis().GetNbins(),h2D.GetYaxis().GetXmin(),h2D.GetYaxis().GetXmax()
+                    ))
 
+                    c1.cd()
+                    c1.SetLogy()
+                    h2D.Draw('colz')
+                    
+                    c1.Update()
+                    time.sleep( 1 )
+                    
+                    if not useAbsEtaBins:
+                        h2D.GetXaxis().SetTitle("iEta")
+                    else:
+                        h2D.GetXaxis().SetTitle("|i#eta|")
+                    print("res_histoName new: {}".format(h2D.GetName())); sys.stdout.flush()
+                    
+                    yaxisName = calibHistoTag
+                    h2D.GetYaxis().SetTitle( yaxisName )
+                    
+                    for iEta in range(1, h2D.GetNbinsX()+1):
+                        if ('ECAP' in calibHistoName and iEta > IETA_CAT['HE2b'][1] ) or \
+                           ('HCAP' in calibHistoName and iEta > IETA_CAT['HF'][1] ):
+                            continue
+                        
+                        
+                        h1D = h2D.ProjectionY("%s_%s" % (h2D.GetName(), iEta), iEta,iEta)
+                        print("H2D projection: {}".format(h1D.GetName())); sys.stdout.flush()
 
+                        if h1D.GetEntries() <= 0: continue
+                        
+                        #h1D.GetXaxis().SetTitle( '%s in iEta %s' % (calibHistoTag, iEta) )
+                        h1D.GetYaxis().SetTitle("Entries")
+                        h1D.GetXaxis().SetRangeUser( 0.1, h1D.GetXaxis().GetXmax() )
+                        
+                        h1D.SetLineWidth(2)
+                        h1D.SetLineColor(colors[iInFile])
+                        h1D.SetMarkerColor(colors[iInFile])
+                        h1D.SetMarkerStyle(markers[iInFile])
+                        h1D.SetMarkerStyle(markers[iInFile])
+                        h1D.SetMarkerSize(0.9)
+                        
+                        print("h1D: {},   GetEntries {}, Xaxis: {}, {}, {} ".format(
+                            h1D.GetName(),
+                            h1D.GetEntries(),
+                            h1D.GetXaxis().GetNbins(),h1D.GetXaxis().GetXmin(),h1D.GetXaxis().GetXmax()
+                        ))
+                        
+                        c2.cd()
+                        c2.SetLogx()
+                        c2.SetLogy()
+                        h1D.GetXaxis().SetRangeUser( 0.1, h1D.GetXaxis().GetXmax() )
+                        h1D.Draw()
 
+                        legend = R.TLegend(0.85,0.93,1,1)
+                        legend.SetHeader("i#eta = %s" % (iEta), "C")
+                        legend.Draw()
 
+                        c2.Update()
+                        #time.sleep( 1 )
 
+                        sDir1 = "plots%s/TPcalib/%s" % (sInFileVersion, sInFileTags[iInFile])
+                        if '_unp_' in calibHistoName:
+                            sDir1 = '%s/unpacked' % (sDir1)
+                        if '_emu_' in calibHistoName:
+                            sDir1 = '%s/emulated' % (sDir1)   
+                        if not os.path.exists(sDir1):
+                            os.makedirs(sDir1)
+
+                        sHistoName_saveas = calibHistoTag
+                        sHistoName_saveas = sHistoName_saveas.replace(' ', '_')
+                        sHistoName_saveas = "%s_%s_iEta%s" % (sHistoName_saveas, PURangeName, iEta)
+                        #c2.SaveAs('%s/%s.png' % (sDir1, h1D.GetName()))
+                        c2.SaveAs('%s/%s.png' % (sDir1, sHistoName_saveas ))
+                        
+                    #c1.Update()
+                    #time.sleep( 1 )
+                    #cin = input('anything')
+                    
         
 if __name__ == '__main__':
 
     #resPtBins = ["lowPt"] # "medPt"  "PtAllBins"  "modPt"
-    resPtBins = ["Pt60To90"] # "medPt"  "PtAllBins"  "modPt", "Pt25To35", "Pt35To60"
+    resPtBins = ["PtAllBins", 'Ptlt25', 'Pt25To35', 'Pt35To60', 'Pt60To90', 'Ptgt90'] # "medPt"  "PtAllBins"  "modPt", "Pt25To35", "Pt35To60", Pt60To90
     
     for resPtBin in resPtBins:
         run(resPtBin)
