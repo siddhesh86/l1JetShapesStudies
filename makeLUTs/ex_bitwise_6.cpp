@@ -35,12 +35,12 @@ using namespace std;
 
 const int printLevel = 0;
 const int nLineToRead = -1;
-const int nColsToRead = 4; // No. of columns to read from input lut_SFInDecimal file. File format: <col0: Eta_bin> <col1: Pt_bin> <col2: PtInGeV> <col3: SF_Decimal>
+const int nColsToRead = 5; // No. of columns to read from input lut_SFInDecimal file. File format: <col0: IEtaBin> <col1: PtInGeV> <col2: IEtaBin_forLUT> <col3: Pt_forLUT> <col4: SF_Decimal>
 const unsigned int nCompBinMax = 2048;
+const int IEtaBinOffsetForEtaCompressedLUT = 0; // 0: IEtaBin_forLUT = IEtaBin = [1, 41];  -1: IEtaBin_forLUT = IEtaBin - 1 = [0, 40]. # 0 give correct calibration.
+std::string sInFile_SFs = "/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs/Default_RawPUS_SF_RegressedTo_log_GenJetPt_v6/lut_calib_2022v1_ECALZS_decimal.txt";
 
-  std::string sInFile_SFs = "/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs/Default_RawPUS_SF_RegressedTo_log_GenJetPt_v6/lut_calib_2022v1_ECALZS_decimal.txt";
-
-  std::string sOutFile = "/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs/Default_RawPUS_SF_RegressedTo_log_GenJetPt_v6/lut_calib_2022v1_ECALZS.txt";
+std::string sOutFile = "/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs/Default_RawPUS_SF_RegressedTo_log_GenJetPt_v6/lut_calib_2022v1_ECALZS.txt";
 
 
 
@@ -257,12 +257,14 @@ int main ()
   int IEtaBin_forLUT = -1;
   unsigned int compBin_last = 0;
   for (size_t iData=0; iData<data.size(); iData++) {
-    unsigned int etaBin      = static_cast<unsigned int>(data[iData][0]);
-    unsigned int ptBin       = static_cast<unsigned int>(data[iData][1]);
+    unsigned int iEta        = static_cast<unsigned int>(data[iData][0]);
+    unsigned int Pt          = static_cast<unsigned int>(data[iData][1] + 0.5);
+    
+    unsigned int etaBin      = static_cast<unsigned int>(data[iData][2]);
+    unsigned int ptBin       = static_cast<unsigned int>(data[iData][3]);
     unsigned int compBin     = (etaBin << 4) | ptBin;
     
-    unsigned int Pt          = static_cast<unsigned int>(data[iData][2] + 0.5);
-    double       SFInDecimal = data[iData][3];
+    double       SFInDecimal = data[iData][4];
     
     unsigned int jetHwPt     = Pt * 2; // jetHwPt = 2*jetPtInGeV https://github.com/cms-sw/cmssw/blob/master/L1Trigger/L1TCalorimeter/src/firmware/Stage2Layer2JetAlgorithmFirmwareImp1.cc#L717 . Applying a factor of 2 does not affect SFInDecimal --> SFInBits calculation here.
     unsigned int SFInBits    = calculateSFInBits(jetHwPt, SFInDecimal);
@@ -270,10 +272,12 @@ int main ()
     unsigned int jetHwPtCorr_Exp = static_cast<unsigned int>( ((double)(jetHwPt) * SFInDecimal) + 0.5);
 
     std::string sComment = "";
-    if ( Pt == 0) {
+    if ( ptBin == 0) {
       IEtaBin_forLUT++;
+      //unsigned int etaBin_calo = etaBin;
+      //if (IEtaBinOffsetForEtaCompressedLUT == 0) etaBin_calo = etaBin + 1;
       //sComment = Form("    # eta_bin %d, pt %d", IEtaBin_forLUT, Pt);
-      sComment = "  # eta_bin " + std::to_string(etaBin) + ", pt " + std::to_string(ptBin);  // + " "
+      sComment = "  # ieta " + std::to_string(iEta) + ", pt " + std::to_string(ptBin);  // + " "
     }
 
 

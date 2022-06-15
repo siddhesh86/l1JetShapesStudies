@@ -66,6 +66,7 @@ nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
 makeLUTForIEta29 = [True, 1.0]
 makeLUTForIEta41 = [True] # SFs for iEta=41 are missing in SFv6. Copy SFs from IEta=40
 separatePtBinForLowPt = True # True: Use separate pT bin quantile for 0 < pT <= 15 GeV where SFs are truckated
+IEtaBinOffsetForEtaCompressedLUT = 0 # 0: IEtaBin_forLUT = IEtaBin = [1, 41];  -1: IEtaBin_forLUT = IEtaBin - 1 = [0, 40]. # 0 give correct calibration.
 sFOut_LUT_pt_compress    = 'lut_pt_compress_2022v1.txt'
 sFOut_LUT_eta_compress   = 'lut_eta_compress_2022v1.txt'
 sFOut_LUT_calib_compress = 'lut_calib_2022v1_ECALZS_decimal.txt'
@@ -80,6 +81,55 @@ NCompPtBins = 16 # 16 # No. of compressed pT bins
 calibSF_L1JetPtRange = [15., 250., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
 LUT_PtRange = [0., 255., 1.] # pT range for SFs for LUT
 SF_forZeroPt = 1.
+
+map_CaloIEta_to_CaloTool_mpEta = OrderedDict([
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+    (9, 9),
+    (10, 10),
+    
+    (11, 11),
+    (12, 12),
+    (13, 13),
+    (14, 14),
+    (15, 15),
+    (16, 16),
+    (17, 17),
+    (18, 18),
+    (19, 19),
+    (20, 20),
+    
+    (21, 21),
+    (22, 22),
+    (23, 23),
+    (24, 24),
+    (25, 25),
+    (26, 26),
+    (27, 27),
+    (28, 28),
+    (29, 29),
+    (30, 29),
+    
+    (31, 30),
+    (32, 31),
+    (33, 32),
+    (34, 33),
+    (35, 34),
+    (36, 35),
+    (37, 36),
+    (38, 37),
+    (39, 38),
+    (40, 39),
+
+    (41, 40),
+])
+
 
 IEtaBinsMerge_forPlots = [
     #[1],
@@ -663,7 +713,8 @@ if __name__ == '__main__':
             fOut_LUT_eta_compress.write('# This is NOT calo ieta\n')
             fOut_LUT_eta_compress.write('# anything after # is ignored with the exception of the header\n')
             fOut_LUT_eta_compress.write('# the header is first valid line starting with #<header> versionStr nrBitsAddress nrBitsData </header>\n')
-            fOut_LUT_eta_compress.write('#<header> v1 6 4 </header>\n')
+            #fOut_LUT_eta_compress.write('#<header> v1 6 4 </header>\n')
+            fOut_LUT_eta_compress.write('#<header> v1 6 6 </header>\n')
 
             fOut_LUT_pt_compress.write('# PT compression LUT\n')
             fOut_LUT_pt_compress.write('# maps 8 bits to 4 bits\n')
@@ -681,12 +732,23 @@ if __name__ == '__main__':
             data_calibSFs_compressed       = OrderedDict()
             #data_calibSFs_compressed_check = data_calibSFs.copy()
             data_calibSFs_compressed_check = copy.deepcopy(data_calibSFs)
-            
-            for idx_EtaBins_sorted, IEtaBin in enumerate(EtaBins_sorted):
+
+            IEtaBin_forLUT_col0 = None
+            for idx_EtaBins_sorted, IEtaBin in enumerate(EtaBins_sorted):               
                 data_calibSFs_compressed[IEtaBin] = OrderedDict()
 
-                IEtaBin_forLUT = IEtaBin - 1
-                fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT), int(IEtaBin_forLUT)))
+                if IEtaBin == 29: continue
+
+                # CaloTools::mpEta(jet->hwEta())
+                CaloTool_mpEta = map_CaloIEta_to_CaloTool_mpEta[IEtaBin]
+                
+                IEtaBin_forLUT_col0 = CaloTool_mpEta  # IEtaBin if IEtaBinOffsetForEtaCompressedLUT == 0 else IEtaBin - 1;
+                IEtaBin_forLUT_col1 = CaloTool_mpEta - 1 #if IEtaBin <= 28 else CaloTool_mpEta - 2
+                #fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT), int(IEtaBin_forLUT)))
+                if idx_EtaBins_sorted == 0:
+                    fOut_LUT_eta_compress.write('0 0  # dummy ieta_bin\n')
+                fOut_LUT_eta_compress.write('%d %d  # ieta %d\n' % (int(IEtaBin_forLUT_col0), int(IEtaBin_forLUT_col1), IEtaBin))
+
 
 
                 for iPtQuant in range(NCompPtBins):                  
@@ -696,12 +758,15 @@ if __name__ == '__main__':
 
                     #SFs_iPtQuant              = list(data_calibSFs[IEtaBin].values())[idxStart : idxEnd]
                     SFs_iPtQuant              = list(data_calibSFs[IEtaBin].values()).copy()[idxStart : idxEnd]
-                    
+
+                    PtMin_iPtQuant            = Pt_Bins_Read_iPtQuant[0]
+                    PtMax_iPtQuant            = Pt_Bins_Read_iPtQuant[-1]
                     avgPt_iPtQuant            = statistics.mean( Pt_Bins_Read_iPtQuant )
                     avgSF_iPtQuant            = statistics.mean( SFs_iPtQuant )
                     if separatePtBinForLowPt and iPtQuant == 0:
                         # ignore SF(pT=0)=1 and set SF(pT<=15 GeV) = SF(pT=15GeV)
                         avgSF_iPtQuant        = SFs_iPtQuant[1]
+                        avgPt_iPtQuant        = Pt_Bins_Read_iPtQuant[-1] # calculate SF_inBits at bin higher edge (pT=15 GeV)
 
                     #data_calibSFs_compressed[IEtaBin][iPtQuant] = avgSF_iPtQuant
                     data_calibSFs_compressed[IEtaBin][avgPt_iPtQuant] = avgSF_iPtQuant
@@ -720,8 +785,8 @@ if __name__ == '__main__':
                             
                     sComments = ""
                     if iPtQuant == 0:
-                        sComments = "   # eta_bin %d, pt %d" % (IEtaBin_forLUT, PtBin_forLUT)
-                    fOut_LUT_calib_compress.write('%d %d %d %f%s\n' % (int(IEtaBin_forLUT), int(PtBin_forLUT), int(avgPt_iPtQuant + 0.5), avgSF_iPtQuant, sComments ))
+                        sComments = "   # ieta %d, pt %d" % (IEtaBin, PtBin_forLUT)
+                    fOut_LUT_calib_compress.write('%d %d %d %d %d %d %f%s\n' % (int(IEtaBin), int(PtMin_iPtQuant + 0.5), int(PtMax_iPtQuant + 0.5), int(avgPt_iPtQuant + 0.5), int(IEtaBin_forLUT_col1), int(PtBin_forLUT), avgSF_iPtQuant, sComments ))
 
                 if PrintLevel >= 2:
                     print("\ndata_calibSFs_compressed[{}]: ({}) {} \ndata_calibSFs_compressed_check[{}]: ({}) {}".format(
@@ -736,9 +801,13 @@ if __name__ == '__main__':
 
             # dummy bins
             # nBinsMaxForEtaCompressionLUT
-            for IEtaBin_forLUT in range(len(EtaBins_sorted), nBinsMaxForEtaCompressionLUT):
-                fOut_LUT_eta_compress.write('%d 0\n' % (int(IEtaBin_forLUT)))
-
+            #for IEtaBin_forLUT in range(len(EtaBins_sorted), nBinsMaxForEtaCompressionLUT):
+            #    fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT), int(IEtaBin_forLUT)))
+            IEtaBin_forLUT_col0 += 1 # the next bin = 42
+            while IEtaBin_forLUT_col0 < nBinsMaxForEtaCompressionLUT:
+                IEtaBin_forLUT_col1 = IEtaBin_forLUT_col0 - 1 
+                fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT_col0), int(IEtaBin_forLUT_col1)))
+                IEtaBin_forLUT_col0 += 1
 
             
             fOut_LUT_pt_compress.close()
@@ -809,8 +878,13 @@ if __name__ == '__main__':
 
             ### -----------------------------
             for Eta_bin in EtaBins_sorted:
+                if IEtaBin == 29: continue
+                
                 fig, ax = plt.subplots()  # Create a figure containing a single axes.
-
+                #plt.figure(figsize=(5,5))
+                #fig = plt.figure(figsize=(18, 16), dpi=300)
+                #fig.figure(figsize=(2, 2))
+                
                 # plot
                 Pt_array_original  = np.array( list(data_calibSFs[Eta_bin].keys()) )
                 SFs_array_original = np.array( list(data_calibSFs[Eta_bin].values()) )

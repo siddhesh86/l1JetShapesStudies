@@ -21,9 +21,9 @@ import glob
 
 commands = {
     ### l1ntuples w/ jetL2CalibSyed
-    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/run_1/l1ntuples_wJetL2Calib_test/L1Ntuple_HCAL_TP_OOT_PUS_PFA1p_wJetL2CalibSyed_nEvts100.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
-    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/run_1/l1ntuples_wJetL2Calib_test/L1Ntuple_HCAL_TP_OOT_PUS_PFA1p_wJetL2CalibSyed_nEvts20k.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
-    "PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/run_1/l1ntuples_wJetL2Calib_test/L1Ntuple_HCAL_TP_OOT_PUS_PFA1p_wJetL2CalibSyed_nEvts10k_v6p5.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '<path to produced L1TNtuples. Wildcard character * is supported>'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+
+    "PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/L1TNtuple_forHCalL2Calib_PFA1p_PhiRing_Run3Summer21DR-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/220413_162531/00*/L1Ntuple_HCAL_TP_OOTPUS_PFA1p_ITPUS_PhiRing_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
 } 
 
 runLocally = True

@@ -19,7 +19,7 @@ config.General.transferOutputs = True
 config.General.transferLogs = False
 
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'l1ntuple_maker_run3_mc_PFA1p.py'
+config.JobType.psetName = 'mc.py'
 #config.JobType.pyCfgParams = ['maxEvt=-1', 'prtEvt=10000', 'nVtxMin=50', 'HCALPFA=%s' % (scheme)] 
 #config.JobType.outputFiles = ['L1Ntuple_HCAL.root']
 
