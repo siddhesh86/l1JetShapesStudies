@@ -35,6 +35,15 @@ python scripts/script_condor_submit.py
 Hadd the output root files and concatenate produced .csv files, if needed.
 The .csv file is now ready to use for BDT training.
 
+If L1Ntuples are analyzed by submitting multiple condor jobs on lxplus, each condor job produces one output .csv file, like L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_PFA1p_nVtxAll_part*_of_60.csv.
+The following command concatenate multiple .csv files into a single .csv file:
+```
+time awk '
+    FNR==1 && NR!=1 { while (/^runNumber/) getline; } 
+    1 {print}    
+' L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_PFA1p_nVtxAll_part*_of_60.csv   > L1T_Jet_MLInputs_Run3_QCD_Pt15to7000_PFA1p_wHCALL1Run2Scheme_nVtxAll_20220626.csv 
+```
+
 
 
 
