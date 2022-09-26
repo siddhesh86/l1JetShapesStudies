@@ -21,12 +21,18 @@ import glob
 
 commands = {
     ### l1ntuples w/ jetL2CalibSyed
-    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '<path to produced L1TNtuples. Wildcard character * is supported>'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/run_1/l1ntuples_wJetL2Calib_test/L1Ntuple_HCAL_TP_OOT_PUS_PFA1p_wJetL2CalibSyed_nEvts100.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/run_1/l1ntuples_wJetL2Calib_test/L1Ntuple_HCAL_TP_OOT_PUS_PFA1p_wJetL2CalibSyed_nEvts20k.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/run_1/l1ntuples_wJetL2Calib_test/L1Ntuple_HCAL_TP_OOT_PUS_PFA1p_wJetL2CalibSyed_nEvts10k_v6p5.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    # 12_3_0_pre6
+    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forHCalL2Calib_PFA1p_wHCALL1Run2Scheme_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/220625_085154/00*/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forHCalL2Calib_PFA1p_wHCALL1IterativeScheme_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/220625_091308/00*/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
 
-    "PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/L1TNtuple_forHCalL2Calib_PFA1p_PhiRing_Run3Summer21DR-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/220413_162531/00*/L1Ntuple_HCAL_TP_OOTPUS_PFA1p_ITPUS_PhiRing_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    # 12_6_0_pre1 
+    "PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/220922_062812/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
 } 
 
-runLocally = False
+runLocally = False 
 nSplitsInput = 1 if runLocally else 60
 
 
@@ -107,6 +113,7 @@ for PUS, command0 in commands.items():
             f.write("echo PYTHON_BASE: $PYTHON_BASE  \n")
             '''
             f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v4_20210510/CMSSW_11_2_0/src/   \n")
+            #f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/CMSSW_12_6_0_pre1/CMSSW_12_6_0_pre1/src/    \n")
             f.write("pwd   \n")
             f.write("cmsenv   \n")
             f.write('eval `scramv1 runtime -sh` \n') # which is alias for cmsenv
@@ -143,8 +150,8 @@ for PUS, command0 in commands.items():
             #f.write("+JobFlavour = \"espresso\" \n") # 20 mins
             #f.write("+JobFlavour = \"microcentury\" \n") # 1 hours
             #f.write("+JobFlavour = \"longlunch\" \n") # 2 hours
-            #f.write("+JobFlavour = \"workday\" \n") # 8 hours
-            f.write("+JobFlavour = \"tomorrow\" \n") # 1 day
+            f.write("+JobFlavour = \"workday\" \n") # 8 hours
+            #f.write("+JobFlavour = \"tomorrow\" \n") # 1 day
             f.write("queue \n")
 
 

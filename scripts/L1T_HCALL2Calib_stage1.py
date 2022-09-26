@@ -29,7 +29,7 @@ import numpy as np
 from operator import xor
 
 PRT_EVT  = 1000  ## Print every Nth event
-MAX_EVT  = -1    ## Number of events to process per chain
+MAX_EVT  = -1     ## Number of events to process per chain
 VERBOSE  = False  ## Verbose print-out
 PrintLevel = 0
 JetClustByHand = True # True ## Run jet clustering by hand
@@ -70,7 +70,7 @@ time awk '
 ' L1T_HCALL2Calib_stage1_PFA1p_nVtxAll_part0_of_60.csv  > L1T_Jet_MLInputs_Run3_QCD_Pt15to7000_TuneCP5_14TeV-pythia8_CMSSW1230pre1wPR37196_PFA1p_nVtxAll_20220325.csv 
 
 '''
-# PU reweighting -----------------------------------------
+# PU reweighting ----------------------------------------- 
 usePUReweighting_0   = False;
 #ipFilePUData = "/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v4_20210510/myStudies/run_1/2018_Data/l1analysis_def.root";
 #ipFilePUData = "/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v4_20210510/myStudies/run_1/mimicMLJetRec/2018_Data/L1T_JetMET_Res_def_hadded.root"; # larger statistics
@@ -343,7 +343,7 @@ def convert_jetIEta_to_jetTowerIEta(jetIEta):
             break
     
     if not jetTowerIEta:
-        print "convert_jetIEta_to_jetTowerIEta(jetIEta):: jetTowerIEta not set... why ?? \t\t **** ERROR ****"
+        print("convert_jetIEta_to_jetTowerIEta(jetIEta):: jetTowerIEta not set... why ?? \t\t **** ERROR ****")
         exit(0)
     
     return jetTowerIEta
@@ -430,7 +430,7 @@ def run():
         #out_file_str  = "L1T_JetMET_Res_%s_part%d_of_%d.root" % (OOT_PU_scheme, M_quantilesIpFilesSet,N_parts)
         out_file_str = out_file_str.replace(".root", "_part%d_of_%d.root" % (M_quantilesIpFilesSet,N_parts))
     out_file_str = out_file_str.replace("__", "_")
-    print "out_file_str: {}".format(out_file_str)
+    print("out_file_str: {}".format(out_file_str))
 
             
 
@@ -448,7 +448,7 @@ def run():
         '''
         if isMC: usePUReweighting = True
 
-    print "OOT_PU_scheme: {}".format(OOT_PU_scheme)
+    print("OOT_PU_scheme: {}".format(OOT_PU_scheme))
     '''
     if OOT_PU_scheme.lower() in ['def', 'pfa2']:            
         sipFileCalibSF_toUse = sipFileCalibSF.replace('$OOTPUS', 'PFA2')
@@ -465,7 +465,7 @@ def run():
     isFirstEntry_WriteInputForML = True
     if runMode in ['makeInputForML']:        
         out_file_str_0 = out_file_str.replace('.root','.csv')
-        print "runMode=makeInputForML:: output file: {}".format(out_file_str_0)
+        print("runMode=makeInputForML:: output file: {}".format(out_file_str_0))
         fOut_MLInputs = open(out_file_str_0, mode='w')
 
         '''
@@ -480,7 +480,7 @@ def run():
         '''
 
     if runMode in ['makePUHisto']:
-        print "Running with runMode = makePUHisto \n"
+        print("Running with runMode = makePUHisto \n")
         
 
     
@@ -495,9 +495,9 @@ def run():
     chains['eTP'] = []  ## Emulated trigger primitives
     chains['Gen'] = []  ## GEN info
     for i in range(len(in_file_names)):
-        print 'Adding file %s' % in_file_names[i]
+        print('Adding file %s' % in_file_names[i])
         in_file_names_ith = glob.glob(in_file_names[i])
-        print "in_file_names_ith ({}): {}".format(len(in_file_names_ith), in_file_names_ith)
+        print("in_file_names_ith ({}): {}".format(len(in_file_names_ith), in_file_names_ith))
         
         chains['Evt'].append( R.TChain('l1EventTree/L1EventTree') )
         chains['Vtx'].append( R.TChain('l1RecoTree/RecoTree') )
@@ -517,16 +517,16 @@ def run():
         chains['eTP'][i].Add( in_file_names[i] )
         '''
         Ntot = len(in_file_names_ith)
-        print '\n\nFor chain %d, total number of input ntuples: %d' % (i, Ntot); sys.stdout.flush();
+        print('\n\nFor chain %d, total number of input ntuples: %d' % (i, Ntot)); sys.stdout.flush();
         Nfirst = 0;  Nlast = Ntot # initial and last input file number
         if N_parts: # split total number of input files into parts
             Nfirst = int(1.0 * Ntot / N_parts * (M_quantilesIpFilesSet)) 
             Nlast  = int(1.0 * Ntot / N_parts * (M_quantilesIpFilesSet + 1) - 1)
-        print "M_quantilesIpFilesSet: {}, N_parts: {}, Nfirst: {}, Nlast: {}".format(M_quantilesIpFilesSet, N_parts, Nfirst, Nlast)
+        print("M_quantilesIpFilesSet: {}, N_parts: {}, Nfirst: {}, Nlast: {}".format(M_quantilesIpFilesSet, N_parts, Nfirst, Nlast))
         
         for ith_file in range(Nfirst, Nlast+1):
             in_file_name = in_file_names_ith[ith_file]
-            print "   %s" %  in_file_name
+            print("   %s" %  in_file_name)
             chains['Evt'][i].Add( in_file_name )
             chains['Vtx'][i].Add( in_file_name )
             chains['Jet'][i].Add( in_file_name )
@@ -535,7 +535,7 @@ def run():
             chains['uTP'][i].Add( in_file_name )
             chains['eTP'][i].Add( in_file_name )
             chains['Gen'][i].Add( in_file_name )
-        print " %d input files read. " % ( (Nlast+1) - Nfirst )
+        print(" %d input files read. " % ( (Nlast+1) - Nfirst ))
             
     
 
@@ -543,7 +543,7 @@ def run():
     ### Book histograms
     ###################
     if PrintLevel >= 1:
-        print "Booking hitograms"
+        print("Booking hitograms")
     hDummy = R.TH1D("hDummy","",1,0,1)
     hDummy.SetDefaultSumw2()
 
@@ -594,7 +594,7 @@ def run():
                             elif dist == 'jet_den': h_bins = pt_bins
                             elif dist == 'jet_res': h_bins = res_bins
                             elif dist == 'jet_dR':  h_bins = dR_bins
-                            else: print '\nInvalid distribution %s - no binning found!!! \nQuitting.', sys.exit()
+                            else: print('\nInvalid distribution %s - no binning found!!! \nQuitting.'); sys.exit()
 
                             if dist == 'jet_eff':
                                 hist[dist][algo][iEta][iPt][src].append( iTP+1 )
@@ -690,7 +690,7 @@ def run():
                                 elif '_PUByRawPt_'  in dist: h_bins = PUByRawPt_bins
                                 elif 'jet_byHand_L1JetPt_vs_PFJetPt' in dist: h_bins = pt_bins
                                 elif 'jet_byHand_L1JetPt_vs_DefaultL1JetPt' in dist: h_bins = res_bins
-                                else: print '\nInvalid distribution %s - no binning found!!! \nQuitting.', sys.exit()
+                                else: print('\nInvalid distribution %s - no binning found!!! \nQuitting.'); sys.exit()
                                 
                                 #print "      dist {}, algo {}, iEta {}, iPt {}, src {}, iTP {}".format(dist, algo, iEta, iPt, src, iTP)
                                 
@@ -821,7 +821,7 @@ def run():
                                 if   'eff_num' in dist or 'eff_den' in dist:
                                     h_bins = eff_bins
                                     sAxexName = sAxexName_Eff
-                                else: print '\nInvalid distribution %s - no binning found!!! \nQuitting.', sys.exit()
+                                else: print('\nInvalid distribution %s - no binning found!!! \nQuitting.'); sys.exit()
                                 
                                 #print "      dist {}, algo {}, iEta {}, iPt {}, src {}, iTP {}".format(dist, algo, iEta, iPt, src, iTP)
                                 
@@ -884,7 +884,7 @@ def run():
                             if 'jet_byHand_rates_' in dist:
                                 h_bins = jetRate_bins
                                 sAxexName = sAxexName_JetRate
-                            else: print '\nInvalid distribution %s - no binning found!!! \nQuitting.', sys.exit()
+                            else: print('\nInvalid distribution %s - no binning found!!! \nQuitting.'); sys.exit()
 
                             #print "      dist {}, algo {}, iEta {}, src {}, iTP {}".format(dist, algo, iEta, src, iTP)
 
@@ -933,7 +933,7 @@ def run():
                                 sAxexName = None
                                 if 'res' in dist:
                                     h_bins = res_bins
-                                else: print '\nInvalid distribution %s - no binning found!!! \nQuitting.', sys.exit()
+                                else: print('\nInvalid distribution %s - no binning found!!! \nQuitting.'); sys.exit()
 
                                 if dist_1 in ['jet_byHand_res_vs_iEta_vs_nVtx']:
                                     if iEta == 'HBEF':
@@ -1010,7 +1010,7 @@ def run():
     
     
     if PrintLevel >= 1: 
-        print "Hitograms booked"
+        print("Hitograms booked")
     
     # nVtx
     hnVtx       = R.TH1D("nVtx",       "nVtx",       201,-0.5,200.5);
@@ -1021,42 +1021,42 @@ def run():
     hnVtxMCWtd  = None
     
     if usePUReweighting:
-        print "ipFilePUData: %s \nipFilePUMC: %s" % (ipFilePUData, ipFilePUMC)
+        print("ipFilePUData: %s \nipFilePUMC: %s" % (ipFilePUData, ipFilePUMC))
         fInPUData = R.TFile(ipFilePUData)
         fInPUMC   = R. TFile(ipFilePUMC)
         if  ( not fInPUData.IsOpen() ):
-            print "PUReweighting: input file %s couldn't open" % (ipFilePUData)
+            print("PUReweighting: input file %s couldn't open" % (ipFilePUData))
             exit(0)
         if ( not fInPUMC.IsOpen() ):
-            print "PUReweighting: input file %s couldn't open" % (ipFilePUMC)
+            print("PUReweighting: input file %s couldn't open" % (ipFilePUMC))
             exit(0)
 
         hnVtxData = fInPUData.Get(sHistoPUData);
         hnVtxMC   = fInPUMC.Get(sHistoPUMC);
         if ( not hnVtxData):
-            print "PUReweighting: Couldn't fetch histogram %s  from %s  \t\t ******** ERROR *********\n" % (sHistoPUData, ipFilePUData)
+            print("PUReweighting: Couldn't fetch histogram %s  from %s  \t\t ******** ERROR *********\n" % (sHistoPUData, ipFilePUData))
             exit(0)
 
         if ( not hnVtxMC):
-            print "PUReweighting: Couldn't fetch histogram %s  from %s  \t\t ******** ERROR *********\n" % (sHistoPUMC, ipFilePUMC)
+            print("PUReweighting: Couldn't fetch histogram %s  from %s  \t\t ******** ERROR *********\n" % (sHistoPUMC, ipFilePUMC))
             exit(0)
 
         if (hnVtxData.GetNbinsX() != hnVtxMC.GetNbinsX()): 
-            printf("PUReweighting: hnVtxData->GetNbinsX() != hnVtxMC->GetNbinsX() \t\t ******** ERROR *********\n");
+            print("PUReweighting: hnVtxData->GetNbinsX() != hnVtxMC->GetNbinsX() \t\t ******** ERROR *********\n");
             exit(0)
 
         hnVtxData.SetName("%s_Data" % (hnVtxData.GetName()));
         hnVtxMC.SetName("%s_MC" % (hnVtxMC.GetName()));
 
         # scale hnVtxData, hnVtxMC to have area = 1
-        print "Area before scaling: hnVtxData %g, \t hnVtxMC %g " % (hnVtxData.Integral(1,hnVtxData.GetNbinsX()), hnVtxMC.Integral(1,hnVtxMC.GetNbinsX()))
+        print("Area before scaling: hnVtxData %g, \t hnVtxMC %g " % (hnVtxData.Integral(1,hnVtxData.GetNbinsX()), hnVtxMC.Integral(1,hnVtxMC.GetNbinsX())))
         hnVtxData.Scale(1. / hnVtxData.Integral(1,hnVtxData.GetNbinsX()))
         hnVtxMC.Scale(1. / hnVtxMC.Integral(1,hnVtxMC.GetNbinsX()))    
-        print "Area after scaling: hnVtxData %g, \t hnVtxMC %g " % (hnVtxData.Integral(1,hnVtxData.GetNbinsX()), hnVtxMC.Integral(1,hnVtxMC.GetNbinsX()))
+        print("Area after scaling: hnVtxData %g, \t hnVtxMC %g " % (hnVtxData.Integral(1,hnVtxData.GetNbinsX()), hnVtxMC.Integral(1,hnVtxMC.GetNbinsX())))
 
         # calculate PU weights
         hPUWt = R.TH1D("hPUWeight","PU weight", hnVtxData.GetNbinsX(), hnVtxData.GetXaxis().GetXmin(), hnVtxData.GetXaxis().GetXmax())
-        print "PUWeights::\n"
+        print("PUWeights::\n")
         for iBin in range(1, hPUWt.GetNbinsX()+1):
             nVtx = hPUWt.GetBinCenter(iBin);
             nCountsData = hnVtxData.GetBinContent(iBin);
@@ -1067,7 +1067,7 @@ def run():
                 PUwt = nCountsData / nCountsMC
 
             hPUWt.SetBinContent(iBin, PUwt);
-            print "iBin %3d, nVtx %3g, PUwt %g, \t nCountsData %g,  nCountsMC %g  " % (iBin,nVtx,PUwt, nCountsData,nCountsMC)
+            print("iBin %3d, nVtx %3g, PUwt %g, \t nCountsData %g,  nCountsMC %g  " % (iBin,nVtx,PUwt, nCountsData,nCountsMC))
 
         hnVtxMCWtd = hnVtxMC.Clone("%s_wtd" % (hnVtxMC.GetName()))
         for iBin in range(1, hnVtxMCWtd.GetNbinsX()+1):
@@ -1079,20 +1079,20 @@ def run():
             
     ### Read Layer2 CalibSF -----------------------------------------------------------------
     if PrintLevel >= 1:
-        print "Read PUwgts. Now read Layer2CalibSF"
+        print("Read PUwgts. Now read Layer2CalibSF")
 
     calibSFs = OrderedDict()
     if runMode in ['CalibJetByHand'] and isinstance(sipFileCalibSF, str) and ".root" in sipFileCalibSF:
-        print "Now read Layer2CalibSF from root files Siddhesh generated "
+        print("Now read Layer2CalibSF from root files Siddhesh generated ")
         
         fInFileCalibSF = R.TFile(sipFileCalibSF_toUse)
         if not fInFileCalibSF.IsOpen():
-            print "CalibJetByHand: input file %s couldn't open" % (sipFileCalibSF_toUse)
+            print("CalibJetByHand: input file %s couldn't open" % (sipFileCalibSF_toUse))
             exit(0)
-        print "CalibJetByHand: input calibration SF reading from %s " % (sipFileCalibSF_toUse)
+        print("CalibJetByHand: input calibration SF reading from %s " % (sipFileCalibSF_toUse))
         
         if PrintLevel >= 1:
-            print "CalibJetByHand:: Calibration SFs::"
+            print("CalibJetByHand:: Calibration SFs::")
         #for jetShape in ['Default'] + JetShapes:
         for jetShape in JetShapes + JetShapesType2:
             # JetShape = "" plots are with the first version of code for 9x9 jets
@@ -1100,12 +1100,12 @@ def run():
             if jetShape == 'Default':  jetShape1 = ""
             else:                      jetShape1 = "_%s" % (jetShape)
             if PrintLevel >= 1:
-                print "jetShape: %s" % (jetShape)
+                print("jetShape: %s" % (jetShape))
                 
             
             #calibSFs[jetShape] = {}
             calibSFs_jetShape_tmp1 = OrderedDict()
-            print "0: jetShape: {}, calibSFs_jetShape_tmp1: {}".format(jetShape, calibSFs_jetShape_tmp1)
+            print("0: jetShape: {}, calibSFs_jetShape_tmp1: {}".format(jetShape, calibSFs_jetShape_tmp1))
             for PUSAlgo in PUSAlgosSelected + PUSAlgosAllType2:
                 
                 # read proper jetShape and PUSAlgo conbination
@@ -1115,7 +1115,7 @@ def run():
                 
                 #calibSFs[jetShape][PUSAlgo] = {}                
                 if PrintLevel >= 1:
-                    print "%4s%s" % (" ", PUSAlgo)
+                    print("%4s%s" % (" ", PUSAlgo))
 
                 sHistoName = sHistoCalibSF
                 sHistoName = sHistoName.replace('$JETSHAPE',     jetShape1)
@@ -1130,13 +1130,13 @@ def run():
                 if not hHisto_SF_vs_iEta: # L1T calib SF are measured only for a few jetShape and PUSAlgorithms
                     continue
                 
-                print "CalibJetByHand: input calibration SF histogram %s" % (sHistoName)
+                print("CalibJetByHand: input calibration SF histogram %s" % (sHistoName))
                 calibSFs_jetShape_tmp1[PUSAlgo] = OrderedDict()
                 
                 for iEta in ETA_Bins:
                     if iEta == 'HBEF': continue
                     if PrintLevel >= 1:
-                        print "%8s%3s" % (" ", iEta)
+                        print("%8s%3s" % (" ", iEta))
 
                     binNumber_iEta = hHisto_SF_vs_iEta.FindBin(float(iEta))
                     SF_tmp         = hHisto_SF_vs_iEta.GetBinContent(binNumber_iEta)
@@ -1168,11 +1168,11 @@ def run():
                             print "%12s[%g, %g]: SF = %g / %g = %g" % (" ", binLowEdge,binUpEdge, AvgPFJetPt,binCenter,calibSF)
                     '''
             
-            print "1: jetShape: {}, calibSFs_jetShape_tmp1: {}".format(jetShape, calibSFs_jetShape_tmp1)
+            print("1: jetShape: {}, calibSFs_jetShape_tmp1: {}".format(jetShape, calibSFs_jetShape_tmp1))
             if calibSFs_jetShape_tmp1: # SF for the corresponding jetShape exist
                 calibSFs[jetShape] = calibSFs_jetShape_tmp1
                 
-        print "\n\nCalibJetByHand: calibSFs: {}".format(json.dumps(calibSFs, sort_keys=True, indent=4))
+        print("\n\nCalibJetByHand: calibSFs: {}".format(json.dumps(calibSFs, sort_keys=True, indent=4)))
 
 
     #if updateCalibSF_DefaultRaw and l1NtupleChunkyDonut:
@@ -1186,7 +1186,7 @@ def run():
         
     ### Read L1Jet CalibLayer2 SFs from csv files provided by Syed -----------------------------------------------------------------
     if runMode in ['CalibJetByHand'] and isinstance(sipFileCalibSF, dict) :
-        print "Now read Layer2CalibSF from csv files provided by Syed"
+        print("Now read Layer2CalibSF from csv files provided by Syed")
 
         calibSF_L1JetPtRangeMin = calibSF_L1JetPtRange[0]
         calibSF_L1JetPtRangeMax = calibSF_L1JetPtRange[1]
@@ -1240,7 +1240,7 @@ def run():
             if calibSFs_jetShape_tmp1:
                 calibSFs[jetShape] = calibSFs_jetShape_tmp1
 
-        print "\n\nCalibJetByHand: calibSFs: {}".format(json.dumps(calibSFs, sort_keys=True, indent=4))
+        print("\n\nCalibJetByHand: calibSFs: {}".format(json.dumps(calibSFs, sort_keys=True, indent=4)))
 
 
 
@@ -1262,11 +1262,11 @@ def run():
     #return
 
     if PrintLevel >= 1:
-        print "Start event loop"
+        print("Start event loop")
 
     nTotalEvents_byChains = []
     iEvt = 0
-    print '\nEntering loop over %d chains' % len(chains['Unp'])
+    print('\nEntering loop over %d chains' % len(chains['Unp']))
     for iCh in range(len(chains['Unp'])):
         if PrintLevel > 0: print("iCh: {}".format(iCh))
 
@@ -1314,7 +1314,7 @@ def run():
             presentTree_l1GeneratorTree = False 
 
         Ntot = chains['Unp'][iCh].GetEntries()
-        print "Chain %d: nEntries %d" % (iCh, Ntot)
+        print("Chain %d: nEntries %d" % (iCh, Ntot))
         nTotalEvents_byChains.append( 0 )
         for jEvt in range(Ntot):
             if PrintLevel > 0: print("jEvt: {}".format(jEvt))
@@ -1323,7 +1323,7 @@ def run():
             nTotalEvents_byChains[iCh] += 1
             
             if jEvt > MAX_EVT and MAX_EVT > 0: break
-            if iEvt % PRT_EVT is 0: print '\nEvent # %d (%dth in chain)' % (iEvt, jEvt+1); sys.stdout.flush();
+            if iEvt % PRT_EVT == 0: print('\nEvent # %d (%dth in chain)' % (iEvt, jEvt+1)); sys.stdout.flush();
 
             hStat.Fill(0)
             
@@ -1345,7 +1345,7 @@ def run():
             # Emu_br = chains['Emu'][iCh].L1Upgrade
 
             #if VERBOSE and iEvt % PRT_EVT is 0: print '  * Run %d, LS %d, event %d, nVtx %d' % (int(Evt_br.run), int(Evt_br.lumi), int(Evt_br.event), int(Vtx_br.nVtx))
-            if VERBOSE and iEvt % PRT_EVT is 0: print '  * Run:LS:Event:  %d:%d:%d,  nVtx %d' % (int(Evt_br.run), int(Evt_br.lumi), int(Evt_br.event), int(Vtx_br.nVtx))
+            if VERBOSE and iEvt % PRT_EVT == 0: print('  * Run:LS:Event:  %d:%d:%d,  nVtx %d' % (int(Evt_br.run), int(Evt_br.lumi), int(Evt_br.event), int(Vtx_br.nVtx)))
 
             hCaloTowers_iEta_vs_iPhi = None
             hCaloTTs_iEta_vs_iPhi    = None
@@ -1372,7 +1372,7 @@ def run():
                 puWeight = hPUWt.GetBinContent(bin_puWeight);
                 
                 if VERBOSE:
-                    print "nVtx: {} puWeight: {}".format(nVtx, puWeight)
+                    print("nVtx: {} puWeight: {}".format(nVtx, puWeight))
             hnVtx.Fill(nVtx);    
             hnVtx_ReWtd.Fill(nVtx, puWeight);
 
@@ -1415,12 +1415,12 @@ def run():
                 
 
             if VERBOSE or PrintLevel >= 1:
-                print 'Number of jets: RECO = %d, \t L1T Unpacked = %d, Emulated = %d. \t Unpack TC: %d, TT: %d, ECALTP: %d, HCALTP: %d. \t Emulated TC: %d, TT: %d, ECALTP: %d, HCALTP: %d. \t\t nGenJets: %d' % \
+                print('Number of jets: RECO = %d, \t L1T Unpacked = %d, Emulated = %d. \t Unpack TC: %d, TT: %d, ECALTP: %d, HCALTP: %d. \t Emulated TC: %d, TT: %d, ECALTP: %d, HCALTP: %d. \t\t nGenJets: %d' % \
                 (nOffJets,
                  nUnpJets, nEmuJets,
                  nUnpTCs,nUnpTTs,nUnpETPs,nUnpHTPs,
                  nEmuTCs,nEmuTTs,nEmuETPs,nEmuHTPs,
-                 nGenJets)
+                 nGenJets))
 
 
                 
@@ -1511,7 +1511,7 @@ def run():
                         selectPFJet = False
 
                     if PrintLevel >= 10:
-                        print "    PFjet {}: selectPFJet: {}    e {}, et {}, etCorr {}, corrFactor {}, eta {}, phi {}, nCaloJets {}, caloE {}, caloEt {}, caloCorrFactor {}, caloEta {}, caloPhi {},    eEMF {}, eHadHB {}, eHadHE {}, eHadHO {}, eHadHF {},  eEmEB {}, eEmEE {}, eEmHF {}, eMaxEcalTow {}, eMaxHcalTow {}, towerArea {},   n60 {}, chef {}, nhef {}, pef {}, eef {}, mef {}, hfhef {}, hfemef {},      chMult {}, nhMult {}, phMult {}, elMult {}, muMult {}, hfhMult {}, hfemMult {}, cemef {}, cmef {}, nemef {}, cMult {}, nMult {}, ".format(\
+                        print("    PFjet {}: selectPFJet: {}    e {}, et {}, etCorr {}, corrFactor {}, eta {}, phi {}, nCaloJets {}, caloE {}, caloEt {}, caloCorrFactor {}, caloEta {}, caloPhi {},    eEMF {}, eHadHB {}, eHadHE {}, eHadHO {}, eHadHF {},  eEmEB {}, eEmEE {}, eEmHF {}, eMaxEcalTow {}, eMaxHcalTow {}, towerArea {},   n60 {}, chef {}, nhef {}, pef {}, eef {}, mef {}, hfhef {}, hfemef {},      chMult {}, nhMult {}, phMult {}, elMult {}, muMult {}, hfhMult {}, hfemMult {}, cemef {}, cmef {}, nemef {}, cMult {}, nMult {}, ".format(\
                             iOff, selectPFJet, \
                             Jet_br.e[iOff], Jet_br.et[iOff], Jet_br.etCorr[iOff], Jet_br.corrFactor[iOff], Jet_br.eta[iOff], Jet_br.phi[iOff], \
                             Jet_br.nCaloJets, Jet_br.caloE[iOff], Jet_br.caloEt[iOff], Jet_br.caloCorrFactor[iOff], Jet_br.caloEta[iOff], Jet_br.caloPhi[iOff], \
@@ -1519,7 +1519,7 @@ def run():
                             Jet_br.eEmEB[iOff], Jet_br.eEmEE[iOff], Jet_br.eEmHF[iOff], Jet_br.eMaxEcalTow[iOff], Jet_br.eMaxHcalTow[iOff], Jet_br.towerArea[iOff], \
                             Jet_br.n60[iOff], Jet_br.chef[iOff], Jet_br.nhef[iOff], Jet_br.pef[iOff], Jet_br.eef[iOff], Jet_br.mef[iOff], Jet_br.hfhef[iOff], Jet_br.hfemef[iOff], \
                             Jet_br.chMult[iOff], Jet_br.nhMult[iOff], Jet_br.phMult[iOff], Jet_br.elMult[iOff], Jet_br.muMult[iOff], Jet_br.hfhMult[iOff], Jet_br.hfemMult[iOff], Jet_br.cemef[iOff], Jet_br.cmef[iOff], Jet_br.nemef[iOff], Jet_br.cMult[iOff], Jet_br.nMult[iOff]
-                        )
+                        ))
 
                     if not selectPFJet: continue
 
@@ -1573,7 +1573,7 @@ def run():
                         PFJetEtaCat = iCat
                 if PFJetEtaCat == 'None' or PFJetEtaCat == 'HBEF':
                     if l1MatchOffline:
-                        print '\n\nSUPER-BIZZARE JET THAT FALLS INTO NO ETA CATEGORIES!!!  eta = %.3f\n\n' % vOff.Eta()
+                        print('\n\nSUPER-BIZZARE JET THAT FALLS INTO NO ETA CATEGORIES!!!  eta = %.3f\n\n' % vOff.Eta())
                     continue
                 sEtaCat_PFJet = PFJetEtaCat
                 
@@ -1583,11 +1583,11 @@ def run():
                         iPFJetPtCat = iCat
                 if iPFJetPtCat == 'None':
                     if vOff.Pt() > PT_CAT['lowPt'][0] and vOff.Pt() < PT_CAT['hiPt'][2]:
-                        print '\n\nSUPER-BIZZARE JET THAT FALLS INTO NO PT CATEGORIES!!!  pT = %.3f\n\n' % vOff.Pt()
+                        print('\n\nSUPER-BIZZARE JET THAT FALLS INTO NO PT CATEGORIES!!!  pT = %.3f\n\n' % vOff.Pt())
                     continue
                 
                 if VERBOSE or PrintLevel >= 1:
-                    print "    offlineJet: eta: {}, phi: {}, etCorr: {}".format(eta_RefJets[iOff], phi_RefJets[iOff], et_RefJets[iOff])
+                    print("    offlineJet: eta: {}, phi: {}, etCorr: {}".format(eta_RefJets[iOff], phi_RefJets[iOff], et_RefJets[iOff]))
 
                 hStat.Fill(7)
                     
@@ -1606,7 +1606,7 @@ def run():
 
                 ## Loop over all L1T unpacked jets
                 if PrintLevel >= 12:
-                    print "  * UnpJets ({}):: ".format(nUnpJets)
+                    print("  * UnpJets ({}):: ".format(nUnpJets))
                 for iUnp in range(nUnpJets):
 
                     if Unp_br.jetBx[iUnp] != 0: continue  ## Use only jets in BX 0
@@ -1631,17 +1631,17 @@ def run():
                     #hist_L1Jet_unp_TowerIEta_vs_IEta.Fill(Unp_br.jetTowerIEta[iUnp], Unp_br.jetIEta[iUnp])
                     #hist_L1Jet_unp_TowerIPhi_vs_IPhi.Fill(Unp_br.jetTowerIPhi[iUnp], Unp_br.jetIPhi[iUnp]) 
                     if PrintLevel >= 12:
-                        print "    {}: jetEt {}, jetEta {}, jetPhi {}, jetIEt {}, jetIEta {}, jetIPhi {},  jetBx {}, jetTowerIPhi {}, jetTowerIEta {}, jetRawEt {}, jetSeedEt {},  jetPUEt {}, jetPUDonutEt0 {}, jetPUDonutEt1 {}, jetPUDonutEt2 {}, jetPUDonutEt3 {}".format(iUnp, \
+                        print("    {}: jetEt {}, jetEta {}, jetPhi {}, jetIEt {}, jetIEta {}, jetIPhi {},  jetBx {}, jetTowerIPhi {}, jetTowerIEta {}, jetRawEt {}, jetSeedEt {},  jetPUEt {}, jetPUDonutEt0 {}, jetPUDonutEt1 {}, jetPUDonutEt2 {}, jetPUDonutEt3 {}".format(iUnp, \
                             Unp_br.jetEt[iUnp], Unp_br.jetEta[iUnp], Unp_br.jetPhi[iUnp], Unp_br.jetIEt[iUnp], Unp_br.jetIEta[iUnp], Unp_br.jetIPhi[iUnp], \
                             Unp_br.jetBx[iUnp], Unp_br.jetTowerIPhi[iUnp], Unp_br.jetTowerIEta[iUnp], Unp_br.jetRawEt[iUnp], Unp_br.jetSeedEt[iUnp], \
                             Unp_br.jetPUEt[iUnp], Unp_br.jetPUDonutEt0[iUnp], Unp_br.jetPUDonutEt1[iUnp], Unp_br.jetPUDonutEt2[iUnp], Unp_br.jetPUDonutEt3[iUnp]
-                        )                    
+                        ) )                   
                     
                 ## End loop: for iUnp in range(nUnpJets)
 
                 ## Loop over all L1T emulated jets
                 if PrintLevel >= 12:
-                    print "  * EmuJets ({}):: ".format(nEmuJets)                
+                    print("  * EmuJets ({}):: ".format(nEmuJets))                
                 for iEmu in range(nEmuJets):
 
                     if Emu_br.jetBx[iEmu] != 0: continue  ## Use only jets in BX 0
@@ -1666,11 +1666,11 @@ def run():
                     #hist_L1Jet_emu_TowerIEta_vs_IEta.Fill(Emu_br.jetTowerIEta[iEmu], Emu_br.jetIEta[iEmu])
                     #hist_L1Jet_emu_TowerIPhi_vs_IPhi.Fill(Emu_br.jetTowerIPhi[iEmu], Emu_br.jetIPhi[iEmu])
                     if PrintLevel >= 12:
-                        print "    {}: jetEt {}, jetEta {}, jetPhi {}, jetIEt {}, jetIEta {}, jetIPhi {},  jetBx {}, jetTowerIPhi {}, jetTowerIEta {}, jetRawEt {}, jetSeedEt {},  jetPUEt {}, jetPUDonutEt0 {}, jetPUDonutEt1 {}, jetPUDonutEt2 {}, jetPUDonutEt3 {}".format(iUnp, \
+                        print("    {}: jetEt {}, jetEta {}, jetPhi {}, jetIEt {}, jetIEta {}, jetIPhi {},  jetBx {}, jetTowerIPhi {}, jetTowerIEta {}, jetRawEt {}, jetSeedEt {},  jetPUEt {}, jetPUDonutEt0 {}, jetPUDonutEt1 {}, jetPUDonutEt2 {}, jetPUDonutEt3 {}".format(iUnp, \
                             Emu_br.jetEt[iEmu], Emu_br.jetEta[iEmu], Emu_br.jetPhi[iEmu], Emu_br.jetIEt[iEmu], Emu_br.jetIEta[iEmu], Emu_br.jetIPhi[iEmu], \
                             Emu_br.jetBx[iEmu], Emu_br.jetTowerIPhi[iEmu], Emu_br.jetTowerIEta[iEmu], Emu_br.jetRawEt[iEmu], Emu_br.jetSeedEt[iEmu], \
                             Emu_br.jetPUEt[iEmu], Emu_br.jetPUDonutEt0[iEmu], Emu_br.jetPUDonutEt1[iEmu], Emu_br.jetPUDonutEt2[iEmu], Emu_br.jetPUDonutEt3[iEmu]
-                        )                                                
+                        ) )                                               
                 ## End loop: for iEmu in range(nEmuJets)
 
                 #print "    dR(emuJet, offlineJet):: PUS: {}, npPUS: {}, Raw: {}, RawPUS: {}".format(vMax['emu']['PUS'].DeltaR(vOff), vMax['emu']['noPUS'].DeltaR(vOff), vMax['emu']['Raw'].DeltaR(vOff), vMax['emu']['RawPUS'].DeltaR(vOff))
@@ -1690,7 +1690,7 @@ def run():
                         else:       etaCat[src][algo] = PFJetEtaCat
 
                         if etaCat[src][algo] == 'None':
-                            print '\n\nSUPER-BIZZARE JET THAT FALLS INTO NO ETA CATEGORIES!!!  eta[%s][%s] = %.3f\n\n' % (vMax[src][algo].Eta(), src, algo)
+                            print('\n\nSUPER-BIZZARE JET THAT FALLS INTO NO ETA CATEGORIES!!!  eta[%s][%s] = %.3f\n\n' % (vMax[src][algo].Eta(), src, algo))
                             continue
                         # if etaCat[src][algo] != PFJetEtaCat:
                         #     print '  * L1T jet (eta = %.3f) not in same category as RECO jet (eta = %.3f)' % (vMax[src][algo].Eta(), vOff.Eta())
@@ -1723,26 +1723,26 @@ def run():
                 
                 for src in []: # ['unp','emu']: not necessary now
                     l1TP_br = None
-                    if src is 'unp':
+                    if src == 'unp':
                         l1TP_br = uTP_br
-                    elif src is 'emu':
+                    elif src == 'emu':
                         l1TP_br = eTP_br                               
 
                     if PrintLevel >= 8:
-                        print "{} {} HCAL TP ({})".format(" "*4,src, l1TP_br.nECALTP)
+                        print("{} {} HCAL TP ({})".format(" "*4,src, l1TP_br.nECALTP))
                         for iTP in range(l1TP_br.nECALTP):
-                            print " {} ecalTPieta {}".format( iTP, l1TP_br.ecalTPieta[iTP])
-                            print " {} ecalTPiphi {}".format( iTP, l1TP_br.ecalTPiphi[iTP])
-                            print " {} ecalTPiCaliphi {}".format( iTP, l1TP_br.ecalTPCaliphi[iTP])
-                            print " {} ecalTPet {}".format( iTP, l1TP_br.ecalTPet[iTP])
-                            print " {} ecalTPcompEt {}".format( iTP, l1TP_br.ecalTPcompEt[iTP])
-                            print " {} ecalTPfineGrain {}".format( iTP, l1TP_br.ecalTPfineGrain[iTP])
+                            print(" {} ecalTPieta {}".format( iTP, l1TP_br.ecalTPieta[iTP]))
+                            print(" {} ecalTPiphi {}".format( iTP, l1TP_br.ecalTPiphi[iTP]))
+                            print(" {} ecalTPiCaliphi {}".format( iTP, l1TP_br.ecalTPCaliphi[iTP]))
+                            print(" {} ecalTPet {}".format( iTP, l1TP_br.ecalTPet[iTP]))
+                            print(" {} ecalTPcompEt {}".format( iTP, l1TP_br.ecalTPcompEt[iTP]))
+                            print(" {} ecalTPfineGrain {}".format( iTP, l1TP_br.ecalTPfineGrain[iTP]))
                             
-                            print "{} {}: ecalTPieta {}, ecalTPiphi {}, ecalTPCaliphi {}, ecalTPet {}, ecalTPcompEt {}, ecalTPfineGrain {}".format(" "*6, iTP, l1TP_br.ecalTPieta[iTP], l1TP_br.ecalTPiphi[iTP], l1TP_br.ecalTPCaliphi[iTP], l1TP_br.ecalTPet[iTP], l1TP_br.ecalTPcompEt[iTP], l1TP_br.ecalTPfineGrain[iTP])
+                            print("{} {}: ecalTPieta {}, ecalTPiphi {}, ecalTPCaliphi {}, ecalTPet {}, ecalTPcompEt {}, ecalTPfineGrain {}".format(" "*6, iTP, l1TP_br.ecalTPieta[iTP], l1TP_br.ecalTPiphi[iTP], l1TP_br.ecalTPCaliphi[iTP], l1TP_br.ecalTPet[iTP], l1TP_br.ecalTPcompEt[iTP], l1TP_br.ecalTPfineGrain[iTP]))
                         
-                        print "{} {} HCAL TP ({})".format(" "*4,src, l1TP_br.nECALTP)
+                        print("{} {} HCAL TP ({})".format(" "*4,src, l1TP_br.nECALTP))
                         for iTP in range(l1TP_br.nHCALTP):
-                            print "{} {}: hcalTPieta {}, hcalTPiphi {}, hcalTPCaliphi {}, hcalTPet {}, hcalTPcompEt {}, hcalTPfineGrain {}".format(" "*6, iTP, l1TP_br.hcalTPieta[iTP], l1TP_br.hcalTPiphi[iTP], l1TP_br.hcalTPCaliphi[iTP], l1TP_br.hcalTPet[iTP], l1TP_br.hcalTPcompEt[iTP], l1TP_br.hcalTPfineGrain[iTP])
+                            print("{} {}: hcalTPieta {}, hcalTPiphi {}, hcalTPCaliphi {}, hcalTPet {}, hcalTPcompEt {}, hcalTPfineGrain {}".format(" "*6, iTP, l1TP_br.hcalTPieta[iTP], l1TP_br.hcalTPiphi[iTP], l1TP_br.hcalTPCaliphi[iTP], l1TP_br.hcalTPet[iTP], l1TP_br.hcalTPcompEt[iTP], l1TP_br.hcalTPfineGrain[iTP]))
                         
                     for iTP in range(l1TP_br.nECALTP):
                         if 'ECAP_TP_et_vs_iEta_vs_nVts' in dists6:
@@ -1761,9 +1761,9 @@ def run():
                 #for src in ['emu']:
                 for src in []: # don't run for L1Taus for time being
                     l1_br = None
-                    if src is 'unp':
+                    if src == 'unp':
                         l1_br = Unp_br
-                    elif src is 'emu':
+                    elif src == 'emu':
                         l1_br = Emu_br
                     
                     hStat.Fill(20)
@@ -1840,7 +1840,7 @@ def run():
                                 if l1jet_pt_woLayer2Calib >= layer2CalibSF_list[0] and l1jet_pt_woLayer2Calib < layer2CalibSF_list[1]:
                                     l1jet_pt = l1jet_pt_woLayer2Calib * layer2CalibSF_list[2]
                                     if PrintLevel >= 1:
-                                        print "%8s l1tau pT = %g * %g = %g" % (' ',l1jet_pt_woLayer2Calib, layer2CalibSF_list[2], l1jet_pt)
+                                        print("%8s l1tau pT = %g * %g = %g" % (' ',l1jet_pt_woLayer2Calib, layer2CalibSF_list[2], l1jet_pt))
                         
                         
                         res = (l1jet_pt - vOff.Pt()) / vOff.Pt()
@@ -1903,7 +1903,7 @@ def run():
                     for src in ['unp','emu']:
                         for algo in ['PUS','noPUS','Raw','RawPUS']:
                             sTmp += "  %s_%s %d" % (src,algo,matchedEmuIdx[src][algo])
-                    print "        {}".format(sTmp)
+                    print("        {}".format(sTmp))
 
                     
                 # check clusters/TTs of the emulated/unpacked jet that matched to the offline jet
@@ -1913,10 +1913,10 @@ def run():
                     l1jet_br = None
                     l1TC_br  = None
                     l1TT_br  = None
-                    if src is 'unp':
+                    if src == 'unp':
                         l1jet_br = Unp_br
                         l1TT_br  = uTT_br
-                    elif src is 'emu':
+                    elif src == 'emu':
                         l1jet_br = Emu_br
                         l1TC_br  = eTC_br
                         l1TT_br  = eTT_br
@@ -2009,7 +2009,7 @@ def run():
                     
                     
                     if VERBOSE:
-                        print "        l1jet {}: jetTowerIEta: {}, jetTowerIPhi: {}, Et+PU: {}, PUet: {} RawEt: {}".format(src, l1jet_br.jetTowerIEta[l1jet_idx], l1jet_br.jetTowerIPhi[l1jet_idx], l1jet_br.jetEt[l1jet_idx] + l1jet_br.jetPUEt[l1jet_idx], l1jet_br.jetPUEt[l1jet_idx], l1jet_br.jetRawEt[l1jet_idx] )
+                        print("        l1jet {}: jetTowerIEta: {}, jetTowerIPhi: {}, Et+PU: {}, PUet: {} RawEt: {}".format(src, l1jet_br.jetTowerIEta[l1jet_idx], l1jet_br.jetTowerIPhi[l1jet_idx], l1jet_br.jetEt[l1jet_idx] + l1jet_br.jetPUEt[l1jet_idx], l1jet_br.jetPUEt[l1jet_idx], l1jet_br.jetRawEt[l1jet_idx] ))
                     if PrintLevel >= 1:
                         '''
                         print "    {}: jetEt {}, jetEta {}, jetPhi {}, jetIEt {}, jetIEta {}, jetIPhi {},   jetTowerIEta {}, jetTowerIPhi {},     jetIEta {},  jetIPhi {}".format(src, \
@@ -2018,13 +2018,13 @@ def run():
                             jetIEta,  jetIPhi                                                                                                                           
                         )
                         '''
-                        print "    {} l1J({}): jetEt {}, jetEta {}, jetPhi {}, jetIEt {}, jetIEta {} --> {}, jetIPhi {},  jetBx {}, jetTowerIPhi {}, jetTowerIEta {}, jetRawEt {}, jetSeedEt {},  jetPUEt {}, jetPUDonutEt0 {}, jetPUDonutEt1 {}, jetPUDonutEt2 {}, jetPUDonutEt3 {}, @@ jetIEta {},  jetIPhi {}, jetEtPUS_L1JetDefault {}".format(src, \
+                        print("    {} l1J({}): jetEt {}, jetEta {}, jetPhi {}, jetIEt {}, jetIEta {} --> {}, jetIPhi {},  jetBx {}, jetTowerIPhi {}, jetTowerIEta {}, jetRawEt {}, jetSeedEt {},  jetPUEt {}, jetPUDonutEt0 {}, jetPUDonutEt1 {}, jetPUDonutEt2 {}, jetPUDonutEt3 {}, @@ jetIEta {},  jetIPhi {}, jetEtPUS_L1JetDefault {}".format(src, \
                             l1jet_idx,\
                                                                                                                                                                                                                                                                                                                                             l1jet_br.jetEt[l1jet_idx], l1jet_br.jetEta[l1jet_idx], l1jet_br.jetPhi[l1jet_idx], l1jet_br.jetIEt[l1jet_idx], l1jet_br.jetIEta[l1jet_idx], convert_jetIEta_to_jetTowerIEta(l1jet_br.jetIEta[l1jet_idx]), l1jet_br.jetIPhi[l1jet_idx], \
                             l1jet_br.jetBx[l1jet_idx], l1jet_br.jetTowerIPhi[l1jet_idx], l1jet_br.jetTowerIEta[l1jet_idx], l1jet_br.jetRawEt[l1jet_idx], l1jet_br.jetSeedEt[l1jet_idx], \
                             l1jet_br.jetPUEt[l1jet_idx], l1jet_br.jetPUDonutEt0[l1jet_idx], l1jet_br.jetPUDonutEt1[l1jet_idx], l1jet_br.jetPUDonutEt2[l1jet_idx], l1jet_br.jetPUDonutEt3[l1jet_idx],
                             jetIEta,  jetIPhi, jetEtPUS_L1JetDefault                                                                                                                           
-                        )
+                        ))
                         
                     '''    
                     # check matched Calo cluster
@@ -2084,7 +2084,7 @@ def run():
                         PUS_TT_ring_ByJetShape[jetShape]  = [0,0,0,0,0] # phi ring excluding central and adjacant clusters
                         PUS_TT_ring2_ByJetShape[jetShape] = [0,0,0,0,0,0,0] # phi ring excluding central cluster
                     
-                    if PrintLevel >= 6 : print "    %s %s nTT %g" % (" " * 4, src, l1TT_br.nTower)    
+                    if PrintLevel >= 6 : print("    %s %s nTT %g" % (" " * 4, src, l1TT_br.nTower)    )
                     for iTT in range(l1TT_br.nTower):
                         TTieta = l1TT_br.ieta[iTT]
                         TTiphi = l1TT_br.iphi[iTT]
@@ -2104,9 +2104,9 @@ def run():
                         AbsdIPhi_TT_Seed = abs( dIPhi_TT_Seed )
                         
                         if PrintLevel >= 7:
-                            print "    %s %s TTieta %g, TTiphi %g, TTiet %g, dIEta_TT_Seed %g, dIPhi_TT_Seed %g" % \
+                            print("    %s %s TTieta %g, TTiphi %g, TTiet %g, dIEta_TT_Seed %g, dIPhi_TT_Seed %g" % \
                                 (" " * 6, src,
-                                 TTieta,TTiphi,TTiet, dIEta_TT_Seed,dIPhi_TT_Seed )
+                                 TTieta,TTiphi,TTiet, dIEta_TT_Seed,dIPhi_TT_Seed ))
                         
                         # variable shape jets with phi ring PU subtraction                       
                         for jetShape in JetShapes:
@@ -2173,9 +2173,9 @@ def run():
                                 if abs(ring_dPhi) > 4: ## ring starting from adjacent phi cluster
                                     PUS_TT_ring2_ByJetShape[jetShape][(ring_dPhi_pos - 5) / 9] += TTiet_toUse  ## Fill 7 9x9 regions
                                     if VERBOSE or PrintLevel >= 5:
-                                        print "    %s %s: ieta %d, iphi %d, iet %g, iet_toUse %g,  dIEta_TT_Seed %g, dIPhi_TT_Seed %g -- TT in PhiRing PU" % \
+                                        print("    %s %s: ieta %d, iphi %d, iet %g, iet_toUse %g,  dIEta_TT_Seed %g, dIPhi_TT_Seed %g -- TT in PhiRing PU" % \
                                         (" " * 8, jetShape, TTieta,TTiphi,TTiet,TTiet_toUse,
-                                         dIEta_TT_Seed,dIPhi_TT_Seed )
+                                         dIEta_TT_Seed,dIPhi_TT_Seed ))
 
                                     if jetShape == '9x9':
                                         if hCaloTTs_iEta_vs_iPhi:
@@ -2189,9 +2189,9 @@ def run():
                                 if ( AbsdIPhi_TT_Seed <= clustSizeAroundSeedInPhi ): # within cluster
                                     Raw_TT_iET_ByJetShape[jetShape] += TTiet_toUse
                                     if VERBOSE or PrintLevel >= 5:
-                                        print "    %s %s: ieta %d, iphi %d, iet %g, iet_toUse %g,  dIEta_TT_Seed %g, dIPhi_TT_Seed %g -- TT within cluster" % \
+                                        print("    %s %s: ieta %d, iphi %d, iet %g, iet_toUse %g,  dIEta_TT_Seed %g, dIPhi_TT_Seed %g -- TT within cluster" % \
                                         (" " * 8, jetShape, TTieta,TTiphi,TTiet,TTiet_toUse,
-                                         dIEta_TT_Seed,dIPhi_TT_Seed )
+                                         dIEta_TT_Seed,dIPhi_TT_Seed ))
  
                                     if jetShape == '9x9':
                                         if hCaloTTs_iEta_vs_iPhi:
@@ -2240,7 +2240,7 @@ def run():
                         # print '      dIEta(%d, %d) = %d' % (TTieta, jetIEta, dIEta(TTieta, jetIEta))
                         # print '      ** Added to central sum'
                         if VERBOSE:
-                            print "    %sieta = %d, iphi = %d, iet = %g, iem = %g, ihad = %g, iratio = %g, iqual = %g, et = %g, eta = %g, phi = %g" % (" " * 8,eTT_br.ieta[iTT], eTT_br.iphi[iTT], eTT_br.iet[iTT], eTT_br.iem[iTT], eTT_br.ihad[iTT], eTT_br.iratio[iTT], eTT_br.iqual[iTT], eTT_br.et[iTT], eTT_br.eta[iTT], eTT_br.phi[iTT])
+                            print("    %sieta = %d, iphi = %d, iet = %g, iem = %g, ihad = %g, iratio = %g, iqual = %g, et = %g, eta = %g, phi = %g" % (" " * 8,eTT_br.ieta[iTT], eTT_br.iphi[iTT], eTT_br.iet[iTT], eTT_br.iem[iTT], eTT_br.ihad[iTT], eTT_br.iratio[iTT], eTT_br.iqual[iTT], eTT_br.et[iTT], eTT_br.eta[iTT], eTT_br.phi[iTT]))
 
                     PUet_ChunkyDonut     =  sum(PUS_TT_iET)  - max(PUS_TT_iET)
                     PUS_TT_ring_Min4     = (sum(PUS_TT_ring) - max(PUS_TT_ring)) / 4.0
@@ -2250,7 +2250,7 @@ def run():
                     
                     if VERBOSE or PrintLevel >= 6:
                         #print "%8s       Raw_TT_iET: %g, PUet_ChunkyDonut: %g, PUS_TT_ring_Min4: %g, PUS_TT_ring_Side4: %g, PUS_TT_ring_Adjacent: %g" % (" ", Raw_TT_iET, PUet_ChunkyDonut, PUS_TT_ring_Min4, PUS_TT_ring_Side4, PUS_TT_ring_Adjacent)
-                        print "%8s   Default    Raw_TT_iET: %g, PUet_ChunkyDonut: %g" % (" ", Raw_TT_iET, PUet_ChunkyDonut)
+                        print("%8s   Default    Raw_TT_iET: %g, PUet_ChunkyDonut: %g" % (" ", Raw_TT_iET, PUet_ChunkyDonut))
                         for jetShape in JetShapes:
                             if jetShape == 'Default': continue
                             PUS_TT_ring_Min4_tmp     = (sum(PUS_TT_ring_ByJetShape[jetShape]) - max(PUS_TT_ring_ByJetShape[jetShape])) / 4.0
@@ -2263,11 +2263,11 @@ def run():
                             PUS_TT_ring_Full_tmp     = sum(PUS_TT_ring2_ByJetShape[jetShape]) + Raw_TT_iET_ByJetShape[jetShape]
                             
                             l1jet_PU_pt_PhiRing = Raw_TT_iET_tmp - (8.0/7*Raw_TT_iET_tmp - 1./7*PUS_TT_ring_Full_tmp) #  l1jet_pt = (8.0/7*JetRaw - 1./7*SumFullPhiRing)
-                            print "%8s   %s   RAWPUS: Raw_TT_iET: %g, PUet_ChunkyDonut: %g, PUS: %g \t PhiRIng: PU: %g, PUS: %g " % \
+                            print("%8s   %s   RAWPUS: Raw_TT_iET: %g, PUet_ChunkyDonut: %g, PUS: %g \t PhiRIng: PU: %g, PUS: %g " % \
                                 (" ", JetShapes, \
                                  Raw_TT_iET_tmp, PUet_ChunkyDonut_tmp, ( Raw_TT_iET_tmp - PUet_ChunkyDonut_tmp), \
                                  l1jet_PU_pt_PhiRing, (Raw_TT_iET_tmp - l1jet_PU_pt_PhiRing)
-                                 )
+                                 ))
 
 
                     if l1jet_br.jetPUEt[l1jet_idx] == 0 and l1jet_br.jetRawEt[l1jet_idx] > 0 and runMode in ['trbshtPhiRingPUS'] and \
@@ -2337,15 +2337,15 @@ def run():
                             #if PrintLevel >= 1:
                             #print "".format(jEvt,)
                             if jetShape == 'Default' and ((Raw_TT_iET_tmp - PUet_tmp) < 0.):
-                                print "\t\t\t (L1JetDefault_RawEtPUS < 0.) for default jet \t\t\t *** ATTENTION *** "
-                            print "         Event: {} ({}:{}:{}), nVtx {}, {}: Raw_TT_iET_tmp {}, PUet_tmp {}, (Raw_TT_iET_tmp - PUet_tmp) {},  jetEtPUS_L1JetDefault {}, jetIEta {}, jetIPhi {},  PFjePt {}".format(jEvt, \
+                                print("\t\t\t (L1JetDefault_RawEtPUS < 0.) for default jet \t\t\t *** ATTENTION *** ")
+                            print("         Event: {} ({}:{}:{}), nVtx {}, {}: Raw_TT_iET_tmp {}, PUet_tmp {}, (Raw_TT_iET_tmp - PUet_tmp) {},  jetEtPUS_L1JetDefault {}, jetIEta {}, jetIPhi {},  PFjePt {}".format(jEvt, \
                                 int(Evt_br.run), int(Evt_br.lumi), int(Evt_br.event), int(nVtx), \
-                                src, Raw_TT_iET_tmp,PUet_tmp,(Raw_TT_iET_tmp - PUet_tmp), jetEtPUS_L1JetDefault, jetIEta,jetIPhi, vOff.Pt() )
-                            print "           l1jet_idx {}: jetEt {}, jetEta {}, jetPhi {}, jetIEt {}, jetIEta {}, jetIPhi {},  jetBx {}, jetTowerIPhi {}, jetTowerIEta {}, jetRawEt/2 {}, jetSeedEt {},  jetPUEt/2 {}, jetPUDonutEt0 {}, jetPUDonutEt1 {}, jetPUDonutEt2 {}, jetPUDonutEt3 {}\n".format(l1jet_idx, \
+                                src, Raw_TT_iET_tmp,PUet_tmp,(Raw_TT_iET_tmp - PUet_tmp), jetEtPUS_L1JetDefault, jetIEta,jetIPhi, vOff.Pt() ) )
+                            print("           l1jet_idx {}: jetEt {}, jetEta {}, jetPhi {}, jetIEt {}, jetIEta {}, jetIPhi {},  jetBx {}, jetTowerIPhi {}, jetTowerIEta {}, jetRawEt/2 {}, jetSeedEt {},  jetPUEt/2 {}, jetPUDonutEt0 {}, jetPUDonutEt1 {}, jetPUDonutEt2 {}, jetPUDonutEt3 {}\n".format(l1jet_idx, \
                                 l1jet_br.jetEt[l1jet_idx], l1jet_br.jetEta[l1jet_idx], l1jet_br.jetPhi[l1jet_idx], l1jet_br.jetIEt[l1jet_idx], l1jet_br.jetIEta[l1jet_idx], l1jet_br.jetIPhi[l1jet_idx], \
                                 l1jet_br.jetBx[l1jet_idx], l1jet_br.jetTowerIPhi[l1jet_idx], l1jet_br.jetTowerIEta[l1jet_idx], l1jet_br.jetRawEt[l1jet_idx]/2., l1jet_br.jetSeedEt[l1jet_idx], \
                                 l1jet_br.jetPUEt[l1jet_idx]/2., l1jet_br.jetPUDonutEt0[l1jet_idx], l1jet_br.jetPUDonutEt1[l1jet_idx], l1jet_br.jetPUDonutEt2[l1jet_idx], l1jet_br.jetPUDonutEt3[l1jet_idx]
-                            ) 
+                            ) )
                         
 
                         l1jet_pt_JetShapeAndAlgoWise[jetShape] = {}    
@@ -2434,9 +2434,9 @@ def run():
                                 sTmp = ""                                
                                 if algo1 == 'RawPUS_phiDefault' and l1jet_br.jetPUEt[l1jet_idx] > 0:
                                     sTmp = "\t PUEt myCal/default: (%g / %g) %.2f" % (PUS_TT_ring_Full_tmp/ 8, l1jet_br.jetPUEt[l1jet_idx], PUS_TT_ring_Full_tmp/ 8 /l1jet_br.jetPUEt[l1jet_idx])
-                                print "%4s%8s, %24s, %3s, pT: Raw: %7.2f, PU: %7.2f, l1j: %7.2f,  %7.2f,    diff: %g %s" % \
+                                print("%4s%8s, %24s, %3s, pT: Raw: %7.2f, PU: %7.2f, l1j: %7.2f,  %7.2f,    diff: %g %s" % \
                                     (' ',jetShape,algo1,sjetIEta_toUse,  \
-                                     Raw_TT_iET_tmp, l1jet_PU_pt, l1jet_pt_woLayer2Calib, l1jet_pt, (l1jet_pt - l1jet_pt_woLayer2Calib), sTmp)
+                                     Raw_TT_iET_tmp, l1jet_PU_pt, l1jet_pt_woLayer2Calib, l1jet_pt, (l1jet_pt - l1jet_pt_woLayer2Calib), sTmp) )
                             
 
                             # troubleshoot histograms
@@ -2567,11 +2567,11 @@ def run():
                         fOut_MLInputs_writer.writeheader()
                         isFirstEntry_WriteInputForML = False
                         if PrintLevel >= 14:
-                            print "WriteInputForML: data_dict.keys(): {}".format(data_dict.keys())
+                            print("WriteInputForML: data_dict.keys(): {}".format(data_dict.keys()) )
                         
                     if runMode in ['makeInputForML']: fOut_MLInputs_writer.writerow( data_dict )
                     if PrintLevel >= 14:
-                        print "WriteInputForML: data_dict: {}".format(data_dict)
+                        print("WriteInputForML: data_dict: {}".format(data_dict))
 
 
             if sFInEventsToRun and hCaloTowers_iEta_vs_iPhi and hCaloTTs_iEta_vs_iPhi:
@@ -2605,7 +2605,7 @@ def run():
                             if len(l1JetsInEvent_sortedByL1JPt) == 0: continue
                             
                             if PrintLevel >= 5:
-                                print "    l1JetCollection[{}][{}][{}][{}]: {} \t\t sorted {}".format(src, jetShape, algo1,  ieta_cat,  l1JetCollection[src][jetShape][algo1][ieta_cat], l1JetsInEvent_sortedByL1JPt)
+                                print("    l1JetCollection[{}][{}][{}][{}]: {} \t\t sorted {}".format(src, jetShape, algo1,  ieta_cat,  l1JetCollection[src][jetShape][algo1][ieta_cat], l1JetsInEvent_sortedByL1JPt))
                                 
                             # leading jet
                             l1JetPt_toConsider      = l1JetsInEvent_sortedByL1JPt[0][0]
@@ -2654,11 +2654,11 @@ def run():
 
         ## End loop: for jEvt in range(chains['Unp'][iCh].GetEntries()):
         
-        print "\n\n nTotalEvents_byChains[iCh {}]: {} ".format(iCh, nTotalEvents_byChains[iCh])
+        print("\n\n nTotalEvents_byChains[iCh {}]: {} ".format(iCh, nTotalEvents_byChains[iCh]))
         hnTotalEvents.SetBinContent(iCh+1, nTotalEvents_byChains[iCh])
     ## End loop: for iCh in range(len(chains['Unp'])):
 
-    print '\nFinished loop over chains'
+    print('\nFinished loop over chains')
     if runMode in ['makeInputForML']: fOut_MLInputs.close()
     
     #out_file_str = "tmp.root"
@@ -2924,7 +2924,7 @@ def run():
     del chains
 
     #print '\nWrote out file:  plots/'+out_file_str+'.root'
-    print '\nWrote out file:  '+out_file_str
+    print('\nWrote out file:  '+out_file_str)
 
 
     print("selectedEvents_list: {}".format(selectedEvents_list))
