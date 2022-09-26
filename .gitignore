@@ -13,3 +13,4 @@ data/*.csv
 */*.error
 scripts/condor_*_L1TStudies_PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut_60_*.sh
 l1ntupleMaker/L1TNtuple_forL1JetL2Calib_12_6_0_pre1/
+

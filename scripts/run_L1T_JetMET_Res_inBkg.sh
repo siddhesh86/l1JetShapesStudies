@@ -40,7 +40,7 @@ declare -a commands=(
 
     ### 2021/09/14
     # 2018 SingleMu data: 2018 D era. After wLUTGenFalse_PFA1pRun3ContainPhaseNSm2_nVtxgt50 nVtx > 50
-    "time python L1T_JetMET_Res.py def   '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SingleMuon/L1TNtuple_HCal_OOT_PUS_data_PFA2_wLUTGenFalse_PFA1pRun3ContainPhaseNSm2_nVtxgt50_Run2018*/210914*/00*/'   nVtxgt50 "
+    #"time python L1T_JetMET_Res.py def   '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SingleMuon/L1TNtuple_HCal_OOT_PUS_data_PFA2_wLUTGenFalse_PFA1pRun3ContainPhaseNSm2_nVtxgt50_Run2018*/210914*/00*/'   nVtxgt50 "
     #"time python L1T_JetMET_Res.py PFA1p '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SingleMuon/L1TNtuple_HCal_OOT_PUS_data_PFA1p_wLUTGenFalse_PFA1pRun3ContainPhaseNSm2_nVtxgt50_Run2018*/210914*/00*/'  nVtxgt50 "
 
     # 2018 SingleMu data: 2018 D era. After wLUTGenFalse_PFA1pRun3ContainPhaseNSm2_nVtxlt25 nVtx < 25
