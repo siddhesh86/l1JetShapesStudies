@@ -5,3 +5,4 @@ __pycache__/
 cout*.txt
 plots/
 *~
+data/*.csv
