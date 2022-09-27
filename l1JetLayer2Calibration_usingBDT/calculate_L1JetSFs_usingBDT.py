@@ -27,8 +27,8 @@ parseGroup2.add_argument('--l1MatchOffline', action='store_true', default=False)
 parseGroup2.add_argument('--l1MatchGen',     action='store_true', default=True)
 
 
-#args = parser.parse_args()
-args = parser.parse_args("--ChunkyDonut --l1MatchGen".split()) # to run in jupyter-notebook 
+args = parser.parse_args()
+#args = parser.parse_args("--ChunkyDonut --l1MatchGen".split()) # to run in jupyter-notebook 
 l1Jet_ChunkyDonut = args.ChunkyDonut
 l1Jet_PhiRing     = args.PhiRing
 l1MatchOffline    = args.l1MatchOffline
@@ -51,6 +51,9 @@ L1JetPtMax               = 255.0 # GeV
 sL1JetEt  = sL1JetEt_PUS_ChunkyDonut if l1Jet_ChunkyDonut else sL1JetEt_PUS_PhiRing
 sRefJetEt = sOfflineJetEt if l1MatchOffline else sGenJetEt 
 
+sOpFileName_SFs = sOpFileName_SFs.replace('.csv', '_%s.csv' % (sL1JetEt))
+sOutDir = '%s_%s' % (sOutDir, sL1JetEt)
+
 
 data_all = pd.read_csv(sIpFileName)
 print("Input file: %s" % (sIpFileName))
@@ -62,7 +65,6 @@ print("sRefJetEt: {}, \t sL1Jet: {}, \t L1JetPtThrsh: {}".format(sRefJetEt, sL1J
 
 
 print("data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
-
 
 
 # In[3]:
@@ -131,8 +133,7 @@ if not os.path.exists(sOutDir):
 
 #print("".format())
 for iEtaBinRange in np.array_split(iEtaBins, 8):
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-        
+    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')        
     
     for iEtaBin in iEtaBinRange:
         data_all_iEtaBin = data_all[data_all[sL1JetTowerIEtaAbs] == iEtaBin]
@@ -168,14 +169,160 @@ print("nEntriesPerIEtaBin: {}".format(nEntriesPerIEtaBin))
 print("nEntriesPerIEtaBin_1: {}".format(nEntriesPerIEtaBin_1))
 
 
-# In[ ]:
+# In[7]:
 
 
-get_ipython().run_cell_magic('time', '', '\nIEta_Cat = OD()\n#IEta_Cat[\'HB\'] = [ 1, 16]\n#IEta_Cat[\'HE\'] = [17, 28]\n#IEta_Cat[\'HF\'] = [30, 41]\nIEta_Cat[\'HBEF\'] = [ 1, 41]\n\nvarsOfInterest = train_vars\nvarsOfInterest.extend([target_var, sL1JetEt, sRefJetEt])\nprint("varsOfInterest: {}\\n".format(varsOfInterest))\n\nfor iEta_category, iEtaBinRange in IEta_Cat.items():\n    data_all_iEtaBins = data_all[\n        (data_all[sL1JetTowerIEtaAbs] >= iEtaBinRange[0]) & \n        (data_all[sL1JetTowerIEtaAbs] <= iEtaBinRange[-1])\n    ][varsOfInterest]\n    print("\\niEta_category {}, iEtaBinRange {}, data_all_iEtaBins.describe(): \\n{}".format(iEta_category, iEtaBinRange, data_all_iEtaBins.describe()))\n    \n    X = data_all_iEtaBins[train_vars]\n    y = data_all_iEtaBins[target_var]\n\n    X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.3, random_state=0)\n    \n    # declare parameters\n    params_i = {\n        \'n_estimators\': 1000, \n        \'learning_rate\': 0.01, \n        \'early_stopping_rounds\': 5\n    }\n    xgb_rg = XGBRegressor(**params_i)\n    xgb_rg.fit(X_train, y_train,\n               eval_set=[(X_valid, y_valid)],\n               verbose=False\n             )\n    print("\\niEta_category {}, iEtaBinRange {}, params: {}, mean_squared_error: {}; {}".format(\n        iEta_category, iEtaBinRange, \n        params_i,\n        mean_squared_error(y_valid, xgb_rg.predict(X_valid)),\n        mean_squared_error(y_valid, xgb_rg.predict(X_valid), squared=False)\n    ))\n    \n    \n    \n    \nprint("Hello1")    \n')
+#%%time
 
 
-# In[ ]:
+sL1JetEt_forML_predict = "%s_predict" % (sL1JetEt_forML)
+sL1JetEt_predict       = "%s_predict" % (sL1JetEt)
+sSF                    = "SF"
+
+IEta_Cat = OD()
+IEta_Cat['HB'] = [ 1, 16]
+IEta_Cat['HE'] = [17, 28]
+IEta_Cat['HF'] = [30, 41]
+#IEta_Cat['HBEF'] = [ 1, 41]
+
+print("train_vars: {}, \ntarget_var: {}, \nsL1JetEt_forML_predict: {}, \nsL1JetEt_predict: {}, \nsSF: {}".format(
+        train_vars, target_var, sL1JetEt_forML_predict, sL1JetEt_predict, sSF
+))
+varsOfInterest = train_vars.copy()
+varsOfInterest.extend([target_var, sL1JetEt, sRefJetEt])
+print("varsOfInterest: {}\n".format(varsOfInterest))
+
+print("After train_vars: {}, \ntarget_var: {}, \nsL1JetEt_forML_predict: {}, \nsL1JetEt_predict: {}, \nsSF: {}".format(
+        train_vars, target_var, sL1JetEt_forML_predict, sL1JetEt_predict, sSF
+))
+
+dafa_SFs = None
+for iEta_category, iEtaBinRange in IEta_Cat.items():
+    iEtaBins_i = range(iEtaBinRange[0], iEtaBinRange[-1]+1)
+    data_all_iEtaBins = data_all[
+        (data_all[sL1JetTowerIEtaAbs] >= iEtaBinRange[0]) & 
+        (data_all[sL1JetTowerIEtaAbs] <= iEtaBinRange[-1])
+    ][varsOfInterest]
+    print("\niEta_category {}, iEtaBinRange {}, data_all_iEtaBins.describe(): \n{}".format(
+        iEta_category, iEtaBinRange, data_all_iEtaBins.describe()
+    ))
+    print("train_vars: {}, target_var: {}, sL1JetEt_forML_predict: {}, sL1JetEt_predict: {}, sSF: {}".format(
+        train_vars, target_var, sL1JetEt_forML_predict, sL1JetEt_predict, sSF
+    ))
+    
+        
+    X = data_all_iEtaBins[train_vars]
+    y = data_all_iEtaBins[target_var]
+
+    X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.3, random_state=0)
+    
+    # declare parameters
+    params_i = {
+        'n_estimators': 1000, 
+        'learning_rate': 0.01, 
+        'early_stopping_rounds': 5
+    }
+    xgb_rg = XGBRegressor(**params_i)
+    xgb_rg.fit(X_train, y_train,
+               eval_set=[(X_valid, y_valid)],
+               verbose=False
+    )
+    print("\niEta_category {}, iEtaBinRange {}, params: {}, mean_squared_error: valid {}; train {}".format(
+        iEta_category, iEtaBinRange, 
+        params_i,
+        #mean_squared_error(y_valid, xgb_rg.predict(X_valid)),
+        mean_squared_error(y_valid, xgb_rg.predict(X_valid), squared=False),
+        mean_squared_error(y_train, xgb_rg.predict(X_train), squared=False)
+        
+    ))
+    
+    print("{} here1".format(iEta_category))
+    dafa_SFs_i = prepareDataframeForSFs(iEtaBins_i)
+    print("{} here2".format(iEta_category))
+    dafa_SFs_i[sL1JetEt_forML_predict] = xgb_rg.predict(dafa_SFs_i[train_vars])
+    print("{} here3".format(iEta_category))
+    dafa_SFs_i[sL1JetEt_predict]       = transform_back_JetEt_fromML( dafa_SFs_i[sL1JetEt_forML_predict] )
+    print("{} here4".format(iEta_category))
+    dafa_SFs_i[sSF]                    = dafa_SFs_i[sL1JetEt_predict] / dafa_SFs_i[sL1JetEt]
+    print("iEtaBins_i: {}".format(iEtaBins_i))
+    print("dafa_SFs_i: {}".format(dafa_SFs_i.describe()))
+    
+    if dafa_SFs is None:
+        dafa_SFs = dafa_SFs_i
+    else:
+        dafa_SFs = pd.concat([dafa_SFs, dafa_SFs_i])    
+    
+    
+    
+print("Hello1")    
+print("\n\ndafa_SFs: \n{}".format(dafa_SFs.to_string()))
+dafa_SFs.to_csv(sOpFileName_SFs, index=False)
+print("Wrote {}".format(sOpFileName_SFs))
 
 
+# In[40]:
 
+
+sL1JetEt_calib = '%s_calib' % (sL1JetEt)
+data_copy1     = data_all[[sL1JetTowerIEtaAbs, sL1JetEt, sGenJetEt]].copy()
+dafa_SFs_copy1 = dafa_SFs[[sL1JetTowerIEtaAbs, sL1JetEt, sSF]].copy()
+dafa_SFs_copy1 = dafa_SFs_copy1.set_index([sL1JetTowerIEtaAbs, sL1JetEt])
+SFs_dict       = dafa_SFs_copy1.to_dict()[sSF]
+
+def calibrateJet(Et_0, iEta):
+    Et = round(Et_0)
+    if Et < 11: Et = 11
+    if Et > 255: Et = 255
+    return Et_0 * SFs_dict[(iEta, Et)]
+
+data_copy1[sL1JetEt_calib] = data_copy1.apply(lambda row: calibrateJet(row[sL1JetEt], row[sL1JetTowerIEtaAbs]), axis=1)
+#data_copy1[sL1JetEt_calib] = np.vectorize(calibrateJet)(data_copy1[sL1JetEt], data_copy1[sL1JetTowerIEtaAbs])
+print("data_copy1: {}".format(data_copy1))
+
+
+# In[42]:
+
+
+# SF vs Et plots ----
+for iEtaBinRange in np.array_split(iEtaBins, 8):
+    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')        
+    
+    for iEtaBin in iEtaBinRange:
+        dafa_SFs_iEtaBin = dafa_SFs[dafa_SFs[sL1JetTowerIEtaAbs] == iEtaBin]
+        axs.plot(
+            dafa_SFs_iEtaBin[sL1JetEt],
+            dafa_SFs_iEtaBin[sSF],
+            label='iEta %d' % (iEtaBin)
+        )
+    axs.set_xlabel('L1JetEt [GeV]')
+    axs.set_ylabel('Scale factor')
+    axs.set_title('%s' % (sL1JetEt))
+    axs.legend()
+        
+    fig.savefig('%s/SF_vs_Et_%s_ieta_%d_to_%d.png' % (sOutDir, sL1JetEt, iEtaBinRange[0], iEtaBinRange[-1]))
+ 
+
+
+# In[43]:
+
+
+# Resolution plots 
+for iEtaBinRange in np.array_split(iEtaBins, 8):
+    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')        
+    
+    for iEtaBin in iEtaBinRange:
+        data_copy1_iEtaBin = data_copy1[data_copy1[sL1JetTowerIEtaAbs] == iEtaBin]
+        axs.hist(
+            (data_copy1_iEtaBin[sL1JetEt_calib]/data_copy1_iEtaBin[sRefJetEt]), 
+            bins=100, range=(0, 2.6),
+            label='iEta %d' % (iEtaBin),
+            histtype='step',#, linewidth=2
+            density=True
+        )
+    axs.set_xlabel('L1JetEt / %s' % (sRefJetEt))
+    axs.set_ylabel('Normalized entries')
+    axs.set_title('%s' % (sL1JetEt))
+    axs.legend()
+        
+    fig.savefig('%s/AfterJEC_%s_ieta_%d_to_%d.png' % (sOutDir, sL1JetEt, iEtaBinRange[0], iEtaBinRange[-1]))
 

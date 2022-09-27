@@ -32,7 +32,8 @@ commands = {
     #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/220922_062812/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
 
     # BDT training
-    "PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py "
+    "ChunkyDonut": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen ",
+    "PhiRing": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen ",
 } 
 
 runLocally = False 
@@ -78,7 +79,6 @@ for PUS, command0 in commands.items():
             f.write('echo "GPU information:" \n')
             f.write("nvidia-smi \n")
             
-            f.write("time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 %s/%s  %s \n" % (pwd,sAnalysis, sConfig_to_use))
             f.write("%s \n" % (command0))
             
 
@@ -94,7 +94,7 @@ for PUS, command0 in commands.items():
             f.write("notification = never \n")
             f.write("should_transfer_files = YES \n")
             f.write("when_to_transfer_output = ON_EXIT \n")
-            f.write("request_gpus = 1 \n")
+            f.write("request_gpus = 2 \n")
             #f.write("+JobFlavour = \"workday\" \n")
             #f.write("+JobFlavour = \"espresso\" \n") # 20 mins
             #f.write("+JobFlavour = \"microcentury\" \n") # 1 hours
