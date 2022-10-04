@@ -12,33 +12,40 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import colors
+import matplotlib
 
 from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
-
+from hyperopt import fmin, tpe, hp, STATUS_OK, Trials, space_eval # hyperparameter optimization
 
 parser = argparse.ArgumentParser()
 parseGroup1 = parser.add_mutually_exclusive_group(required=True)
-parseGroup1.add_argument('--ChunkyDonut',    action='store_true', default=True)
-parseGroup1.add_argument('--PhiRing',        action='store_true', default=False)
+parseGroup1.add_argument('--ChunkyDonut',    action='store_true')
+parseGroup1.add_argument('--PhiRing',        action='store_true')
 parseGroup2 = parser.add_mutually_exclusive_group(required=True)
-parseGroup2.add_argument('--l1MatchOffline', action='store_true', default=False)
-parseGroup2.add_argument('--l1MatchGen',     action='store_true', default=True)
+parseGroup2.add_argument('--l1MatchOffline', action='store_true')
+parseGroup2.add_argument('--l1MatchGen',     action='store_true')
 
+runLocally = False
 
-args = parser.parse_args()
-#args = parser.parse_args("--ChunkyDonut --l1MatchGen".split()) # to run in jupyter-notebook 
+args = None
+if not runLocally:
+    matplotlib.use('Agg') # use for condor jobs to disable display of plots
+    args = parser.parse_args()
+else:
+    args = parser.parse_args("--ChunkyDonut --l1MatchGen".split()) # to run in jupyter-notebook     
 l1Jet_ChunkyDonut = args.ChunkyDonut
 l1Jet_PhiRing     = args.PhiRing
 l1MatchOffline    = args.l1MatchOffline
 l1MatchGen        = args.l1MatchGen
 
-
+version         = "v3_HyperOpt" 
 sIpFileName     = "../data/L1T_Jet_MLInputs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925.csv"
-sOpFileName_SFs = "../data/L1T_Jet_SFs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925.csv"
-sOutDir         = "./plots"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925_%s.csv" % (version)
+sOutDir         = "./plots_%s" % (version)
 
+printLevel = 5
 iEtaBins = [i for i in range(1, 42) if i!=29]
 sL1JetEt_PUS_ChunkyDonut = 'L1JetEt_PUS_ChunkyDonut'
 sL1JetEt_PUS_PhiRing     = 'L1JetEt_PUS_PhiRing'
@@ -59,6 +66,8 @@ data_all = pd.read_csv(sIpFileName)
 print("Input file: %s" % (sIpFileName))
 print("iEtaBins ({}): {}".format(len(iEtaBins), iEtaBins))
 print("sRefJetEt: {}, \t sL1Jet: {}, \t L1JetPtThrsh: {}".format(sRefJetEt, sL1JetEt, L1JetPtThrsh))
+print("l1Jet_ChunkyDonut {}, l1Jet_PhiRing {}, l1MatchOffline {}, l1MatchGen {}".format(
+    l1Jet_ChunkyDonut, l1Jet_PhiRing, l1MatchOffline, l1MatchGen))
 
 
 # In[2]:
@@ -104,7 +113,8 @@ def prepareDataframeForSFs(iEtaBinRange):
 data_all[sL1JetEt_forML]    = transform_JetEt_forML(data_all[sL1JetEt])
 data_all[sRefJetEt_forML]   = transform_JetEt_forML(data_all[sRefJetEt])
 
-print("data_all.describe(): \n{}".format(data_all.describe()))
+if printLevel >= 1:
+    print("data_all.describe(): \n{}".format(data_all.describe()))
 #print("\n\ndata_SFs.describe(): \n{}".format(data_SFs.describe()))
 #print("\n\ndata_SFs.describe(): \n{}".format(data_SFs.to_string()))
 
@@ -116,11 +126,13 @@ print("data_all.describe(): \n{}".format(data_all.describe()))
 
 # Drop entries with L1JetEt < L1JetPtThrsh
 data_all_L1EtBelowThrsh = data_all[ data_all[sL1JetEt] < L1JetPtThrsh ]
-print("data_all[ data_all['{}'] < {} ]: \n{}".format(sL1JetEt, L1JetPtThrsh, data_all_L1EtBelowThrsh))
+if printLevel >= 6:
+    print("data_all[ data_all['{}'] < {} ]: \n{}".format(sL1JetEt, L1JetPtThrsh, data_all_L1EtBelowThrsh))
 data_all.drop(index=data_all_L1EtBelowThrsh.index, inplace=True)
 
 print("\nDoes any of the columns have NaN entries: \ndata_all.isna().sum(): \n{}".format(data_all.isna().sum()))
-print("\nAfter cleaning, data_all.describe(): \n{}".format(data_all.describe()))
+if printLevel >= 5:
+    print("\nAfter cleaning, data_all.describe(): \n{}".format(data_all.describe()))
 
 
 # In[5]:
@@ -165,15 +177,15 @@ axs.set_ylabel('Entries')
 axs.set_title('%s' % (sL1JetEt))
 #axs.legend()
 fig.savefig('%s/%s_nEntriesPerIEtaBin.png' % (sOutDir, sL1JetEt))
-print("nEntriesPerIEtaBin: {}".format(nEntriesPerIEtaBin))
-print("nEntriesPerIEtaBin_1: {}".format(nEntriesPerIEtaBin_1))
+if printLevel >= 11:
+    print("nEntriesPerIEtaBin: {}".format(nEntriesPerIEtaBin))
+    print("nEntriesPerIEtaBin_1: {}".format(nEntriesPerIEtaBin_1))
 
 
-# In[7]:
+# In[21]:
 
 
 #%%time
-
 
 sL1JetEt_forML_predict = "%s_predict" % (sL1JetEt_forML)
 sL1JetEt_predict       = "%s_predict" % (sL1JetEt)
@@ -185,17 +197,74 @@ IEta_Cat['HE'] = [17, 28]
 IEta_Cat['HF'] = [30, 41]
 #IEta_Cat['HBEF'] = [ 1, 41]
 
-print("train_vars: {}, \ntarget_var: {}, \nsL1JetEt_forML_predict: {}, \nsL1JetEt_predict: {}, \nsSF: {}".format(
-        train_vars, target_var, sL1JetEt_forML_predict, sL1JetEt_predict, sSF
-))
+if printLevel >= 11:
+    print("train_vars: {}, \ntarget_var: {}, \nsL1JetEt_forML_predict: {}, \nsL1JetEt_predict: {}, \nsSF: {}".format(
+        train_vars, target_var, sL1JetEt_forML_predict, sL1JetEt_predict, sSF))
+    
 varsOfInterest = train_vars.copy()
 varsOfInterest.extend([target_var, sL1JetEt, sRefJetEt])
-print("varsOfInterest: {}\n".format(varsOfInterest))
+if printLevel >= 0:
+    print("Going for BDT training: varsOfInterest: {}\n".format(varsOfInterest))
+    print("After train_vars: {}, \ntarget_var: {}, \nsL1JetEt_forML_predict: {}, \nsL1JetEt_predict: {}, \nsSF: {}".format(
+        train_vars, target_var, sL1JetEt_forML_predict, sL1JetEt_predict, sSF))
 
-print("After train_vars: {}, \ntarget_var: {}, \nsL1JetEt_forML_predict: {}, \nsL1JetEt_predict: {}, \nsSF: {}".format(
-        train_vars, target_var, sL1JetEt_forML_predict, sL1JetEt_predict, sSF
-))
+# ML training ----------------------------------------------------------------------
+def train_MLModel_wHyperopt(X, y):
+    X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.3, random_state=0)
+    
+    hyperparameter_space = { 
+        'n_estimators': hp.choice('n_estimators', np.arange(500, 2001, 100, dtype=int)),
+        'learning_rate':hp.quniform('learning_rate', 0.01, 0.2, 0.01),
+        'early_stopping_rounds': 10
+    }    
 
+    
+    def ML_score(params):
+        model = XGBRegressor(**params)
+        model.fit(
+            X_train, y_train,
+            eval_set=[(X_valid, y_valid)],
+            verbose=False       
+        )
+        score = mean_squared_error(y_valid, model.predict(X_valid), squared=False)
+        if printLevel >= 3:
+            print("score: valid {}, train {}. params: {}".format(
+                score,
+                mean_squared_error(y_train, model.predict(X_train), squared=False),
+                params))
+        return {'loss': score, 'status': STATUS_OK, 'ML_model': model}
+            
+    
+    def getBestMLModel(trials):
+        # https://stackoverflow.com/questions/54273199/how-to-save-the-best-hyperopt-optimized-keras-models-and-its-weights
+        valid_trial_list = [trial for trial in trials  if STATUS_OK == trial['result']['status']]
+        losses = [float(trial['result']['loss']) for trial in valid_trial_list]
+        index_having_minimum_loss = np.argmin(losses)
+        best_trial_obj = valid_trial_list[index_having_minimum_loss]
+        return best_trial_obj['result']['ML_model']
+        
+        
+        
+    # ref: 
+    # https://sites.google.com/view/raybellwaves/blog/using-xgboost-and-hyperopt-in-a-kaggle-comp
+    # https://www.kaggle.com/code/prashant111/a-guide-on-xgboost-hyperparameters-tuning/notebook
+    trials = Trials()
+    best_params = fmin(
+        fn=ML_score,
+        space=hyperparameter_space, 
+        algo=tpe.suggest,
+        max_evals=30,
+        trials=trials)
+    print("best_params: {}".format(best_params))
+    print("space_eval(hyperparameter_space, best_params): {}".format(space_eval(hyperparameter_space, best_params)))
+    
+    return getBestMLModel(trials)
+# ----------------------------------------------------------------------------        
+    
+    
+    
+    
+    
 dafa_SFs = None
 for iEta_category, iEtaBinRange in IEta_Cat.items():
     iEtaBins_i = range(iEtaBinRange[0], iEtaBinRange[-1]+1)
@@ -203,49 +272,24 @@ for iEta_category, iEtaBinRange in IEta_Cat.items():
         (data_all[sL1JetTowerIEtaAbs] >= iEtaBinRange[0]) & 
         (data_all[sL1JetTowerIEtaAbs] <= iEtaBinRange[-1])
     ][varsOfInterest]
-    print("\niEta_category {}, iEtaBinRange {}, data_all_iEtaBins.describe(): \n{}".format(
-        iEta_category, iEtaBinRange, data_all_iEtaBins.describe()
-    ))
-    print("train_vars: {}, target_var: {}, sL1JetEt_forML_predict: {}, sL1JetEt_predict: {}, sSF: {}".format(
-        train_vars, target_var, sL1JetEt_forML_predict, sL1JetEt_predict, sSF
-    ))
-    
+    if printLevel >= 0:
+        print("\niEta_category {}, iEtaBinRange {}, data_all_iEtaBins.describe(): \n{}".format(
+            iEta_category, iEtaBinRange, data_all_iEtaBins.describe()))
+   
         
     X = data_all_iEtaBins[train_vars]
     y = data_all_iEtaBins[target_var]
+    
+    xgb_rg = train_MLModel_wHyperopt(X, y)
 
-    X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.3, random_state=0)
     
-    # declare parameters
-    params_i = {
-        'n_estimators': 1000, 
-        'learning_rate': 0.01, 
-        'early_stopping_rounds': 5
-    }
-    xgb_rg = XGBRegressor(**params_i)
-    xgb_rg.fit(X_train, y_train,
-               eval_set=[(X_valid, y_valid)],
-               verbose=False
-    )
-    print("\niEta_category {}, iEtaBinRange {}, params: {}, mean_squared_error: valid {}; train {}".format(
-        iEta_category, iEtaBinRange, 
-        params_i,
-        #mean_squared_error(y_valid, xgb_rg.predict(X_valid)),
-        mean_squared_error(y_valid, xgb_rg.predict(X_valid), squared=False),
-        mean_squared_error(y_train, xgb_rg.predict(X_train), squared=False)
-        
-    ))
-    
-    print("{} here1".format(iEta_category))
     dafa_SFs_i = prepareDataframeForSFs(iEtaBins_i)
-    print("{} here2".format(iEta_category))
     dafa_SFs_i[sL1JetEt_forML_predict] = xgb_rg.predict(dafa_SFs_i[train_vars])
-    print("{} here3".format(iEta_category))
     dafa_SFs_i[sL1JetEt_predict]       = transform_back_JetEt_fromML( dafa_SFs_i[sL1JetEt_forML_predict] )
-    print("{} here4".format(iEta_category))
     dafa_SFs_i[sSF]                    = dafa_SFs_i[sL1JetEt_predict] / dafa_SFs_i[sL1JetEt]
-    print("iEtaBins_i: {}".format(iEtaBins_i))
-    print("dafa_SFs_i: {}".format(dafa_SFs_i.describe()))
+    if printLevel >= 11:
+        print("iEtaBins_i: {}".format(iEtaBins_i))
+        print("dafa_SFs_i: {}".format(dafa_SFs_i.describe()))
     
     if dafa_SFs is None:
         dafa_SFs = dafa_SFs_i
@@ -254,13 +298,13 @@ for iEta_category, iEtaBinRange in IEta_Cat.items():
     
     
     
-print("Hello1")    
-print("\n\ndafa_SFs: \n{}".format(dafa_SFs.to_string()))
+#print("Hello1")    
+#print("\n\ndafa_SFs: \n{}".format(dafa_SFs.to_string()))
 dafa_SFs.to_csv(sOpFileName_SFs, index=False)
 print("Wrote {}".format(sOpFileName_SFs))
 
 
-# In[40]:
+# In[ ]:
 
 
 sL1JetEt_calib = '%s_calib' % (sL1JetEt)
@@ -277,10 +321,11 @@ def calibrateJet(Et_0, iEta):
 
 data_copy1[sL1JetEt_calib] = data_copy1.apply(lambda row: calibrateJet(row[sL1JetEt], row[sL1JetTowerIEtaAbs]), axis=1)
 #data_copy1[sL1JetEt_calib] = np.vectorize(calibrateJet)(data_copy1[sL1JetEt], data_copy1[sL1JetTowerIEtaAbs])
-print("data_copy1: {}".format(data_copy1))
+if printLevel >= 10:
+    print("data_copy1: {}".format(data_copy1))
 
 
-# In[42]:
+# In[ ]:
 
 
 # SF vs Et plots ----
@@ -303,7 +348,7 @@ for iEtaBinRange in np.array_split(iEtaBins, 8):
  
 
 
-# In[43]:
+# In[ ]:
 
 
 # Resolution plots 
@@ -325,4 +370,5 @@ for iEtaBinRange in np.array_split(iEtaBins, 8):
     axs.legend()
         
     fig.savefig('%s/AfterJEC_%s_ieta_%d_to_%d.png' % (sOutDir, sL1JetEt, iEtaBinRange[0], iEtaBinRange[-1]))
+print("\n\nDone.")
 

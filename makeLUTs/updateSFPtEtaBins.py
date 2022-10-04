@@ -26,61 +26,67 @@ import copy
 
 PrintLevel       = 2
 JetShapes        = ['Default' ]
-PUSAlgosAll      = ['RawPUS']  #['RawPUS', 'RawPUS_phiDefault']
+PUSAlgosAll      = ['RawPUS_phiDefault'] # ['RawPUS', 'RawPUS_phiDefault']
 
 nLinesToRead = -1 # Max line to read from SF.csv file
 
 # Read L1Jet CalibLayer2 SFs from csv files provided by Syed
+useAdditionalSFForLUT = True # 8/7 factor is needed for PhiRing as different PU estimation considered in CMSSW and Andrew's computation
 icalibSF = 0 # 0, 1
-calibSFLable = ['SF_RegressedTo_log(GenJetPt)_v6', 'SF_RegressedTo_log(L1JetPt)/log(GenJetPt)_v6'][icalibSF]  
+calibSFLable = ['SF'][icalibSF]  
 sipFileCalibSF = {
     'Default': {
        'RawPUS': { # Chunky donut
-           'fileName': '/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/SFsFromSyed/20220406_0/SFs_v6/L1JetLayer2SFs_Run3_QCD_Pt15to7000_TuneCP5_14TeV-pythia8_CMSSW1230pre1wPR37196_PFA1p_nVtxAll_L1JetRawPUS_v6_20220429.csv', 
-           'SFLabel': ['ScaleFactor_Log(GenJet)', 'ScaleFactor_Log(L1JetRaw)/Log(GenJet)'][icalibSF],
-           'L1JetPtVarName':'L1JetRawEnergy',
+           'fileName': '../data/L1T_Jet_SFs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925_v3_HyperOpt_L1JetEt_PUS_ChunkyDonut.csv', 
+           'SFLabel': ['SF'][icalibSF],
+           'L1JetPtVarName':'L1JetEt_PUS_ChunkyDonut',
+           'additionalCorrForLUT': 1.0,
        },
        
        'RawPUS_phiDefault': {
-           'fileName': '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/run_1/IMPORTANT/L1JetLayer2SFs_Run3_QCD_Pt15to7000_TuneCP5_14TeV-pythia8_CMSSW1230pre1wPR37196_PFA1p_nVtxAll_PhiRingPUS_v6_20220429.csv', 
-           'SFLabel': ['ScaleFactor_Log(GenJet)', 'ScaleFactor_Log(PhiRing)/Log(GenJet)'][icalibSF],
-           'L1JetPtVarName':'PhiRingEnergy',
+           'fileName': '../data/L1T_Jet_SFs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925_v3_HyperOpt_L1JetEt_PUS_PhiRing.csv',
+           'SFLabel': ['SF'][icalibSF],
+           'L1JetPtVarName':'L1JetEt_PUS_PhiRing',
+           'additionalCorrForLUT': 8.0/7.0, # 8/7 factor is needed for PhiRing as different PU estimation considered in CMSSW and Andrew's computation
        },
     },
 
 
 }
-#calibSF_additionalCorr = 8./7
-#updateCalibSF_DefaultRaw = True # update calibSFs_additionalCorr['Default']['Raw'] depending on 
-calibSFs_additionalCorr = {
-    'Default': { # trigger tower Et was scalled by 0.5 while calculating l1Jet_pT by-hand and to calculate layer2 calibSFs
-        'Raw': {'l1NtupleChunkyDonut': 1. * 0.5,  'l1NtuplePhiRing': 8./7 * 0.5 },
-        'RawPUS': 1. * 0.5,
-        'RawPUS_phiDefault': 8./7 * 0.5,
-    },
-    
-}
 
 
+sFilePtCompressedLUT_Ref = '/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs_2018/lut_pt_compress_2017v1.txt'
+
+PtCompressedLUTVersion = 'v2018' # 'v2018',  'v2022'
+EtaCompressedLUT = True; EtaCompressedLUTVersion = 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged'
+
+
+sLUTVersion = '2022v4'
 nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
-makeLUTForIEta29 = [True, 1.0]
-makeLUTForIEta41 = [True] # SFs for iEta=41 are missing in SFv6. Copy SFs from IEta=40
+makeLUTForIEta29 = [False, 1.0]
+makeLUTForIEta41 = [False] # SFs for iEta=41 are missing in SFv6. Copy SFs from IEta=40
 separatePtBinForLowPt = True # True: Use separate pT bin quantile for 0 < pT <= 15 GeV where SFs are truckated
 IEtaBinOffsetForEtaCompressedLUT = 0 # 0: IEtaBin_forLUT = IEtaBin = [1, 41];  -1: IEtaBin_forLUT = IEtaBin - 1 = [0, 40]. # 0 give correct calibration.
-sFOut_LUT_pt_compress    = 'lut_pt_compress_2022v1.txt'
-sFOut_LUT_eta_compress   = 'lut_eta_compress_2022v1.txt'
-sFOut_LUT_calib_compress = 'lut_calib_2022v1_ECALZS_decimal.txt'
+sFOut_LUT_pt_compress    = 'lut_pt_compress_%s.txt' % (sLUTVersion)
+sFOut_LUT_eta_compress   = 'lut_eta_compress_%s.txt' % (sLUTVersion)
+sFOut_LUT_calib_compress = 'lut_calib_%s_ECALZS_decimal.txt' % (sLUTVersion)
 
 makeLUTsInUncompressedBins = False # make LUTs without compressing Pt and Eta bins
-sFOut_LUT_pt_uncompress  = 'lut_pt_compress_2022v1.txt'
-sFOut_LUT_eta_uncompress = 'lut_eta_compress_2022v1.txt'
-sFOut_LUT_calib_uncompress = 'lut_calib_2022v1_ECALZS_decimal.txt'
+sFOut_LUT_pt_uncompress  = 'lut_pt_uncompress_%s.txt' % (sLUTVersion)
+sFOut_LUT_eta_uncompress = 'lut_eta_uncompress_%s.txt' % (sLUTVersion)
+sFOut_LUT_calib_uncompress = 'lut_calib_%s_ECALZS_decimal_uncompress.txt' % (sLUTVersion)
 
 
 NCompPtBins = 16 # 16 # No. of compressed pT bins
-calibSF_L1JetPtRange = [15., 250., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
+calibSF_L1JetPtRange = [15., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
 LUT_PtRange = [0., 255., 1.] # pT range for SFs for LUT
-SF_forZeroPt = 1.
+SF_forZeroPt = 1.0
+
+
+if PtCompressedLUTVersion == 'v2018':
+    separatePtBinForLowPt = False
+    # '2018PtCompression has 1st bins from 1 <= pT <= 19, so set SF(pT <= 19) = SF(pT(19))
+    calibSF_L1JetPtRange = [19., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
 
 map_CaloIEta_to_CaloTool_mpEta = OrderedDict([
     (1, 1),
@@ -130,8 +136,50 @@ map_CaloIEta_to_CaloTool_mpEta = OrderedDict([
     (41, 40),
 ])
 
+CaloTool_mpEtas = [1, 40]
 
-IEtaBinsMerge_forPlots = [
+CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2018 = OrderedDict([
+    ( 0, [*range(1, 5+1)]),  # 0
+    ( 1, [*range(6, 9+1)]),  # 1
+    ( 2, [*range(10,13+1)]), # 2
+    ( 3, [*range(14,15+1)]), # 3
+    ( 4, [*range(16,17+1)]), # 4
+    ( 5, [*range(18,19+1)]), # 5
+    ( 6, [*range(20,21+1)]), # 6
+    ( 7, [22]), # 7
+    ( 8, [23]), # 8
+    ( 9, [24]), # 9
+    (10, [25]), # 10
+    (11, [26]), # 11
+    (12, [*range(27,28+1)]), # 12
+    (13, [*range(29,31+1)]), # 13
+    (14, [*range(32,35+1)]), # 14
+    (15, [*range(36,40+1)]), # 15
+])
+CaloToolMPEtaBinsMerge_forEtaUncompressedLUT = OrderedDict()
+for CaloToolMPEta in range(1,41): # CaloToolMPEta=iEta for iEta=(1, 28),  CaloToolMPEta=iEta-1 for iEta=(30, 41)
+    CaloToolMPEtaBinsMerge_forEtaUncompressedLUT[CaloToolMPEta - 1] = [ CaloToolMPEta ]
+    
+
+CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2022_ChunkyDonut = OrderedDict([
+    ( 0, [*range(1, 5+1)]),  # 0
+    ( 1, [*range(6, 9+1)]),  # 1
+    ( 2, [*range(10,13+1)]), # 2
+    ( 3, [*range(14,15+1)]), # 3
+    ( 4, [*range(16,17+1)]), # 4
+    ( 5, [*range(18,19+1)]), # 5
+    ( 6, [*range(20,21+1)]), # 6
+    ( 7, [22]), # 7
+    ( 8, [23]), # 8
+    ( 9, [24]), # 9
+    (10, [25]), # 10
+    (11, [26]), # 11
+    (12, [*range(27,28+1)]), # 12
+    (13, [*range(29,31+1)]), # 13
+    (14, [*range(32,35+1)]), # 14
+    (15, [*range(36,40+1)]), # 15
+])
+IEtaBinsMerge_forPlots_ChunkyDonut = [
     #[1],
     [*range(1,6)],
     [*range(5,10)],
@@ -143,6 +191,160 @@ IEtaBinsMerge_forPlots = [
     [*range(30,35)],
     [*range(34,41)],
 ]
+IEtaBinsMerge_forPlots_1_ChunkyDonut = [
+    #[1],
+    [*range(1,8)],
+    [*range(4,12)],
+    [*range(8,16)],
+    [*range(12,20)],
+    [*range(16,24)],
+    [*range(20,28)],
+    [*range(24,32)],
+    [*range(28,36)],
+    [*range(32,38)],
+    [*range(36,41)],
+]
+IEtaBinsMerge_forPlots_2_ChunkyDonut = [
+    #[1],
+    [*range(1,4+1)],
+    [*range(5,11+1)],
+    [12],
+    [*range(13,15+1)],
+    [*range(16,17+1)],
+    [*range(18,21+1)],
+    [*range(22,23+1)],
+    [*range(24,25+1)],
+    [*range(26,27+1)],
+    [28],
+    [30],
+    [*range(31,32+1)],
+    [*range(33,36+1)],
+    [37],
+    [*range(38,39+1)],
+    [*range(40,41+1)],
+]
+
+
+
+CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2022_PhiRing = OrderedDict([
+    ( 0, [*range(1, 5+1)]),  # 0
+    ( 1, [*range(6, 9+1)]),  # 1
+    ( 2, [*range(10,13+1)]), # 2
+    ( 3, [*range(14,15+1)]), # 3
+    ( 4, [*range(16,17+1)]), # 4
+    ( 5, [*range(18,19+1)]), # 5
+    ( 6, [*range(20,21+1)]), # 6
+    ( 7, [22]), # 7
+    ( 8, [23]), # 8
+    ( 9, [24]), # 9
+    (10, [25]), # 10
+    (11, [26]), # 11
+    (12, [*range(27,28+1)]), # 12
+    (13, [*range(29,31+1)]), # 13
+    (14, [*range(32,35+1)]), # 14
+    (15, [*range(36,40+1)]), # 15
+])
+
+IEtaBinsMerge_forPlots_PhiRing = [
+    #[1],
+    [*range(1,6)],
+    [*range(5,10)],
+    [*range(9,14)],
+    [*range(13,18)],
+    [*range(17,22)],
+    [*range(21,26)],
+    [*range(25,31)],
+    [*range(30,35)],
+    [*range(34,41)],
+]
+IEtaBinsMerge_forPlots_1_PhiRing = [
+    #[1],
+    [*range(1,8)],
+    [*range(4,12)],
+    [*range(8,16)],
+    [*range(12,20)],
+    [*range(16,24)],
+    [*range(20,28)],
+    [*range(24,32)],
+    [*range(28,36)],
+    [*range(32,38)],
+    [*range(36,41)],
+]
+IEtaBinsMerge_forPlots_2_PhiRing = [
+    #[1],
+    [*range(1,4+1)],
+    [*range(5,10+1)],
+    [*range(11,12+1)],
+    [*range(13,15+1)],
+    [*range(16,17+1)],
+    [*range(18,22+1)],
+    [*range(23,26+1)],
+    [27],
+    [28],
+    [30],
+    [*range(31,32+1)],
+    [33],
+    [*range(34,36+1)],
+    [*range(37,38+1)],
+    [39],
+    [*range(40,41+1)],
+]
+
+
+CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2022_ChunkyDonutAndPhiRingMerged = OrderedDict([
+    ( 0, [*range(1, 4+1)]),  # 0
+    ( 1, [*range(5, 11+1)]),  # 1
+    ( 2, [*range(12,13+1)]), # 2
+    ( 3, [*range(14,15+1)]), # 3
+    ( 4, [*range(16,17+1)]), # 4
+    ( 5, [*range(18,21+1)]), # 5
+    ( 6, [22]), # 6
+    ( 7, [23]), # 7
+    ( 8, [*range(24,25+1)]), # 8
+    ( 9, [26]), # 9
+    (10, [27]), # 10
+    (11, [28]), # 11
+    (12, [29]), # 12
+    (13, [*range(30,31+1)]), # 13
+    (14, [*range(32,38+1)]), # 14
+    (15, [*range(39,40+1)]), # 15
+])
+IEtaBinsMerge_forPlots_2_2022_ChunkyDonutAndPhiRingMerged = [
+    #[1],
+    [*range(1,4+1)],
+    [*range(5,11+1)],
+    [*range(12,13+1)],
+    [*range(14,15+1)],
+    [*range(16,17+1)],
+    [*range(18,21+1)],
+    [22],
+    [23],
+    [*range(24,25+1)],
+    [26],
+    [27],
+    [28],
+    [30],
+    [*range(31,32+1)],
+    [*range(33,39+1)],
+    [*range(40,41+1)],
+]
+
+
+CaloToolMPEtaBinsMerge_forEtaCompressedLUT = None
+IEtaBinsMerge_forPlots   = None
+IEtaBinsMerge_forPlots_1 = None
+IEtaBinsMerge_forPlots_2 = None
+if 'RawPUS' in PUSAlgosAll:
+    CaloToolMPEtaBinsMerge_forEtaCompressedLUT = CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2022_ChunkyDonut 
+    IEtaBinsMerge_forPlots   = IEtaBinsMerge_forPlots_ChunkyDonut
+    IEtaBinsMerge_forPlots_1 = IEtaBinsMerge_forPlots_1_ChunkyDonut
+    IEtaBinsMerge_forPlots_2 = IEtaBinsMerge_forPlots_2_ChunkyDonut
+elif 'RawPUS_phiDefault' in PUSAlgosAll:
+    CaloToolMPEtaBinsMerge_forEtaCompressedLUT = CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2022_PhiRing
+    IEtaBinsMerge_forPlots   = IEtaBinsMerge_forPlots_PhiRing
+    IEtaBinsMerge_forPlots_1 = IEtaBinsMerge_forPlots_1_PhiRing
+    IEtaBinsMerge_forPlots_2 = IEtaBinsMerge_forPlots_2_PhiRing
+IEtaBinsMerge_forPlots_2 = IEtaBinsMerge_forPlots_2_2022_ChunkyDonutAndPhiRingMerged    
 
 
 
@@ -176,7 +378,9 @@ for iEta in range(-41,42):
     ETA_Bins.append(str(iEta))
 
 
+colors_matplotlib = ['r', 'b', 'c', 'm', 'g', 'y', 'gray', 'olive', 'teal', 'orange']
 
+    
 
 def splitInQuantile(arrayOriginal, nQuantiles):
     '''
@@ -352,8 +556,41 @@ def splitInQuantile_ConstDeltaSF_old(Pt_Bins_Read, SFsOriginal, nQuantiles):
 
     return
 
-    
-    
+
+
+def readPtCompressedBinning(PtCompressionBinning_dict):
+    idx_pTBinQuantiles = []
+
+    Pt_list = (list(PtCompressionBinning_dict.keys()))
+    for idx_Pt, Pt in enumerate(Pt_list):
+        if idx_Pt == 0: continue
+        
+        PtCompressedBin = PtCompressionBinning_dict[Pt]
+        if PrintLevel >= 20:
+            print("readPtCompressedBinning():: Pt {}, PtCompressedBin {}".format(Pt, PtCompressedBin))
+
+        Pt_lastBin = Pt_list[idx_Pt - 1]
+        PtCompressedBin_lastPtBin = PtCompressionBinning_dict[Pt_lastBin]
+        if PtCompressedBin != PtCompressedBin_lastPtBin:
+            idx_pTBinQuantiles.append(idx_Pt)
+
+    if PrintLevel >= 20:
+        print("idx_pTBinQuantiles ({}): {}".format(len(idx_pTBinQuantiles), idx_pTBinQuantiles))
+        
+    return idx_pTBinQuantiles
+
+        
+
+                            
+
+def convert_CaloToolMPEta_to_IEta(CaloToolMPEta):
+    IEta = None
+    for IEta_tmp in map_CaloIEta_to_CaloTool_mpEta.keys():
+        if map_CaloIEta_to_CaloTool_mpEta[ IEta_tmp ] == CaloToolMPEta:
+            IEta = IEta_tmp
+
+    return IEta
+        
     
 
 if __name__ == '__main__':
@@ -363,6 +600,30 @@ if __name__ == '__main__':
     calibSF_L1JetPtRangeMax = calibSF_L1JetPtRange[1]
     calibSF_L1JetPtBinWidth = calibSF_L1JetPtRange[2]
 
+
+    ## read 2018 PtCompression Binning ---------------------------------------
+    # fPtCompressedLUT_Ref,
+
+    PtCompressionBinning_dict = OrderedDict()
+    if PtCompressedLUTVersion == 'v2018':
+        print("PtCompressedLUT read from {}".format(sFilePtCompressedLUT_Ref))
+        with open(sFilePtCompressedLUT_Ref, mode='r') as fPtCompressedLUT_Ref:
+            lines = fPtCompressedLUT_Ref.readlines()
+
+            for line0 in lines:
+                line = line0.replace('\n', '')
+                columns = line.split(' ')
+                if '#' in columns[0]: continue
+
+                PtCompressionBinning_dict[int(columns[0])] = [int(columns[1])]
+                if PrintLevel >= 11:
+                    print("line: {}!!! \t split: {}".format(line, line.split(' ')))
+    
+    if PrintLevel >= 2:
+        print("PtCompressionBinning_dict: {}".format(PtCompressionBinning_dict))
+    #-------------------------------------------------------------------------
+
+    
     
     print(list(sipFileCalibSF.keys()))
     for jetShape in JetShapes:
@@ -383,9 +644,12 @@ if __name__ == '__main__':
             print("ETA_Bins ({}): {} ".format(len(ETA_Bins), ETA_Bins))
             
 
-            data_calibSFs = OrderedDict()
+            data_calibSFs =  OrderedDict()
             for Eta_bin in ETA_Bins:
                 data_calibSFs[int(Eta_bin)] = OrderedDict()
+                for Pt in np.arange(LUT_PtRange[0], LUT_PtRange[1]+1, LUT_PtRange[2]):
+                    data_calibSFs[int(Eta_bin)][Pt] = 0.0
+                    
 
             with open(sipFileCalibSF_toRead, mode='r') as fipFileCalibSF_toRead:
                 calibSF_csv_reader = csv.DictReader(fipFileCalibSF_toRead)
@@ -397,10 +661,11 @@ if __name__ == '__main__':
                     iEta_tmp = int(calibSF_csv_row['L1JetTowerIEtaAbs']) # str
                     #l1JetPt_tmp = float(calibSF_csv_row['PhiRingEnergy'])
                     l1JetPt_tmp = float(calibSF_csv_row[ sipFileCalibSF[jetShape][PUSAlgo]['L1JetPtVarName'] ])
-                    SF_tmp = float(calibSF_csv_row[ sipFileCalibSF[jetShape][PUSAlgo]['SFLabel'] ])
+                    SF_tmp = float(calibSF_csv_row[ sipFileCalibSF[jetShape][PUSAlgo]['SFLabel'] ]) * sipFileCalibSF[jetShape][PUSAlgo]['additionalCorrForLUT']
+                    
                     if PrintLevel >= 11:
-                        print("calibSF_csv_row: {}, iEta {} {}, l1JetPt {} {}, SF {} {}={}".format(
-                            calibSF_csv_row, type(iEta_tmp),iEta_tmp, type(l1JetPt_tmp),l1JetPt_tmp, type(SF_tmp),SF_tmp, sipFileCalibSF[jetShape][PUSAlgo]['SFLabel']))
+                        print("calibSF_csv_row: {}, iEta {} {}, l1JetPt {} {}, SF {} {}={} {} * additional factor {}".format(
+                            calibSF_csv_row, type(iEta_tmp),iEta_tmp, type(l1JetPt_tmp),l1JetPt_tmp, type(SF_tmp),SF_tmp, sipFileCalibSF[jetShape][PUSAlgo]['SFLabel'],float(calibSF_csv_row[ sipFileCalibSF[jetShape][PUSAlgo]['SFLabel'] ]), sipFileCalibSF[jetShape][PUSAlgo]['additionalCorrForLUT']))
 
                         
                     #if l1JetPt_tmp < calibSF_L1JetPtRangeMin or l1JetPt_tmp > calibSF_L1JetPtRangeMax: continue
@@ -424,12 +689,13 @@ if __name__ == '__main__':
                 if calibSF_L1JetPtRange[0] not in data_calibSFs[Eta_bin].keys():
                     print("L1 pT {} not in data_calibSFs[ieta={}] \t\t **** ERROR ****".format(calibSF_L1JetPtRange[0], Eta_bin))
                 sTmp = "Eta %d: \nLowPt: " % (Eta_bin)
+
                 for Pt in np.arange(LUT_PtRange[0], calibSF_L1JetPtRange[0]):
                     if abs(Pt - 0) < 0.0001:
-                        #data_calibSFs[Eta_bin][Pt] = 1.0
+                        data_calibSFs[Eta_bin][Pt] = SF_forZeroPt
                         # Add Pt=0 at the beining in OrderedDict
-                        data_calibSFs[Eta_bin].update( {Pt : 1.0} )
-                        data_calibSFs[Eta_bin].move_to_end(Pt, last=False)
+                        #data_calibSFs[Eta_bin].update( {Pt : SF_forZeroPt } )
+                        #data_calibSFs[Eta_bin].move_to_end(Pt, last=False)
                     else:
                         data_calibSFs[Eta_bin][Pt] = data_calibSFs[Eta_bin][calibSF_L1JetPtRange[0]]
                     sTmp += " ({}, {}),".format(Pt, data_calibSFs[Eta_bin][Pt])
@@ -468,6 +734,14 @@ if __name__ == '__main__':
                     print("data_calibSFs[{}]: ({}) {}".format(IEta_current, len(list(data_calibSFs[IEta_current].keys())), data_calibSFs[IEta_current]))
             # ------------------------------------------------------------------------------------------------------
 
+
+            if PrintLevel >= 1:
+                print("\n\ndata_calibSFs:: {}".format('*'*10))
+                for Eta_bin in list(data_calibSFs.keys()):
+                    print("\t iEta {}: {}".format(Eta_bin, data_calibSFs[Eta_bin]))
+
+
+                    
 
             EtaBins_sorted = list(data_calibSFs.keys())
             EtaBins_sorted.sort()
@@ -578,7 +852,7 @@ if __name__ == '__main__':
 
                 if PrintLevel >= 5:
                     print("\nEta_bin {} \ndata_calibSFs[Eta_bin]: {} ".format(Eta_bin, data_calibSFs[Eta_bin]))
-                    print("data_calibSFs[Eta_bin] ({}): {} ".format(len(list(data_calibSFs[Eta_bin].keys())), data_calibSFs[Eta_bin].keys()))
+                    print("data_calibSFs[{}] ({}): {} ".format(Eta_bin, len(list(data_calibSFs[Eta_bin].keys())), data_calibSFs[Eta_bin].keys()))
                 if len(list(data_calibSFs[Eta_bin].keys())) == 0:
                     print("Eta_bin {}: len(list(data_calibSFs[Eta_bin].keys())) == 0".format(Eta_bin))
                     continue
@@ -587,8 +861,10 @@ if __name__ == '__main__':
                     print("Eta_Bins_Read.index(Eta_bin)): {} ".format(Eta_Bins_Read.index(Eta_bin)))
                     
                 idx_Eta_Bin_Read = Eta_Bins_Read.index(Eta_bin)
-                
-                SFs_inEtaBin = np.array( list(data_calibSFs[Eta_bin].values()) )
+
+                #SFs_inEtaBin = np.array( list(data_calibSFs[Eta_bin].values()) )
+                SFs_inEtaBin_list = [data_calibSFs[Eta_bin][Pt] for Pt in np.arange(LUT_PtRange[0], LUT_PtRange[1]+1, LUT_PtRange[2]) ]
+                SFs_inEtaBin = np.array( SFs_inEtaBin_list )
                 #SFs_array[Eta_bin] = SFs_inEtaBin
                 SFs_array[idx_Eta_Bin_Read] = SFs_inEtaBin
 
@@ -599,8 +875,15 @@ if __name__ == '__main__':
                         SFs_array.shape,SFs_array
                     ))
 
-            print("\n\nSF_all final ({}): {}".format(SFs_array.shape,SFs_array))
+            #print("\n\nSF_all final ({}): \n{}".format(SFs_array.shape, np.array2string(SFs_array, max_line_width=2000, threshold=3000, precision=6) ))
+            #print("\n\nSF_all final ({}): \n{}".format(SFs_array.shape, np.array_str(SFs_array, max_line_width=2000, precision=6) ))
+            #print("\n\nSF_all final ({}): \n{}".format(SFs_array.shape, SFs_array.tolist() ))
+            print("\n\nSF_all final ({}): ".format(SFs_array.shape ))
+            for iEta in range(SFs_array.shape[0]):
+                sTmp = [ (Pt, SFs_array[iEta][Pt]) for Pt in range(SFs_array.shape[1])]
+                print("\tSFs_array[{}]: {}".format(iEta, sTmp))
             # ----------------------------------------------------------------------------------------------------------
+            
             
             ## average SF over all eta bins
             SFs_AvgOverEtaBins = np.average(SFs_array, axis=0)
@@ -609,27 +892,27 @@ if __name__ == '__main__':
 
             
             ### Divide pT in quantiles with constant DeltaSF over the quatiles  ---------------------------
-            idx_quantiles, SFs_AvgOverEtaBins_splitInQuantile = splitInQuantile_ConstDeltaSF(Pt_Bins_Read, SFs_AvgOverEtaBins, nQuantiles=NCompPtBins)
+            idx_PtQuantiles, SFs_AvgOverEtaBins_splitInQuantile = splitInQuantile_ConstDeltaSF(Pt_Bins_Read, SFs_AvgOverEtaBins, nQuantiles=NCompPtBins)
             
 
             Pt_quantiles = []
-            for idx in idx_quantiles:
+            for idx in idx_PtQuantiles:
                 Pt_quantiles.append( (Pt_Bins_Read[idx-1] + Pt_Bins_Read[idx]) / 2. )
                
             if PrintLevel >= 2:
-                print("idx_quantiles ({}): {}, \nPt_quantiles ({}): {} \nSFs_AvgOverEtaBins_splitInQuantile: {}".format(
-                    len(idx_quantiles), idx_quantiles,
+                print("idx_PtQuantiles ({}): {}, \nPt_quantiles ({}): {} \nSFs_AvgOverEtaBins_splitInQuantile: {}".format(
+                    len(idx_PtQuantiles), idx_PtQuantiles,
                     len(Pt_quantiles), Pt_quantiles,
                     len(SFs_AvgOverEtaBins_splitInQuantile), SFs_AvgOverEtaBins_splitInQuantile)
                       )
 
-             
+            
             SFs_AvgInPtQuant_AvgOverEtaBins = SFs_AvgOverEtaBins.copy()
             Pt_AvgInPtQuant = []
             SFs_AvgInPtQuant_AvgOverEtaBins_Coarse = []
             for iQuant in range(NCompPtBins):
-                idxStart                  = 0             if iQuant == 0               else idx_quantiles[(iQuant-1)]
-                idxEnd                    = nPt_Bins_Read if iQuant == (NCompPtBins-1) else idx_quantiles[(iQuant)]
+                idxStart                  = 0             if iQuant == 0               else idx_PtQuantiles[(iQuant-1)]
+                idxEnd                    = nPt_Bins_Read if iQuant == (NCompPtBins-1) else idx_PtQuantiles[(iQuant)]
                 Pt_Bins_Read_iQuant       = Pt_Bins_Read[idxStart : idxEnd]
                 SFs_AvgOverEtaBins_iQuant = SFs_AvgOverEtaBins[idxStart : idxEnd]
                 avgPt_iQuant              = statistics.mean(Pt_Bins_Read_iQuant)
@@ -654,6 +937,23 @@ if __name__ == '__main__':
                         len(SFs_AvgInPtQuant_AvgOverEtaBins), SFs_AvgInPtQuant_AvgOverEtaBins
                     ))
 
+                    
+
+            if PtCompressedLUTVersion == 'v2018': # ----------------------
+                # use 2018 PtCompression binning
+                idx_PtQuantiles = readPtCompressedBinning(PtCompressionBinning_dict)
+
+                Pt_quantiles = []
+                for idx in idx_PtQuantiles:
+                    Pt_quantiles.append( (Pt_Bins_Read[idx-1] + Pt_Bins_Read[idx]) / 2. )
+
+                if PrintLevel >= 2:
+                    print("\nPtCompressedLUTVersion == 'v2018':: idx_PtQuantiles ({}): {}, \nPt_quantiles ({}): {} \nSFs_AvgOverEtaBins_splitInQuantile: {}".format(
+                        len(idx_PtQuantiles), idx_PtQuantiles,
+                        len(Pt_quantiles), Pt_quantiles,
+                        len(SFs_AvgOverEtaBins_splitInQuantile), SFs_AvgOverEtaBins_splitInQuantile)
+                          )
+            # ----------------------------------------------------------------------------------------------------------
 
                     
             sDir1 = "plots_%s_%s_%s" % (jetShape, PUSAlgo, calibSFLable)
@@ -693,7 +993,16 @@ if __name__ == '__main__':
             # -------------------------------------------------------------------------------------
 
 
+            ## EtaCompresses LUT ------------------------------------------------------------------
+            if EtaCompressedLUT:
+                if PrintLevel >= 0: print("\n\nMake EtaCompressedLUT:")
+                CaloToolMPEtaBinsMerge_forEtaCompressedLUT = CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2018
 
+                for idxIEtaMergedBin, CaloToolMPEtaBinsToMerge in enumerate(CaloToolMPEtaBinsMerge_forEtaCompressedLUT):
+                    if PrintLevel >= 0:
+                        print("idxIEtaMergedBin {}, CaloToolMPEtaBinsToMerge {}".format(idxIEtaMergedBin, CaloToolMPEtaBinsToMerge))
+                    
+            # -------------------------------------------------------------------------------------
 
 
             sDir_LUT = "LUTs/%s_%s_%s" % (jetShape, PUSAlgo, calibSFLable)
@@ -713,8 +1022,10 @@ if __name__ == '__main__':
             fOut_LUT_eta_compress.write('# This is NOT calo ieta\n')
             fOut_LUT_eta_compress.write('# anything after # is ignored with the exception of the header\n')
             fOut_LUT_eta_compress.write('# the header is first valid line starting with #<header> versionStr nrBitsAddress nrBitsData </header>\n')
-            #fOut_LUT_eta_compress.write('#<header> v1 6 4 </header>\n')
-            fOut_LUT_eta_compress.write('#<header> v1 6 6 </header>\n')
+            if EtaCompressedLUT:
+                fOut_LUT_eta_compress.write('#<header> v1 6 4 </header>\n')
+            else:
+                fOut_LUT_eta_compress.write('#<header> v1 6 6 </header>\n') # eta uncompresses LUT
 
             fOut_LUT_pt_compress.write('# PT compression LUT\n')
             fOut_LUT_pt_compress.write('# maps 8 bits to 4 bits\n')
@@ -733,71 +1044,152 @@ if __name__ == '__main__':
             #data_calibSFs_compressed_check = data_calibSFs.copy()
             data_calibSFs_compressed_check = copy.deepcopy(data_calibSFs)
 
+            data_calibSFs_compressedInEtaAndPt   = OrderedDict()
+            data_calibSFs_compressedInPt         = OrderedDict()
+            data_calibSFs_uncompress             = copy.deepcopy(data_calibSFs) 
+            
             IEtaBin_forLUT_col0 = None
-            for idx_EtaBins_sorted, IEtaBin in enumerate(EtaBins_sorted):               
-                data_calibSFs_compressed[IEtaBin] = OrderedDict()
 
-                if IEtaBin == 29: continue
+            CaloToolMPEtaBinsMerge = None
+            if EtaCompressedLUT:
+                if EtaCompressedLUTVersion == 'v2018':
+                    CaloToolMPEtaBinsMerge = CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2018 # use 2018 Eta compressed bins
+                    
+                elif EtaCompressedLUTVersion == 'v2022ChunkyDonut':
+                    CaloToolMPEtaBinsMerge = CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2022_ChunkyDonut
+                    if 'RawPUS_phiDefault' in PUSAlgosAll:
+                        print("Mismatch in {}  and {} \t\t\t **** ERROR **** \n".format(PUSAlgosAll, EtaCompressedLUTVersion))
+                        exit(0)
+                        
+                elif EtaCompressedLUTVersion == 'v2022PhiRing':
+                    CaloToolMPEtaBinsMerge = CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2022_PhiRing
+                    if 'RawPUS' in PUSAlgosAll:
+                        print("Mismatch in {}  and {} \t\t\t **** ERROR **** \n".format(PUSAlgosAll, EtaCompressedLUTVersion))
+                        exit(0)
+                        
+                elif EtaCompressedLUTVersion == 'v2022Merged':
+                    CaloToolMPEtaBinsMerge = CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2022_ChunkyDonutAndPhiRingMerged
+            else:
+                CaloToolMPEtaBinsMerge = CaloToolMPEtaBinsMerge_forEtaUncompressedLUT
+            if PrintLevel >= 0:
+                print("CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2018: {}, \nCaloToolMPEtaBinsMerge_forEtaUncompressedLUT: {}, \nCaloToolMPEtaBinsMerge: {}".format(CaloToolMPEtaBinsMerge_forEtaCompressedLUT_2018, CaloToolMPEtaBinsMerge_forEtaUncompressedLUT, CaloToolMPEtaBinsMerge))
 
-                # CaloTools::mpEta(jet->hwEta())
-                CaloTool_mpEta = map_CaloIEta_to_CaloTool_mpEta[IEtaBin]
                 
-                IEtaBin_forLUT_col0 = CaloTool_mpEta  # IEtaBin if IEtaBinOffsetForEtaCompressedLUT == 0 else IEtaBin - 1;
-                IEtaBin_forLUT_col1 = CaloTool_mpEta - 1 #if IEtaBin <= 28 else CaloTool_mpEta - 2
-                #fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT), int(IEtaBin_forLUT)))
-                if idx_EtaBins_sorted == 0:
-                    fOut_LUT_eta_compress.write('0 0  # dummy ieta_bin\n')
-                fOut_LUT_eta_compress.write('%d %d  # ieta %d\n' % (int(IEtaBin_forLUT_col0), int(IEtaBin_forLUT_col1), IEtaBin))
-
-
-
-                for iPtQuant in range(NCompPtBins):                  
-                    idxStart                  = 0             if iPtQuant == 0               else idx_quantiles[(iPtQuant-1)]
-                    idxEnd                    = nPt_Bins_Read if iPtQuant == (NCompPtBins-1) else idx_quantiles[(iPtQuant)]
-                    Pt_Bins_Read_iPtQuant     = Pt_Bins_Read[idxStart : idxEnd]
-
-                    #SFs_iPtQuant              = list(data_calibSFs[IEtaBin].values())[idxStart : idxEnd]
-                    SFs_iPtQuant              = list(data_calibSFs[IEtaBin].values()).copy()[idxStart : idxEnd]
-
-                    PtMin_iPtQuant            = Pt_Bins_Read_iPtQuant[0]
-                    PtMax_iPtQuant            = Pt_Bins_Read_iPtQuant[-1]
-                    avgPt_iPtQuant            = statistics.mean( Pt_Bins_Read_iPtQuant )
-                    avgSF_iPtQuant            = statistics.mean( SFs_iPtQuant )
-                    if separatePtBinForLowPt and iPtQuant == 0:
-                        # ignore SF(pT=0)=1 and set SF(pT<=15 GeV) = SF(pT=15GeV)
-                        avgSF_iPtQuant        = SFs_iPtQuant[1]
-                        avgPt_iPtQuant        = Pt_Bins_Read_iPtQuant[-1] # calculate SF_inBits at bin higher edge (pT=15 GeV)
-
-                    #data_calibSFs_compressed[IEtaBin][iPtQuant] = avgSF_iPtQuant
-                    data_calibSFs_compressed[IEtaBin][avgPt_iPtQuant] = avgSF_iPtQuant
-                    
-                    
+            for CaloToolMPEtaBin_forLUT, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge.items(): # run on each iEtaBinRange
                 
-                    #data_calibSFs_compressed_check[IEtaBin][idxStart : idxEnd] = [avgSF_iPtQuant] * (idxEnd - idxStart)
-                    for idx_PtUncompressesBin in range(idxStart, idxEnd):
-                        data_calibSFs_compressed_check[IEtaBin][idx_PtUncompressesBin] = avgSF_iPtQuant
+                data_calibSFs_compressedInEtaAndPt[CaloToolMPEtaBin_forLUT]   = OrderedDict()
+                data_calibSFs_compressedInPt[CaloToolMPEtaBin_forLUT]         = OrderedDict()
+                SFs_array = np.zeros(shape=(len(CaloToolMPEtaRange), NCompPtBins ))
+
+                PtQuantiles_info = OrderedDict()
+                
+                IEtaBin_forLUT_col1 = CaloToolMPEtaBin_forLUT
+                for CaloTool_mpEta in CaloToolMPEtaRange: # runs each iEta in iEtaBinRange
+                    idx_CaloTool_mpEta_inRange = CaloToolMPEtaRange.index(CaloTool_mpEta)
+                    IEtaBin = convert_CaloToolMPEta_to_IEta(CaloTool_mpEta)
+                    IEtaBin_forLUT_col0 = CaloTool_mpEta
+                    data_calibSFs_compressedInPt[CaloToolMPEtaBin_forLUT][IEtaBin]         = OrderedDict()
+                    data_calibSFs_compressed[IEtaBin]       = OrderedDict()
+                    
+                    if CaloToolMPEtaBin_forLUT == 0 and idx_CaloTool_mpEta_inRange == 0:
+                        fOut_LUT_eta_compress.write('0 0  # dummy ieta_bin\n')
+                    fOut_LUT_eta_compress.write('%d %d  # ieta %d\n' % (int(IEtaBin_forLUT_col0), int(IEtaBin_forLUT_col1), IEtaBin))
+                    
+                    for iPtQuant in range(NCompPtBins):    # run on iPtQuant in iEta               
+                        idxPtStart                  = 0             if iPtQuant == 0               else idx_PtQuantiles[(iPtQuant-1)]
+                        idxPtEnd                    = nPt_Bins_Read if iPtQuant == (NCompPtBins-1) else idx_PtQuantiles[(iPtQuant)]
+                        Pt_Bins_Read_iPtQuant     = Pt_Bins_Read[idxPtStart : idxPtEnd]
+
+                        #SFs_iPtQuant              = list(data_calibSFs[IEtaBin].values())[idxPtStart : idxPtEnd]
+                        SFs_iPtQuant              = list(data_calibSFs[IEtaBin].values()).copy()[idxPtStart : idxPtEnd]
+
+                        PtMin_iPtQuant            = Pt_Bins_Read_iPtQuant[0]
+                        PtMax_iPtQuant            = Pt_Bins_Read_iPtQuant[-1]
+                        avgPt_iPtQuant            = statistics.mean( Pt_Bins_Read_iPtQuant )
+                        avgSF_iPtQuant            = statistics.mean( SFs_iPtQuant )
+                        if separatePtBinForLowPt and iPtQuant == 0:
+                            # ignore SF(pT=0)=1 and set SF(pT<=15 GeV) = SF(pT=15GeV)
+                            avgSF_iPtQuant        = SFs_iPtQuant[1]
+                            avgPt_iPtQuant        = Pt_Bins_Read_iPtQuant[-1] # calculate SF_inBits at bin higher edge (pT=15 GeV)
+
+                        #data_calibSFs_compressed[IEtaBin][iPtQuant] = avgSF_iPtQuant
+                        data_calibSFs_compressed[IEtaBin][avgPt_iPtQuant] = avgSF_iPtQuant
+                        data_calibSFs_compressedInPt[CaloToolMPEtaBin_forLUT][IEtaBin][avgPt_iPtQuant] = avgSF_iPtQuant
+
+                        #data_calibSFs_compressed_check[IEtaBin][idxPtStart : idxPtEnd] = [avgSF_iPtQuant] * (idxPtEnd - idxPtStart)
+                        for idx_PtUncompressesBin in range(idxPtStart, idxPtEnd):
+                            data_calibSFs_compressed_check[IEtaBin][idx_PtUncompressesBin] = avgSF_iPtQuant
+
+
+                        # fOut_LUT_pt_compress ---------------------------
+                        PtBin_forLUT = iPtQuant                    
+                        if CaloToolMPEtaBin_forLUT == 0 and idx_CaloTool_mpEta_inRange == 0:
+                            for Pt in Pt_Bins_Read_iPtQuant:
+                                fOut_LUT_pt_compress.write('%d %d\n' % (int(Pt), int(PtBin_forLUT)))
+                        # ------------------------------------------------
+
+
+                        if idx_CaloTool_mpEta_inRange == 0:
+                            PtQuantiles_info[iPtQuant] = OrderedDict([
+                                ('PtMin_iPtQuant', int(PtMin_iPtQuant + 0.5)),
+                                ('PtMax_iPtQuant', int(PtMax_iPtQuant + 0.5)),
+                                ('avgPt_iPtQuant', int(avgPt_iPtQuant + 0.5)),
+                                ('PtBin_forLUT',   int(PtBin_forLUT))
+                            ])
+
+
+                        '''
+                        sComments = ""
+                        if iPtQuant == 0:
+                            sComments = "   # ieta %d, pt %d" % (IEtaBin, PtBin_forLUT)
+                        fOut_LUT_calib_compress.write('%d %d %d %d %d %d %f%s\n' % (int(IEtaBin), int(PtMin_iPtQuant + 0.5), int(PtMax_iPtQuant + 0.5), int(avgPt_iPtQuant + 0.5), int(IEtaBin_forLUT_col1), int(PtBin_forLUT), avgSF_iPtQuant, sComments ))
+                        '''
+
+                        
+                    if PrintLevel >= 2:
+                        print("\ndata_calibSFs_compressed[{}]: ({}) {} \ndata_calibSFs_compressed_check[{}]: ({}) {}".format(
+                            IEtaBin, len(data_calibSFs_compressed[IEtaBin].keys()), data_calibSFs_compressed[IEtaBin],
+                            IEtaBin, len(data_calibSFs_compressed_check[IEtaBin].keys()), data_calibSFs_compressed_check[IEtaBin]
+                        ))
+
+                    if PrintLevel >= 20:
+                        print("\n\n data_calibSFs[{}] @11  : {} \n\n".format(IEtaBin, data_calibSFs[IEtaBin]))
+
+                        
+                    SFs_array[idx_CaloTool_mpEta_inRange] = np.array( list(data_calibSFs_compressedInPt[CaloToolMPEtaBin_forLUT][IEtaBin].values()) )
 
                     
-                    PtBin_forLUT = iPtQuant                    
-                    if idx_EtaBins_sorted == 0:
-                        for Pt in Pt_Bins_Read_iPtQuant:
-                            fOut_LUT_pt_compress.write('%d %d\n' % (int(Pt), int(PtBin_forLUT)))
-                            
-                    sComments = ""
-                    if iPtQuant == 0:
-                        sComments = "   # ieta %d, pt %d" % (IEtaBin, PtBin_forLUT)
-                    fOut_LUT_calib_compress.write('%d %d %d %d %d %d %f%s\n' % (int(IEtaBin), int(PtMin_iPtQuant + 0.5), int(PtMax_iPtQuant + 0.5), int(avgPt_iPtQuant + 0.5), int(IEtaBin_forLUT_col1), int(PtBin_forLUT), avgSF_iPtQuant, sComments ))
+                ## average SF over all eta bins
+                SFs_AvgOverEtaBinsRange = np.average(SFs_array, axis=0)
+                print("\nCaloToolMPEtaBin_forLUT: {}, CaloToolMPEtaRange: {}, SFs_AvgOverEtaBinsRange ({}): {}".format(CaloToolMPEtaBin_forLUT, CaloToolMPEtaRange, len(SFs_AvgOverEtaBinsRange), SFs_AvgOverEtaBinsRange))
 
                 if PrintLevel >= 2:
-                    print("\ndata_calibSFs_compressed[{}]: ({}) {} \ndata_calibSFs_compressed_check[{}]: ({}) {}".format(
-                        IEtaBin, len(data_calibSFs_compressed[IEtaBin].keys()), data_calibSFs_compressed[IEtaBin],
-                        IEtaBin, len(data_calibSFs_compressed_check[IEtaBin].keys()), data_calibSFs_compressed_check[IEtaBin]
-                    ))
+                    print("\nPrint SFs in CaloToolMPEtaBin_forLUT {},  CaloToolMPEtaRange {}".format(CaloToolMPEtaBin_forLUT, CaloToolMPEtaRange))
+                    for CaloTool_mpEta in CaloToolMPEtaRange: # runs each iEta in iEtaBinRange
+                        IEtaBin = convert_CaloToolMPEta_to_IEta(CaloTool_mpEta)
+                        print("CaloTool_mpEta {}, IEtaBin {} SFs_0 ({}): {}".format(CaloTool_mpEta, IEtaBin, len(list(data_calibSFs_compressed[IEtaBin].values())), data_calibSFs_compressed[IEtaBin].values()))
+                        #print("CaloTool_mpEta {}, IEtaBin {} SFs_1 ({}): {}".format(CaloTool_mpEta, IEtaBin, len(list(data_calibSFs_compressedInPt[CaloToolMPEtaBin_forLUT][IEtaBin].values())), data_calibSFs_compressedInPt[CaloToolMPEtaBin_forLUT][IEtaBin].values()))
+                    print("SFs_AvgOverEtaBinsRange ({}): {}".format(len(SFs_AvgOverEtaBinsRange), SFs_AvgOverEtaBinsRange))
 
-                if PrintLevel >= 20:
-                    print("\n\n data_calibSFs[{}] @11  : {} \n\n".format(IEtaBin, data_calibSFs[IEtaBin]))
+                
+                for iPtQuant, PtQuantile_info in PtQuantiles_info.items():
+                    PtMin_iPtQuant = PtQuantile_info['PtMin_iPtQuant']
+                    PtMax_iPtQuant = PtQuantile_info['PtMax_iPtQuant']
+                    avgPt_iPtQuant = PtQuantile_info['avgPt_iPtQuant']
+                    avgSF_iPtQuant = SFs_AvgOverEtaBinsRange[iPtQuant]
 
-            
+                    data_calibSFs_compressedInEtaAndPt[CaloToolMPEtaBin_forLUT][avgPt_iPtQuant] = avgSF_iPtQuant
+
+                    PtBin_forLUT = iPtQuant 
+                    sComments = ""
+                    if iPtQuant == 0:
+                        #sComments = "   # ieta %d, pt %d" % (IEtaBin, PtBin_forLUT)
+                        sComments = "   # ieta {}, pt {}".format(CaloToolMPEtaRange, PtBin_forLUT)
+                    fOut_LUT_calib_compress.write('%d %d %d %d %d %d %f%s\n' % (int(CaloToolMPEtaBin_forLUT), int(PtMin_iPtQuant + 0.5), int(PtMax_iPtQuant + 0.5), int(avgPt_iPtQuant + 0.5), int(IEtaBin_forLUT_col1), int(PtBin_forLUT), avgSF_iPtQuant, sComments ))
+
+
+
+
 
             # dummy bins
             # nBinsMaxForEtaCompressionLUT
@@ -806,7 +1198,8 @@ if __name__ == '__main__':
             IEtaBin_forLUT_col0 += 1 # the next bin = 42
             while IEtaBin_forLUT_col0 < nBinsMaxForEtaCompressionLUT:
                 IEtaBin_forLUT_col1 = IEtaBin_forLUT_col0 - 1 
-                fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT_col0), int(IEtaBin_forLUT_col1)))
+                #fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT_col0), int(IEtaBin_forLUT_col1)))
+                fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT_col0), int(0)))
                 IEtaBin_forLUT_col0 += 1
 
             
@@ -878,7 +1271,7 @@ if __name__ == '__main__':
 
             ### -----------------------------
             for Eta_bin in EtaBins_sorted:
-                if IEtaBin == 29: continue
+                if Eta_bin == 29: continue
                 
                 fig, ax = plt.subplots()  # Create a figure containing a single axes.
                 #plt.figure(figsize=(5,5))
@@ -919,6 +1312,108 @@ if __name__ == '__main__':
                 
                 #plt.show()
                 plt.savefig('%s/SFs_pTCompressed_ieta%d.png' % (sDir1, Eta_bin))
+
+
+
+            ## Compare Eta-Pt compresses SFs ---------------------------------------------------------------------------
+            for CaloToolMPEtaBin_forLUT, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge.items(): # run on each iEtaBinRange
+                fig, ax = plt.subplots()  # Create a figure containing a single axes.
+
+                for CaloTool_mpEta in CaloToolMPEtaRange: # runs each iEta in iEtaBinRange
+                    idx_CaloTool_mpEta_inRange = CaloToolMPEtaRange.index(CaloTool_mpEta)
+                    IEtaBin = convert_CaloToolMPEta_to_IEta(CaloTool_mpEta)
+
+                    # plot
+                    x_array_tmp = np.array( list(data_calibSFs_compressed[IEtaBin].keys()) )
+                    y_array_tmp = np.array( list(data_calibSFs_compressed[IEtaBin].values()) )
+
+                    ax.plot(x_array_tmp,y_array_tmp, label='iEta=%s' % (IEtaBin), marker='o', markerfacecolor=colors_matplotlib[idx_CaloTool_mpEta_inRange], markeredgecolor=colors_matplotlib[idx_CaloTool_mpEta_inRange], color='None') # 'o'
+
+                y_array_tmp = np.array( list(data_calibSFs_compressedInEtaAndPt[CaloToolMPEtaBin_forLUT].values()) )
+                ax.plot(x_array_tmp,y_array_tmp, label='Avg. over iEta range', color='None', marker='^', markerfacecolor='k') # 'o'
+
+                for iPt_quantile in range(len(Pt_quantiles)):
+                    label1 = "Compressed pT bin edge" if iPt_quantile == 0 else None
+                    ax.axvline(Pt_quantiles[iPt_quantile], color='dimgray', linestyle='dotted', label=label1)
+               
+                
+                ax.set_xlabel('L1 jet pT [GeV]')
+                ax.set_ylabel('SF')
+                #ax.set_title("Simple Plot")  # Add a title to the axes.
+                ax.legend()  # Add a legend.
+
+                ax.set_xscale('log', base=10)
+
+                # Set axes limit
+                plt.xlim(10, 280)
+                
+                #plt.show()
+                plt.savefig('%s/EtaPtComptessesSF_iEta%02d_to_%02d.png' % (sDir1, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1]) ))
+            #----------------------------------------------------------------------------------------------------------
+ 
+
+            for iEtaBinsMerge in IEtaBinsMerge_forPlots_1:
+
+                fig, ax = plt.subplots()  # Create a figure containing a single axes.
+
+                x_array_tmp = None
+                for IEtaBin in iEtaBinsMerge:
+                    if IEtaBin == 29: continue
+
+                    # plot
+                    x_array_tmp = np.array( list(data_calibSFs_compressed[IEtaBin].keys()) )
+                    y_array_tmp = np.array( list(data_calibSFs_compressed[IEtaBin].values()) )
+
+                    ax.plot(x_array_tmp,y_array_tmp, label='iEta=%s' % (IEtaBin)) # 'o'
+
+                
+                ax.set_xlabel('L1 jet pT [GeV]')
+                ax.set_ylabel('SF')
+                #ax.set_title("Simple Plot")  # Add a title to the axes.
+                ax.legend()  # Add a legend.
+
+                ax.set_xscale('log', base=10)
+
+                # Set axes limit
+                plt.xlim(10, 280)
+                
+                #plt.show()
+                plt.savefig('%s/PtComptessesSF_iEta%02d_to_%02d.png' % (sDir1, iEtaBinsMerge[0], iEtaBinsMerge[-1] ))
+            #----------------------------------------------------------------------------------------------------------
+ 
+
+            for iEtaBinsMerge in IEtaBinsMerge_forPlots_2:
+
+                fig, ax = plt.subplots()  # Create a figure containing a single axes.
+
+                x_array_tmp = None
+                for IEtaBin in iEtaBinsMerge:
+                    if IEtaBin == 29: continue
+
+                    # plot
+                    x_array_tmp = np.array( list(data_calibSFs_compressed[IEtaBin].keys()) )
+                    y_array_tmp = np.array( list(data_calibSFs_compressed[IEtaBin].values()) )
+
+                    ax.plot(x_array_tmp,y_array_tmp, label='iEta=%s' % (IEtaBin)) # 'o'
+
+                
+                ax.set_xlabel('L1 jet pT [GeV]')
+                ax.set_ylabel('SF')
+                #ax.set_title("Simple Plot")  # Add a title to the axes.
+                ax.legend()  # Add a legend.
+
+                ax.set_xscale('log', base=10)
+
+                # Set axes limit
+                plt.xlim(10, 280)
+                
+                #plt.show()
+                plt.savefig('%s/PtComptessesSF_v2_iEta%02d_to_%02d.png' % (sDir1, iEtaBinsMerge[0], iEtaBinsMerge[-1] ))
+            #----------------------------------------------------------------------------------------------------------
+ 
+                        
+
+                
 
             print("Done !!!")
 
