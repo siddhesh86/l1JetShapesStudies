@@ -1,0 +1,11 @@
+data/
+*.txt
+*.log
+plots*
+plots*/
+l1JetLayer2Calibration_usingBDT/plots*
+makeLUTs/plots*
+*.png
+*/*.png
+*/*/*.png
+*/*.root
