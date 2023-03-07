@@ -32,7 +32,7 @@ PRT_EVT  = 1000  ## Print every Nth event
 MAX_EVT  = -1     ## Number of events to process per chain
 VERBOSE  = False  ## Verbose print-out
 PrintLevel = 0
-JetClustByHand = True # True ## Run jet clustering by hand
+JetClustByHand =  False # True ## Run jet clustering by hand
 #JetShapes = ['Default', '9x9', '7x9', '5x9', '3x9', '3x9_plus_0.5_times_9x9']
 JetShapes = ['Default', '9x9', ]
 JetShapesForML = ['9x9', ]
@@ -43,7 +43,7 @@ PUSAlgosSelected = [] #['Raw', 'RawPUS', 'RawPUS_phiDefault']
 PUSAlgosAllType2 = [] # ['Et', 'RawEt']
 
 
-runMode = 'makeInputForML' # makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
+runMode = '' # makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
 # 'test'           # run on L1Ntuple_*_1.root ntuple for tests
 # ''               # 1st round to make jet resolution plots
 # 'CalCalibSF'     # set true to fill PFjetPt vs L1jetPt histograms to calculate calibration SFs
@@ -565,8 +565,9 @@ def run():
     hStat = R.TH1D("h_Stat", ";Conditions;Events", 51,-0.5,50.5)
     
     ## Variable distributions
-    dists = ['jet_eff', 'jet_num', 'jet_den', 'jet_res', 'jet_dR']
     dists = []
+    if runMode == '':
+        dists = ['jet_eff', 'jet_num', 'jet_den', 'jet_res', 'jet_dR']
     
     hist = {}
     ## Loop over all distributions
@@ -1527,7 +1528,7 @@ def run():
 
                 # 2018 data: HE- dead zone (HEM15/16)
                 if not isMC:
-                    if Evt_br.run > 319077 and \
+                    if Evt_br.run > 319077 and Evt_br.run < 340000 and \
                        Jet_br.eta[iOff] > -3.4  and Jet_br.eta[iOff] < -1.17 and \
                        Jet_br.phi[iOff] > -1.97 and Jet_br.phi[iOff] < -0.47:
                         continue
@@ -1708,13 +1709,14 @@ def run():
                                     hist['jet_num'][algo]['HBEF'           ][jPt][src][iCh].Fill( vOff.Pt() )
 
                         if max_pt[src][algo] > 0:
-                            iL1JetPtCat = getJetPtCategory( vMax[src][algo].Pt() )
+                            # iL1JetPtCat = getJetPtCategory( vMax[src][algo].Pt() )
+                            # etaCat[src][algo]
                             if 'jet_res' in hist.keys():
-                                hist['jet_res'][algo][etaCat[src][algo]][iL1JetPtCat][src][iCh].Fill( (vMax[src][algo].Pt() - vOff.Pt()) / vOff.Pt(), puWeight )
-                                hist['jet_res'][algo]['HBEF'           ][iL1JetPtCat][src][iCh].Fill( (vMax[src][algo].Pt() - vOff.Pt()) / vOff.Pt(), puWeight )
+                                hist['jet_res'][algo][PFJetEtaCat][iPFJetPtCat][src][iCh].Fill( (vMax[src][algo].Pt() - vOff.Pt()) / vOff.Pt(), puWeight )
+                                hist['jet_res'][algo]['HBEF'     ][iPFJetPtCat][src][iCh].Fill( (vMax[src][algo].Pt() - vOff.Pt()) / vOff.Pt(), puWeight )
                             if 'jet_dR' in hist.keys():
-                                hist['jet_dR'] [algo][etaCat[src][algo]][iL1JetPtCat][src][iCh].Fill( (vMax[src][algo].DeltaR(vOff)), puWeight )
-                                hist['jet_dR'] [algo]['HBEF'           ][iL1JetPtCat][src][iCh].Fill( (vMax[src][algo].DeltaR(vOff)), puWeight )
+                                hist['jet_dR'] [algo][PFJetEtaCat][iPFJetPtCat][src][iCh].Fill( (vMax[src][algo].DeltaR(vOff)), puWeight )
+                                hist['jet_dR'] [algo]['HBEF'     ][iPFJetPtCat][src][iCh].Fill( (vMax[src][algo].DeltaR(vOff)), puWeight )
 
                     ## End loop: for algo in ['PUS','noPUS','Raw','RawPUS']
                 ## End loop: for src in ['unp','emu']
@@ -2699,9 +2701,9 @@ def run():
     '''
 
 
-    '''
+
     ## Loop over all histograms
-    if runMode not in ['CalCalibSF', 'CalibJetByHand', 'makeInputForML']:
+    if runMode not in ['CalCalibSF', 'CalibJetByHand', 'makeInputForML'] and len(hist) > 0:
         out_file.cd()
         for algo in ['PUS','noPUS','Raw','RawPUS']:
             for iEta in ETA_CAT.keys():
@@ -2727,7 +2729,7 @@ def run():
             ## End loop: for iEta in ETA_CAT.keys()
         ## End loop: for algo in ['PUS','noPUS','Raw','RawPUS']
         
-    if runMode not in ['CalCalibSF', 'CalibJetByHand', 'makeInputForML']:
+    if runMode not in ['CalCalibSF', 'CalibJetByHand', 'makeInputForML'] and len(hist1) > 0:
         out_file.cd()
         for dist in dists1:
             for iEta in ETA_Bins:
@@ -2737,7 +2739,7 @@ def run():
                         if src == 'unp': hist1[dist][iEta][src][iTP].SetLineColor(R.kBlack)
                         if src == 'emu': hist1[dist][iEta][src][iTP].SetLineColor(colors[iTP])
                         hist1[dist][iEta][src][iTP].Write()
-    '''
+
     
     ## Loop over all histograms
     # hist2

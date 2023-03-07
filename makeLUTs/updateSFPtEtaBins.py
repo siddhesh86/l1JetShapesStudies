@@ -61,7 +61,8 @@ PtCompressedLUTVersion = 'v2018' # 'v2018',  'v2022'
 EtaCompressedLUT = True; EtaCompressedLUTVersion = 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged'
 
 
-sLUTVersion = '2022v4'
+sLUTVersion = '2022v5'
+JECSF_boundary = [0.9, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0]
 nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
 makeLUTForIEta29 = [False, 1.0]
 makeLUTForIEta41 = [False] # SFs for iEta=41 are missing in SFv6. Copy SFs from IEta=40
@@ -662,6 +663,8 @@ if __name__ == '__main__':
                     #l1JetPt_tmp = float(calibSF_csv_row['PhiRingEnergy'])
                     l1JetPt_tmp = float(calibSF_csv_row[ sipFileCalibSF[jetShape][PUSAlgo]['L1JetPtVarName'] ])
                     SF_tmp = float(calibSF_csv_row[ sipFileCalibSF[jetShape][PUSAlgo]['SFLabel'] ]) * sipFileCalibSF[jetShape][PUSAlgo]['additionalCorrForLUT']
+                    if SF_tmp < JECSF_boundary[0]: SF_tmp = JECSF_boundary[0]
+                    if SF_tmp > JECSF_boundary[1]: SF_tmp = JECSF_boundary[1]
                     
                     if PrintLevel >= 11:
                         print("calibSF_csv_row: {}, iEta {} {}, l1JetPt {} {}, SF {} {}={} {} * additional factor {}".format(

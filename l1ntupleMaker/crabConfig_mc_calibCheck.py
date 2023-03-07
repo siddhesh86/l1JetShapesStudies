@@ -14,7 +14,7 @@ from CRABClient.UserUtilities import config
 config = config()
 
 #config.General.requestName = 
-config.General.workArea = 'L1TNtuple_forL1JetL2Calib_12_6_0_pre1_JECLUT2022v4' 
+config.General.workArea = 'L1TNtuple_forL1JetL2Calib_12_6_0_pre1_JECLUT2022v5' 
 config.General.transferOutputs = True
 config.General.transferLogs = False
 

@@ -122,7 +122,7 @@ process = L1NtupleAODRAWEMU(process)
 
 
 ## New new JEC LUTs to check correct SFs are read 
-process.caloStage2Params.jetCalibrationLUTFile = "L1Trigger/L1TCalorimeter/data/lut_calib_2022v4_ECALZS.txt"
+process.caloStage2Params.jetCalibrationLUTFile = "L1Trigger/L1TCalorimeter/data/lut_calib_2022v5_ECALZS.txt"
 
 
 
