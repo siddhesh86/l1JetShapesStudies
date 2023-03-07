@@ -4,7 +4,7 @@
 
 ## *************************************************************************** ##
 ##  Look at scale and resolution of L1T jets and MET with different input TPs  ##
-## *************************************************************************** ##
+## *************************************************************************** ## 
 
 '''
 troubleshoot mode:
@@ -42,8 +42,10 @@ PUSAlgosAll      = ['Raw', 'RawPUS', 'RawPUS_phiDefault']
 PUSAlgosSelected = [] #['Raw', 'RawPUS', 'RawPUS_phiDefault']
 PUSAlgosAllType2 = [] # ['Et', 'RawEt']
 
+GoldenJSONForData="Cert_Collisions2022_eraG_362433_362760_Golden.json"
 
-runMode = '' # makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
+
+runMode = 'makeInputForML' # makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
 # 'test'           # run on L1Ntuple_*_1.root ntuple for tests
 # ''               # 1st round to make jet resolution plots
 # 'CalCalibSF'     # set true to fill PFjetPt vs L1jetPt histograms to calculate calibration SFs
