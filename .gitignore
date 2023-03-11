@@ -19,6 +19,7 @@ makeLUTs/plots_Default_RawPUS_SF/*.png
 makeLUTs/plots_Default_RawPUS_phiDefault_SF/
 l1JetLayer2Calibration_usingBDT/plots*
 makeLUTs/plots*
+scripts/plot*/
 *.png
 */*.png
 */*/*.png
