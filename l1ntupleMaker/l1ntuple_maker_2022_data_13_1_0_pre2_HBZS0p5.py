@@ -2,9 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: l1Ntuple -s RAW2DIGI --python_filename=l1ntuple_maker_run3_data_calibCheck.py -n 100 --no_output --era=Run3 --data --conditions=124X_dataRun3_v9 --customise=L1Trigger/Configuration/customiseReEmul.L1TReEmulFromRAW --customise=L1Trigger/Configuration/customiseSettings.L1TSettingsToCaloParams_2022_v0_4 --customise=L1Trigger/L1TNtuples/customiseL1Ntuple.L1NtupleAODRAWEMU --filein=/store/express/Run2022A/ExpressPhysics/FEVT/Express-v1/000/353/709/00000/4584e10d-10b5-4549-a857-29b5fe0c2674.root --no_exec
-# with default CMSSW_12_6_0_pre1: /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/CMSSW_12_6_0_pre1/CMSSW_12_6_0_pre1
-
+# with command line options: l1Ntuple -s RAW2DIGI --python_filename=l1ntuple_maker_2022_data_13_1_0_pre2_HBZS0p5.py -n 100 --no_output --era=Run3 --data --conditions=130X_dataRun3_Prompt_v1 --customise=L1Trigger/Configuration/customiseReEmul.L1TReEmulFromRAW --customise=L1Trigger/Configuration/customiseSettings.L1TSettingsToCaloParams_2022_v0_6_modZS0p5 --customise=L1Trigger/L1TNtuples/customiseL1Ntuple.L1NtupleAODRAWEMU --filein=/store/data/Run2022G/Muon/RAW-RECO/ZMu-PromptReco-v1/000/362/696/00000/b7079b53-a77e-4950-aab5-09f9412750a6.root --no_exec
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run3_cff import Run3
@@ -29,15 +27,8 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-        #'/store/express/Run2022A/ExpressPhysics/FEVT/Express-v1/000/353/709/00000/4584e10d-10b5-4549-a857-29b5fe0c2674.root'
-        #'/store/express/Run2022C/ExpressPhysics/FEVT/Express-v1/000/357/479/00000/698f8904-7529-4926-bdcb-079008c16f23.root'
-        '/store/data/Run2022C/Muon/AOD/PromptReco-v1/000/356/426/00000/2c5ff18d-b7f0-45ca-941e-c3d515091c6c.root'
-    ),
-    secondaryFileNames = cms.untracked.vstring(
-        '/store/data/Run2022C/Muon/RAW/v1/000/356/426/00000/167a60bf-bb76-455e-a392-3616d206123d.root',
-        '/store/data/Run2022C/Muon/RAW/v1/000/356/426/00000/a34469b3-5b9e-43f6-9501-272a54d33587.root'
-    )
+    fileNames = cms.untracked.vstring('/store/data/Run2022G/Muon/RAW-RECO/ZMu-PromptReco-v1/000/362/696/00000/b7079b53-a77e-4950-aab5-09f9412750a6.root'),
+    secondaryFileNames = cms.untracked.vstring()
 )
 
 process.options = cms.untracked.PSet(
@@ -59,7 +50,9 @@ process.options = cms.untracked.PSet(
     ),
     fileMode = cms.untracked.string('FULLMERGE'),
     forceEventSetupCacheClearOnNewRun = cms.untracked.bool(False),
+    holdsReferencesToDeleteEarly = cms.untracked.VPSet(),
     makeTriggerResults = cms.obsolete.untracked.bool,
+    modulesToIgnoreForDeleteEarly = cms.untracked.vstring(),
     numberOfConcurrentLuminosityBlocks = cms.untracked.uint32(0),
     numberOfConcurrentRuns = cms.untracked.uint32(1),
     numberOfStreams = cms.untracked.uint32(0),
@@ -83,7 +76,7 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '124X_dataRun3_v9', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '130X_dataRun3_Prompt_v1', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
@@ -103,30 +96,16 @@ from L1Trigger.Configuration.customiseReEmul import L1TReEmulFromRAW
 process = L1TReEmulFromRAW(process)
 
 # Automatic addition of the customisation function from L1Trigger.Configuration.customiseSettings
-from L1Trigger.Configuration.customiseSettings import L1TSettingsToCaloParams_2022_v0_4 
+from L1Trigger.Configuration.customiseSettings import L1TSettingsToCaloParams_2022_v0_6_modZS0p5 
 
-#call to customisation function L1TSettingsToCaloParams_2022_v0_4 imported from L1Trigger.Configuration.customiseSettings
-process = L1TSettingsToCaloParams_2022_v0_4(process)
+#call to customisation function L1TSettingsToCaloParams_2022_v0_6_modZS0p5 imported from L1Trigger.Configuration.customiseSettings
+process = L1TSettingsToCaloParams_2022_v0_6_modZS0p5(process)
 
 # Automatic addition of the customisation function from L1Trigger.L1TNtuples.customiseL1Ntuple
 from L1Trigger.L1TNtuples.customiseL1Ntuple import L1NtupleAODRAWEMU 
 
 #call to customisation function L1NtupleAODRAWEMU imported from L1Trigger.L1TNtuples.customiseL1Ntuple
 process = L1NtupleAODRAWEMU(process)
-
-
-
-
-
-
-
-
-## New new JEC LUTs to check correct SFs are read 
-process.caloStage2Params.jetCalibrationLUTFile = "L1Trigger/L1TCalorimeter/data/lut_calib_2022v5_ECALZS.txt"
-
-
-
-
 
 # End of customisation functions
 
