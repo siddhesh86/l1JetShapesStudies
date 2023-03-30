@@ -36,13 +36,14 @@ commands = {
     #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut_JEC2022v4_test":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_JECLUT2022v4_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/220928_161945/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
     #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut_JEC2022v5_test":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_JECLUT2022v5_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/221007_181344/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
 
-    #"2022_Default_l1NtupleChunkyDonut_JEC2022v7":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_0_0_pre4_Run2022G-ZMu-PromptReco-v1/230221_161135/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut ",
-    "2022_Default_l1NtupleChunkyDonut_JEC2022v7":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_0_0_pre4_Run2022G-ZMu-PromptReco-v1/230221_161135/0000/L1Ntuple_1-1.root'   --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut ",
+    "2022_Default_l1NtupleChunkyDonut_JEC2022v7":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_0_0_pre4_Run2022G-ZMu-PromptReco-v1/230221_161135/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut ",
+    #"2022_Default_l1NtupleChunkyDonut_JEC2022v7":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_0_0_pre4_Run2022G-ZMu-PromptReco-v1/230221_161135/0000/L1Ntuple_1-1.root'   --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut ",
+    #"2022_Default_l1NtupleChunkyDonut_JEC2022v7":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_0_0_pre4_Run2022G-ZMu-PromptReco-v1/230221_161135/0000/L1Ntuple_1-1.root'   --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut ",
     
 } 
 
-runLocally = True 
-nSplitsInput = 1 if runLocally else 250
+runLocally = False 
+nSplitsInput = 1 if runLocally else 45
 
 
 
@@ -121,12 +122,8 @@ for PUS, command0 in commands.items():
             f.write("export PYTHON_BASE=/cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2   \n")
             f.write("echo PYTHON_BASE: $PYTHON_BASE  \n")
             '''
-            f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v4_20210510/CMSSW_11_2_0/src/   \n")
+            #f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v4_20210510/CMSSW_11_2_0/src/   \n")
             #f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v5_20220311/CMSSW_12_6_0_pre1/CMSSW_12_6_0_pre1/src/    \n")
-            f.write("pwd   \n")
-            f.write("cmsenv   \n")
-            f.write('eval `scramv1 runtime -sh` \n') # which is alias for cmsenv
-
             '''
             f.write("echo CMSSW_BASE: $CMSSW_BASE  \n")
             f.write("echo PATH: $PATH  \n")
@@ -135,6 +132,15 @@ for PUS, command0 in commands.items():
             f.write("echo PYTHONPATH: $PYTHONPATH  \n")
             '''
             
+            f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v6_20230213/CMSSW_13_0_0_pre4/src   \n")
+            f.write("pwd   \n")
+            f.write("cmsenv   \n")
+            f.write('eval `scramv1 runtime -sh` \n') # which is alias for cmsenv
+            f.write("echo ROOTSYSY $ROOTSYS   \n")
+            f.write("export PATH=$PATH:$ROOTSYS/bin   \n")
+            f.write("export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTSYS/lib   \n")
+            f.write("export PYTHONPATH=$PYTHONPATH:$ROOTSYS/lib   \n")
+                                   
             
             #f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v4_20210510/myStudies/run_1/mimicMLJetRec/Run3_MC/tmp/  \n")
             f.write("cd %s  \n" % (pwd))
