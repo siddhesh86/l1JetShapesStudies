@@ -469,11 +469,12 @@ def run():
 
     usePUReweighting = False
     isMC = False
+    for in_file in in_file_names:
+        if "mc" in in_file.lower():
+            isMC = True
+
+    
     if usePUReweighting_0:
-        isMC = False
-        for in_file in in_file_names:
-            if "mc" in in_file.lower():
-                isMC = True
         '''
         if not isMC:
             print "input ntuples are not for MC.... and still running with usePUReweighting == true ??? \t\t **** ERROR ****"
@@ -1506,7 +1507,7 @@ def run():
                     if passHLTTrgs:
                         break
 
-                if not passHLTTrgs:
+                if not passHLTTrgs: 
                     continue
 
             hStat.Fill(2)
@@ -1590,7 +1591,7 @@ def run():
                  nOffMuons, nOffEles))
 
 
-            if PrintLevel >= 1:
+            if PrintLevel >= 3:
                 print("OffMuons (%d)::" %(nOffMuons))
                 for iMu in range(nOffMuons):
                     print(f"  {iMu}: charge {Muon_br.charge[iMu]}, e {Muon_br.e[iMu]}, et {Muon_br.et[iMu]}, pt {Muon_br.pt[iMu]}, eta {Muon_br.eta[iMu]}, phi {Muon_br.phi[iMu]}, mt {Muon_br.mt[iMu]}, met {Muon_br.met[iMu]}, isLooseMuon {Muon_br.isLooseMuon[iMu]}, isMediumMuon {Muon_br.isMediumMuon[iMu]}, isTightMuon {Muon_br.isTightMuon[iMu]}, iso {Muon_br.iso[iMu]}, passesSingleMuon {Muon_br.passesSingleMuon[iMu]}, hlt_mu {Muon_br.hlt_mu[iMu]}, hlt_isomu {Muon_br.hlt_isomu[iMu]}, hlt_deltaR {Muon_br.hlt_deltaR[iMu]}, hlt_isoDeltaR {Muon_br.hlt_isoDeltaR[iMu]} " )
@@ -1612,7 +1613,7 @@ def run():
             # Mimic trigger conditions in offline objects ---------------------------------------------------------------------------------
             if not isMC and len(HLT_Triggers_Required) > 0:
                 nOffMuons_passingTrigThsh = [0] * len(TrigThshs_OffMuPt)
-                if PrintLevel >= 1:
+                if PrintLevel >= 3:
                     print(f"nOffMuons_passingTrigThsh_0: {nOffMuons_passingTrigThsh}")
                 for iMu in range(nOffMuons):
                     if not Muon_br.isTightMuon[iMu]: continue
@@ -1627,7 +1628,7 @@ def run():
                         passingTrigThshs = False
                         break
                     
-                if PrintLevel >= 1:
+                if PrintLevel >= 3:
                     print(f"nOffMuons_passingTrigThsh: {nOffMuons_passingTrigThsh},   passingTrigThshs: {passingTrigThshs}")
 
                 if not passingTrigThshs: continue
@@ -1825,6 +1826,23 @@ def run():
                         continue
                 
                 hStat.Fill(9)
+
+
+                # save Reco jet pT for Gen jet ------------------------------------------------------------
+                if l1MatchGen:
+                    off_vec_matchedTo_gen_vec = R.TLorentzVector()
+                    off_vec_matchedTo_gen_vec.SetPtEtaPhiM(0, 0, 0, 0)
+                    for iOff in range(nOffJets):
+                        iOff_vec = R.TLorentzVector()
+                        iOff_vec.SetPtEtaPhiM(Jet_br.etCorr[iOff], Jet_br.eta[iOff], Jet_br.phi[iOff], 0)
+
+                        if vOff.DeltaR(iOff_vec) < DR_MAX and iOff_vec.Pt() > off_vec_matchedTo_gen_vec.Pt():
+                            off_vec_matchedTo_gen_vec = iOff_vec
+                    
+
+
+                # -----------------------------------------------------------------------------------------
+
                 
                 jetIEta_offlineJet     = calculateJetIEta(vOff.Eta())
                 jetIEtaAbs_offlineJet  = abs(jetIEta_offlineJet)
@@ -1835,18 +1853,20 @@ def run():
 
                 data_dict = OrderedDict()
                 #if VERBOSE and iEvt % PRT_EVT is 0: print '  * Run %d, LS %d, event %d, nVtx %d' % (int(Evt_br.run), int(Evt_br.lumi), int(Evt_br.event), int(nVtx))
-                data_dict['runNumber']         = int(Evt_br.run)
-                data_dict['lumiSectionNumber'] = int(Evt_br.lumi)
-                data_dict['eventNumber']       = int(Evt_br.event)
-                data_dict['nVertexReco']       = int(nVtx)
-                data_dict['nTT_Unpacked']      = nUnpTTs
-                data_dict['nTT_Emulated']      = nEmuTTs
+                data_dict['runNumber']                = int(Evt_br.run)
+                data_dict['lumiSectionNumber']        = int(Evt_br.lumi)
+                data_dict['eventNumber']              = int(Evt_br.event)
+                data_dict['nVertexReco']              = int(nVtx)
+                data_dict['nTT_Unpacked']             = nUnpTTs
+                data_dict['nTT_Emulated']             = nEmuTTs
                 if   l1MatchOffline:
-                    data_dict['PFJetEtCorr'] = vOff.Pt()
+                    data_dict['PFJetEtCorr']          = vOff.Pt()
                 elif l1MatchGen:
-                    data_dict['GenJetEt'] = vOff.Pt()
-                    data_dict['nVertexGen']     = int(Gen_br.nVtx)
-                    data_dict['nMeanPUGen']     = int(Gen_br.nMeanPU)
+                    data_dict['GenJetEt']             = vOff.Pt()
+                    data_dict['nVertexGen']           = int(Gen_br.nVtx)
+                    data_dict['nMeanPUGen']           = int(Gen_br.nMeanPU)
+                    data_dict['matchedPFJetEtCorr']   = off_vec_matchedTo_gen_vec.Pt()
+                    
                 #data_dict['PFJetEta']    = Jet_br.eta[iOff]
                 #data_dict['PFJetPhi']    = Jet_br.phi[iOff]
                     
@@ -2049,139 +2069,6 @@ def run():
                             hist6['HCAP_TP_compEt_vs_iEta_vs_nVts'][src][iCh].Fill( l1TP_br.hcalTPieta[iTP], nVtx, l1TP_br.hcalTPcompEt[iTP], puWeight )
 
                     
-                ### Compare PFjet with L1Taus --------------------------------------------------------------------------------------------------
-                #for src in ['emu']:
-                for src in []: # don't run for L1Taus for time being
-                    l1_br = None
-                    if src == 'unp':
-                        l1_br = Unp_br
-                    elif src == 'emu':
-                        l1_br = Emu_br
-                    
-                    hStat.Fill(20)
-                    
-                    ## Find highest-pT Level-1 jet with good dR matching to unpacked jet
-                    matchedTau_pt = {}
-                    matchedTauIdx   = {}
-                    vMatchedTau = {}
-                    for algo in PUSAlgosAllType2: # ['Et', 'RawEt']
-                        matchedTau_pt[algo] = -99.0
-                        matchedTauIdx[algo] = -1
-                        vMatchedTau[algo]   = R.TLorentzVector()
-                    
-                    for iL1Tau in range(l1_br.nTaus):
-                        
-                        if l1_br.tauBx[iL1Tau] != 0: continue  ## Use only taus in BX 0
-                        
-                        vTau = {}
-                        for algo in PUSAlgosAllType2: # ['Et', 'RawEt']
-                            vTau[algo] = R.TLorentzVector()  ## Create a 4-vector of the L1T jet
-                        
-                        vTau['Et']   .SetPtEtaPhiM(l1_br.tauEt[iL1Tau],     l1_br.tauEta[iL1Tau], l1_br.tauPhi[iL1Tau], 0)
-                        vTau['RawEt'].SetPtEtaPhiM(l1_br.tauRawEt[iL1Tau],  l1_br.tauEta[iL1Tau], l1_br.tauPhi[iL1Tau], 0)
-                        
-                        for algo in PUSAlgosAllType2: # ['Et', 'RawEt']
-                            if vTau[algo].DeltaR(vOff) < DR_MAX and vTau[algo].Pt() > matchedTau_pt[algo]:
-                                matchedTau_pt[algo] = vTau[algo].Pt()
-                                matchedTauIdx[algo] = iL1Tau
-                                vMatchedTau[algo] = vTau[algo]
-
-                    jetShape = jetShape1 = None
-                    if len(JetShapesType2) > 0:
-                        jetShape = JetShapesType2[0]
-                        jetShape1 = "_%s" % (JetShapesType2[0])
-                    else:
-                        continue
-                    for algo in PUSAlgosAllType2: # ['Et', 'RawEt']
-                        hStat.Fill(21)
-                        
-                        l1tau_idx = matchedTauIdx[algo]
-                        if l1tau_idx < 0: continue
-
-                        hStat.Fill(22)
-                        
-                        tauIEta = None
-                        tauIPhi = None
-                        if   src == 'emu':
-                            tauIEta = l1_br.tauTowerIEta[l1tau_idx]
-                            tauIPhi = l1_br.tauTowerIPhi[l1tau_idx]
-                        elif src == 'unp':
-                            tauIEta = convert_tauIEta_to_tauTowerIEta( l1_br.tauIEta[l1tau_idx] )
-                            tauIPhi = convert_tauIPhi_to_tauTowerIPhi( l1_br.tauIPhi[l1tau_idx] )
-                        tauIEtaAbs  = abs(tauIEta)
-                        stauIEta    = str(tauIEta)
-                        stauIEtaAbs = str(tauIEtaAbs)
-                        stauIEta_toUse = stauIEtaAbs if useAbsEtaBins else stauIEta;
-                        tauIEta_toUse  =  tauIEtaAbs if useAbsEtaBins else  tauIEta;
-                        sL1TauEtaCat = None
-                        for ieta_cat in IETA_CAT.keys():
-                            if ieta_cat == 'HBEF': continue
-                            if tauIEtaAbs >= IETA_CAT[ieta_cat][0] and tauIEtaAbs <= IETA_CAT[ieta_cat][1]:
-                                sL1TauEtaCat = ieta_cat
-                        
-                        l1jet_pt = vMatchedTau[algo].Pt()
-                        l1jet_pt_woLayer2Calib = l1jet_pt
-                        
-                        algo1 = algo
-                        sjetIEta_toUse = stauIEta_toUse
-                        # l1jet_pt calibration
-                        if runMode in ['CalibJetByHand'] and \
-                           jetShape in calibSFs.keys() and algo1 in calibSFs[jetShape].keys() and sjetIEta_toUse in calibSFs[jetShape][algo1].keys():
-                            for layer2CalibSF_list in calibSFs[jetShape][algo1][sjetIEta_toUse]:
-                                # layer2CalibSF_list: [bin_pt_low, bin_pt_up, layer2CalibSF]
-                                if l1jet_pt_woLayer2Calib >= layer2CalibSF_list[0] and l1jet_pt_woLayer2Calib < layer2CalibSF_list[1]:
-                                    l1jet_pt = l1jet_pt_woLayer2Calib * layer2CalibSF_list[2]
-                                    if PrintLevel >= 1:
-                                        print("%8s l1tau pT = %g * %g = %g" % (' ',l1jet_pt_woLayer2Calib, layer2CalibSF_list[2], l1jet_pt))
-                        
-                        
-                        res = (l1jet_pt - vOff.Pt()) / vOff.Pt()
-                        
-                        '''
-                        print "tauIEta_toUse {}, nVtx {}, res {}, puWeight {}  \t l1TauMatchingPFJet_res_vs_iEta_vs_nVtx algo {}, iEta {}', iPFJetPtCat {}, src {}, iCh {}".format(tauIEta_toUse, nVtx, res, puWeight, algo,'HBEF', iPFJetPtCat,src,iCh)
-                        print "jetShape1 {}, algo {}: {}".format(jetShape1, algo, 'jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1))
-                        print "hist5: {}".format(hist5)
-                        if 'jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1) in hist5:
-                            print "hist5: {} exist".format('jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1))
-                        if algo in hist5['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)]:
-                            print "algo {} exist".format(algo)
-                        if 'HBEF' in hist5['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo]:
-                            print "HBEF exist"
-                        if iPFJetPtCat in hist5['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo]['HBEF'        ]:
-                            print "iPFJetPtCat {} exist".format(iPFJetPtCat)
-                        if src in hist5['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo]['HBEF'        ][iPFJetPtCat        ]:
-                            print "src: {}, iCh: {} len(iCh) {}".format(src, iCh, len(hist5['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo]['HBEF'        ][iPFJetPtCat        ][src]))
-                        '''
-
-                        '''
-                        iL1JetPtCat = getJetPtCategory( l1jet_pt )
-                        if iL1JetPtCat != 'None':
-                            hist5['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo]['HBEF'        ][iL1JetPtCat        ][src][iCh].Fill(tauIEta_toUse, nVtx, res, puWeight)
-                        hist5['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo]['HBEF'        ]['PtAllBins'][src][iCh].Fill(tauIEta_toUse, nVtx, res, puWeight)
-                        '''
-                        hist5['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo]['HBEF'        ][iPFJetPtCat][src][iCh].Fill(tauIEta_toUse, nVtx, res, puWeight)
-                        hist5['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo]['HBEF'        ]['PtAllBins'][src][iCh].Fill(tauIEta_toUse, nVtx, res, puWeight)
-                        
-                        #l1JetCollection[src][jetShape][algo1].append( [l1jet_pt, sL1TauEtaCat] )
-                        #l1JetCollection[src][jetShape][algo1][sL1TauEtaCat].append( [l1jet_pt, sL1TauEtaCat] )
-                        l1JetCollection[src][jetShape][algo1][sEtaCat_PFJet].append( [l1jet_pt, sEtaCat_PFJet] ) # use EtaCat of PF jet for rate plots
-                        
-                        # trigger efficiency plots                        
-                        for jPt in PT_CAT.keys():
-                            hist3['jet_byHand_eff_den_vs_PU%s' % (jetShape1)][algo1][sEtaCat_PFJet][jPt][src][iCh].Fill( vOff.Pt(), nVtx, puWeight )
-                            hist3['jet_byHand_eff_den_vs_PU%s' % (jetShape1)][algo1]['HBEF'       ][jPt][src][iCh].Fill( vOff.Pt(), nVtx, puWeight )
-                            
-                            PtTrshToUse = PT_CAT[jPt][1]
-                            if jPt in PtTrshForTau:
-                                PtTrshToUse = PtTrshForTau[jPt]
-                            #print "jPt {}, PtTrshToUse {} \t instead of {} ".format(jPt, PtTrshToUse, PT_CAT[jPt][1])
-                            
-                            #if l1jet_pt > PT_CAT[jPt][1]:
-                            if l1jet_pt > PtTrshToUse:
-                                hist3['jet_byHand_eff_num_vs_PU%s' % (jetShape1)][algo1][sEtaCat_PFJet][jPt][src][iCh].Fill( vOff.Pt(), nVtx, puWeight )
-                                hist3['jet_byHand_eff_num_vs_PU%s' % (jetShape1)][algo1]['HBEF'       ][jPt][src][iCh].Fill( vOff.Pt(), nVtx, puWeight )
-                        
-                    ### End compare PFjet with L1Taus -------------------------------------------------------------------------------------------                        
 
 
                 hStat.Fill(30)        
