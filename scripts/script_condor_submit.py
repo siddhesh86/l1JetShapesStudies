@@ -41,9 +41,10 @@ commands = {
     #"2022_Default_l1NtupleChunkyDonut_JEC2022v7":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_0_0_pre4_Run2022G-ZMu-PromptReco-v1/230221_161135/0000/L1Ntuple_1-1.root'   --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut ",
 
     # 13_1_0_pre2_HBZS0p5
-    "2023_MC_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/230328_213104/0000/L1Ntuple_*'   --PUrangeTag nVtxAll  --l1MatchGen  --l1NtupleChunkyDonut    ",
+    #"2023_MC_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/230328_213104/0000/L1Ntuple_*'   --PUrangeTag nVtxAll  --l1MatchGen  --l1NtupleChunkyDonut    ",
     #"2023_MC_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/230328_213104/0000/L1Ntuple_982.root'   --PUrangeTag nVtxAll  --l1MatchGen  --l1NtupleChunkyDonut  ",
-    
+    "2022_Data_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run2022G-ZMu-PromptReco-v1/230329_100000/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtupleChunkyDonut    ",
+    #"2022_Data_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run2022G-ZMu-PromptReco-v1/230329_100000/0000/L1Ntuple_9.root'   --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtupleChunkyDonut    ",
 } 
 
 runLocally = False 
