@@ -5,6 +5,7 @@
 
 
 import os
+import sys
 import argparse
 from collections import OrderedDict
 from collections import OrderedDict as OD
@@ -25,8 +26,6 @@ from sklearn.metrics import mean_squared_error
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials, space_eval # hyperparameter optimization
 import pickle
 
-from IPython.display import display, HTML
-display(HTML("<style>.container { width:100% !important; }</style>"))
 
 from CommonTools import (
     convert_Et_to_logEt, 
@@ -52,14 +51,18 @@ parseGroup2 = parser.add_mutually_exclusive_group(required=True)
 parseGroup2.add_argument('--l1MatchOffline', action='store_true')
 parseGroup2.add_argument('--l1MatchGen',     action='store_true')
 
-runLocally = True
+runLocally = False
 
 args = None
 if not runLocally:
     matplotlib.use('Agg') # use for condor jobs to disable display of plots
     args = parser.parse_args()
 else:
-    args = parser.parse_args("--ChunkyDonut --l1MatchGen --MLTarget logGenEt --fracOfDataToUse 0.01".split()) # to run in jupyter-notebook     
+    #args = parser.parse_args("--ChunkyDonut --l1MatchGen --MLTarget logGenEt --fracOfDataToUse 0.01".split()) # to run in jupyter-notebook     
+    args = parser.parse_args("--ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et --fracOfDataToUse 0.01".split()) # to run in jupyter-notebook     
+    from IPython.display import display, HTML
+    display(HTML("<style>.container { width:100% !important; }</style>"))
+
 l1Jet_ChunkyDonut = args.ChunkyDonut
 l1Jet_PhiRing     = args.PhiRing
 l1MatchOffline    = args.l1MatchOffline
@@ -94,13 +97,15 @@ sRefJetEt = sOfflineJetEt if l1MatchOffline else sGenJetEt
 
 version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230403" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse) 
 sIpFileName     = "../data/L1T_Jet_MLInputs_2023_QCDPT-15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1_13_1_0_pre2_HBZS0p5_20230330.csv"
-sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCDPT-15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1_13_1_0_pre2_HBZS0p5_20230330_%s.csv" % (version)
+#sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCDPT-15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1_13_1_0_pre2_HBZS0p5_20230330_%s.csv" % (version)
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCDP_126X_mcRun3_2023_13_1_0_pre2_HBZS0p5_20230330_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 
 
-sOpFileName_SFs = sOpFileName_SFs.replace('.csv', '_%s.csv' % (sL1JetEt))
-sOutDir = '%s_%s' % (sOutDir, sL1JetEt)
+#sOpFileName_SFs = sOpFileName_SFs.replace('.csv', '_%s.csv' % (sL1JetEt))
+#sOutDir = '%s_%s' % (sOutDir, sL1JetEt)
 
+plotPerformancePlots = False
 
 PT_CAT = OD()
 PT_CAT['Ptlt25']   = [ 0,  15,   25]  ## Low pT, turn-on threshold, high pT
@@ -163,28 +168,30 @@ if not os.path.exists(sOutDirAfterJEC):     os.mkdir( sOutDirAfterJEC )
 if not os.path.exists(sOutDirBeforeJEC_1D): os.mkdir( sOutDirBeforeJEC_1D )    
 if not os.path.exists(sOutDirAfterJEC_1D):  os.mkdir( sOutDirAfterJEC_1D )
 if not os.path.exists("../data"):           os.mkdir("../data")
-
-
-# In[2]:
-
-
-data_all = pd.read_csv(sIpFileName)
+    
 print("Input file: %s" % (sIpFileName))
 print(f"{fracOfDataToUse = }")
 print(f"{PUForSFComputation = }")
+print(f"{version = }")
 print("iEtaBins ({}): {}".format(len(iEtaBins), iEtaBins))
 print("sRefJetEt: {}, \t sL1Jet: {}, \t L1JetPtThrsh: {}".format(sRefJetEt, sL1JetEt, L1JetPtThrsh))
 print("l1Jet_ChunkyDonut {}, l1Jet_PhiRing {}, l1MatchOffline {}, l1MatchGen {}".format(
-    l1Jet_ChunkyDonut, l1Jet_PhiRing, l1MatchOffline, l1MatchGen))
+    l1Jet_ChunkyDonut, l1Jet_PhiRing, l1MatchOffline, l1MatchGen)); sys.stdout.flush();    
 
 
-# In[3]:
+# In[ ]:
+
+
+data_all = pd.read_csv(sIpFileName)
+
+
+# In[ ]:
 
 
 print("Original sample: data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
 
 
-# In[4]:
+# In[ ]:
 
 
 data_all[sL1JetEt_PUS_ChunkyDonut] = data_all['L1Jet9x9_RawEt'] - data_all['L1Jet9x9_PUEt_ChunkyDonut']
@@ -192,7 +199,7 @@ data_all[sL1JetEt_PUS_ChunkyDonut] = data_all['L1Jet9x9_RawEt'] - data_all['L1Je
 data_all[sL1JetEt_PUS_PhiRing]     = data_all['L1Jet9x9_RawEt'] - (data_all['L1Jet9x9_EtSum7PUTowers'] / 7.0 )
 
 
-# In[5]:
+# In[ ]:
 
 
 #%%script false --no-raise-error
@@ -203,29 +210,30 @@ sOutDir1D_toUse = '%s/L1JetEt' % (sOutDirBeforeJEC)
 if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
 if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
 
-for iEta in ETA_Bins:
-    print("iEta %d"%(int(iEta)))
-        
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')      
-    
-    iEtaBin = int(iEta)
-    data_all_iEtaBin = data_all[data_all[sL1JetTowerIEtaAbs] == iEtaBin]
-    axs.hist(
-        (data_all_iEtaBin[sL1JetEt]), 
-        bins=100, range=(0, 300),
-        label='iEta %d' % (iEtaBin),
-        histtype='step',#, linewidth=2
-    )
-    axs.set_xlabel('L1JetEt')
-    axs.set_ylabel('Normalized entries')
-    axs.set_title('iEta %d' % (iEtaBin))
-    axs.legend()
-      
-    fig.savefig('%s/L1JetEt_ieta_%d.png' % (sOutDir1D_toUse, iEtaBin))
-    plt.close(fig) 
+if plotPerformancePlots:    
+    for iEta in ETA_Bins:
+        print("iEta %d"%(int(iEta)))
+
+        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')      
+
+        iEtaBin = int(iEta)
+        data_all_iEtaBin = data_all[data_all[sL1JetTowerIEtaAbs] == iEtaBin]
+        axs.hist(
+            (data_all_iEtaBin[sL1JetEt]), 
+            bins=100, range=(0, 300),
+            label='iEta %d' % (iEtaBin),
+            histtype='step',#, linewidth=2
+        )
+        axs.set_xlabel('L1JetEt')
+        axs.set_ylabel('Normalized entries')
+        axs.set_title('iEta %d' % (iEtaBin))
+        axs.legend()
+
+        fig.savefig('%s/L1JetEt_ieta_%d.png' % (sOutDir1D_toUse, iEtaBin))
+        plt.close(fig) 
 
 
-# In[6]:
+# In[ ]:
 
 
 ## data cleaning--------
@@ -244,25 +252,25 @@ if printLevel >= 5:
     print("\nAfter cleaning, data_all.describe(): \n{}".format(data_all.describe()))
 
 
-# In[7]:
+# In[ ]:
 
 
 print("After data cleaning: data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
 
 
-# In[8]:
+# In[ ]:
 
 
 data_all = data_all.sample(frac=fracOfDataToUse, random_state=1)
 
 
-# In[9]:
+# In[ ]:
 
 
 print("Sample to use: data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
 
 
-# In[10]:
+# In[ ]:
 
 
 #%%script false --no-raise-error
@@ -273,29 +281,30 @@ sOutDir1D_toUse = '%s/L1JetEt' % (sOutDirBeforeJEC)
 if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
 if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
 
-for iEta in ETA_Bins:
-    print("iEta %d"%(int(iEta)))
-        
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')      
-    
-    iEtaBin = int(iEta)
-    data_all_iEtaBin = data_all[data_all[sL1JetTowerIEtaAbs] == iEtaBin]
-    axs.hist(
-        (data_all_iEtaBin[sL1JetEt]), 
-        bins=100, range=(0, 300),
-        label='iEta %d' % (iEtaBin),
-        histtype='step',#, linewidth=2
-    )
-    axs.set_xlabel('L1JetEt')
-    axs.set_ylabel('Normalized entries')
-    axs.set_title('iEta %d' % (iEtaBin))
-    axs.legend()
-      
-    fig.savefig('%s/L1JetEt_ieta_%d_afterDataCleaning.png' % (sOutDir1D_toUse, iEtaBin))
-    plt.close(fig)
+if plotPerformancePlots:    
+    for iEta in ETA_Bins:
+        print("iEta %d"%(int(iEta)))
+
+        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')      
+
+        iEtaBin = int(iEta)
+        data_all_iEtaBin = data_all[data_all[sL1JetTowerIEtaAbs] == iEtaBin]
+        axs.hist(
+            (data_all_iEtaBin[sL1JetEt]), 
+            bins=100, range=(0, 300),
+            label='iEta %d' % (iEtaBin),
+            histtype='step',#, linewidth=2
+        )
+        axs.set_xlabel('L1JetEt')
+        axs.set_ylabel('Normalized entries')
+        axs.set_title('iEta %d' % (iEtaBin))
+        axs.legend()
+
+        fig.savefig('%s/L1JetEt_ieta_%d_afterDataCleaning.png' % (sOutDir1D_toUse, iEtaBin))
+        plt.close(fig)
 
 
-# In[11]:
+# In[ ]:
 
 
 # Closer for Et_to_logEt
@@ -308,7 +317,7 @@ if printLevel >= 15:
     print(f"{ np.max(abs(data_all['closure_logRefJetEt__tmp'])) = }")
 
 
-# In[12]:
+# In[ ]:
 
 
 # Closer for GenEt_to_GenEtByL1Et
@@ -321,7 +330,7 @@ if printLevel >= 15:
     print(f"{ np.max(abs(data_all['closure_GenEtByL1Et_tmp'])) = }")
 
 
-# In[13]:
+# In[ ]:
 
 
 # Closer for GenEt_to_logGenEtByL1Et
@@ -334,7 +343,7 @@ if printLevel >= 15:
     print(f"{ np.max(abs(data_all['closure_logGenEtByL1Et_tmp'])) = }")
 
 
-# In[14]:
+# In[ ]:
 
 
 # set trainning and target variables
@@ -376,7 +385,7 @@ if printLevel >= 1:
     print("data_all.describe(): \n{}".format(data_all.describe()))
 
 
-# In[15]:
+# In[ ]:
 
 
 ## L1Jet response per iEta before JEC
@@ -386,31 +395,32 @@ sOutDir1D_toUse = '%s/L1JetResponse_perEtaBin' % (sOutDirBeforeJEC)
 if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
 if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
 
+if plotPerformancePlots:    
 #print("".format())
-for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
-    #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
-    
-    for CaloTool_mpEta in CaloToolMPEtaRange: # runs each iEta in iEtaBinRange
-        iEtaBin = convert_CaloToolMPEta_to_IEta(CaloTool_mpEta)
-        data_all_iEtaBin = data_all[data_all[sL1JetTowerIEtaAbs] == iEtaBin]
-        axs.hist(
-            (data_all_iEtaBin[sL1JetEt]/data_all_iEtaBin[sRefJetEt]), 
-            bins=100, range=(0, 2.6),
-            label='iEta %d' % (iEtaBin),
-            histtype='step',#, linewidth=2
-            density=True
-        )
-    axs.set_xlabel('L1JetEt / %s' % (sRefJetEt))
-    axs.set_ylabel('Normalized entries')
-    axs.set_title('%s' % (sL1JetEt))
-    axs.legend()
-        
-    fig.savefig('%s/L1JetResponse_beforeJEC_%s_ieta_%d_to_%d.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))
-    plt.close(fig)    
+    for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
+        #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
+        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
+
+        for CaloTool_mpEta in CaloToolMPEtaRange: # runs each iEta in iEtaBinRange
+            iEtaBin = convert_CaloToolMPEta_to_IEta(CaloTool_mpEta)
+            data_all_iEtaBin = data_all[data_all[sL1JetTowerIEtaAbs] == iEtaBin]
+            axs.hist(
+                (data_all_iEtaBin[sL1JetEt]/data_all_iEtaBin[sRefJetEt]), 
+                bins=100, range=(0, 2.6),
+                label='iEta %d' % (iEtaBin),
+                histtype='step',#, linewidth=2
+                density=True
+            )
+        axs.set_xlabel('L1JetEt / %s' % (sRefJetEt))
+        axs.set_ylabel('Normalized entries')
+        axs.set_title('%s' % (sL1JetEt))
+        axs.legend()
+
+        fig.savefig('%s/L1JetResponse_beforeJEC_%s_ieta_%d_to_%d.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))
+        plt.close(fig)    
 
 
-# In[16]:
+# In[ ]:
 
 
 ## L1Jet response per iEta bin range before JEC
@@ -420,36 +430,37 @@ sOutDir1D_toUse = '%s/L1JetResponse_perEtaBinRange' % (sOutDirBeforeJEC)
 if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
 if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
 
-for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
-    #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
-    iEtaBin_first = convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0])
-    iEtaBin_last  = convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])
-    
-    for pt_cat, pt_range in PT_CAT.items(): 
-        data_all_iEtaBin = data_all[
-            (data_all[sL1JetTowerIEtaAbs] >= iEtaBin_first) &  
-            (data_all[sL1JetTowerIEtaAbs] <= iEtaBin_last) & 
-            (data_all[sRefJetEt] >= pt_range[0]) &
-            (data_all[sRefJetEt] <  pt_range[2])
-        ]
-        axs.hist(
-            (data_all_iEtaBin[sL1JetEt]/data_all_iEtaBin[sRefJetEt]), 
-            bins=100, range=(0, 2.6),
-            label='%d <= %s < %d' % (pt_range[0], sRefJetEt, pt_range[2]),
-            histtype='step',#, linewidth=2
-            density=True
-        )
-    axs.set_xlabel('L1JetEt / %s' % (sRefJetEt))
-    axs.set_ylabel('Normalized entries')
-    axs.set_title('%s in %d <= iEta <= %d' % (sL1JetEt, iEtaBin_first, iEtaBin_last))
-    axs.legend()
-        
-    fig.savefig('%s/L1JetResponse_beforeJEC_%s_ieta_%d_to_%d_inPtCat_%s.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1]), pt_cat))
-    plt.close(fig)    
+if plotPerformancePlots:
+    for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
+        #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
+        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
+        iEtaBin_first = convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0])
+        iEtaBin_last  = convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])
+
+        for pt_cat, pt_range in PT_CAT.items(): 
+            data_all_iEtaBin = data_all[
+                (data_all[sL1JetTowerIEtaAbs] >= iEtaBin_first) &  
+                (data_all[sL1JetTowerIEtaAbs] <= iEtaBin_last) & 
+                (data_all[sRefJetEt] >= pt_range[0]) &
+                (data_all[sRefJetEt] <  pt_range[2])
+            ]
+            axs.hist(
+                (data_all_iEtaBin[sL1JetEt]/data_all_iEtaBin[sRefJetEt]), 
+                bins=100, range=(0, 2.6),
+                label='%d <= %s < %d' % (pt_range[0], sRefJetEt, pt_range[2]),
+                histtype='step',#, linewidth=2
+                density=True
+            )
+        axs.set_xlabel('L1JetEt / %s' % (sRefJetEt))
+        axs.set_ylabel('Normalized entries')
+        axs.set_title('%s in %d <= iEta <= %d' % (sL1JetEt, iEtaBin_first, iEtaBin_last))
+        axs.legend()
+
+        fig.savefig('%s/L1JetResponse_beforeJEC_%s_ieta_%d_to_%d_inPtCat_%s.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1]), pt_cat))
+        plt.close(fig)    
 
 
-# In[17]:
+# In[ ]:
 
 
 # L1JetResponse vs Eta before JEC
@@ -470,111 +481,113 @@ PU_Cat_forResolutionPlots['PUAll'] = [0, 99]
 sL1JetEt_forResolutionPlots = sL1JetEt
 sL1JetResponse = 'L1JetEt/%s' % (sRefJetEt)
 
-for PU_category, PURange in PU_Cat_forResolutionPlots.items():
-    PURangeMin = PURange[0]
-    PURangeMax = PURange[1]
+if plotPerformancePlots:
+    for PU_category, PURange in PU_Cat_forResolutionPlots.items():
+        PURangeMin = PURange[0]
+        PURangeMax = PURange[1]
 
-    for Pt_category, PtRange in Pt_Cat_forResolutionPlots.items():
-        PtRangeMin = PtRange[0]
-        PtRangeMax = PtRange[1]
-        
-        JES = OD()
-        JER = OD()
-        for iEtaBin in iEtaBins:
-            data_toUse_ = data_all[
-                (data_all[sL1JetTowerIEtaAbs] == iEtaBin   ) & 
-                (data_all[sRefJetEt]               >= PtRangeMin) &
-                (data_all[sRefJetEt]               <  PtRangeMax) & 
-                (data_all[snVtx]                   >= PURangeMin) &
-                (data_all[snVtx]                   <  PURangeMax)
-            ]#.copy()
-            data_toUse_[sL1JetResponse] = data_toUse_[sL1JetEt_forResolutionPlots] / data_toUse_[sRefJetEt]
-            print(f"PU: {PURange}, Pt: {PtRange}, iEta: {iEtaBin}")
-            
-            h = hist.Hist.new.Regular(100,0,2.5, name=sL1JetResponse).Weight()            
-            h.fill(data_toUse_[sL1JetResponse])
-            
-            x_    = h.axes[0].centers
-            y_    = h.values()
-            yErr_ = np.sqrt(h.variances())
-                        
-            # index of bins with y>0
-            idx_NonZeroY = np.nonzero(y_)
-            
-            # Give initial parameters for Gaussian function fit
-            #pInitial = [y_.max(), 1, 0.3]
-            pInitial = [y_.max(), np.mean(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse]), np.std(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse])]
-            
-            #popt, pcov = curve_fit(GaussianFunction, xdata=x_, ydata=y_, p0=pInitial)
-            try:
-                popt, pcov = curve_fit(GaussianFunction, xdata=x_[idx_NonZeroY], ydata=y_[idx_NonZeroY], p0=pInitial, sigma=yErr_[idx_NonZeroY])
-            except:
-                print(f"{PU_category = }, {Pt_category = }, {iEtaBin = }, {pInitial = }:  fit did not converge *** ")
-                continue
-            poptErr    = np.sqrt(np.diag(pcov))
-            print(f"popt: {popt}, \npcov: \n{pcov},  \n{poptErr = }")
-            
-            Mean_  = popt[1];    errMean_  = poptErr[1]
-            Sigma_ = popt[2];    errSigma_ = poptErr[2]
-            
-            x1Dense_ = np.arange(x_.min(), x_.max(), 0.01)            
-            
+        for Pt_category, PtRange in Pt_Cat_forResolutionPlots.items():
+            PtRangeMin = PtRange[0]
+            PtRangeMax = PtRange[1]
+
+            JES = OD()
+            JER = OD()
+            for iEtaBin in iEtaBins:
+                data_toUse_ = data_all[
+                    (data_all[sL1JetTowerIEtaAbs] == iEtaBin   ) & 
+                    (data_all[sRefJetEt]               >= PtRangeMin) &
+                    (data_all[sRefJetEt]               <  PtRangeMax) & 
+                    (data_all[snVtx]                   >= PURangeMin) &
+                    (data_all[snVtx]                   <  PURangeMax)
+                ]#.copy()
+                data_toUse_[sL1JetResponse] = data_toUse_[sL1JetEt_forResolutionPlots] / data_toUse_[sRefJetEt]
+                print(f"PU: {PURange}, Pt: {PtRange}, iEta: {iEtaBin}")
+
+                h = hist.Hist.new.Regular(100,0,2.5, name=sL1JetResponse).Weight()            
+                h.fill(data_toUse_[sL1JetResponse])
+
+                x_    = h.axes[0].centers
+                y_    = h.values()
+                yErr_ = np.sqrt(h.variances())
+
+                # index of bins with y>0
+                idx_NonZeroY = np.nonzero(y_)
+
+                # Give initial parameters for Gaussian function fit
+                #pInitial = [y_.max(), 1, 0.3]
+                pInitial = [y_.max(), np.mean(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse]), np.std(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse])]
+
+                #popt, pcov = curve_fit(GaussianFunction, xdata=x_, ydata=y_, p0=pInitial)
+                try:
+                    popt, pcov = curve_fit(GaussianFunction, xdata=x_[idx_NonZeroY], ydata=y_[idx_NonZeroY], p0=pInitial, sigma=yErr_[idx_NonZeroY])
+                except:
+                    print(f"{PU_category = }, {Pt_category = }, {iEtaBin = }, {pInitial = }:  fit did not converge *** ")
+                    continue
+                poptErr    = np.sqrt(np.diag(pcov))
+                print(f"popt: {popt}, \npcov: \n{pcov},  \n{poptErr = }")
+
+                Mean_  = popt[1];    errMean_  = poptErr[1]
+                Sigma_ = popt[2];    errSigma_ = poptErr[2]
+
+                x1Dense_ = np.arange(x_.min(), x_.max(), 0.01)            
+
+                fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
+                axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
+                axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
+                axs.set_xlabel(sL1JetResponse)
+                axs.set_ylabel('Entries')
+                axs.set_title('%s %s iEta %s' % (PU_category, Pt_category, iEtaBin))
+                axs.legend(bbox_to_anchor=(0.0, 1.0), loc='upper left', borderaxespad=0.9)
+                axs.set_ylim(0, y_.max() * 1.4)
+                axs.grid()
+
+                errJER_      = calculate_errorOfRatio(N=Sigma_, D=Mean_, eN=errSigma_, eD=errMean_)            
+                JES[iEtaBin] = {'value': Mean_,          'error': errMean_}
+                JER[iEtaBin] = {'value': Sigma_ / Mean_, 'error': errJER_}
+
+                fig.savefig('%s/L1JetResponse_1D_%s_%s_ieta_%d.png' % (sOutDir1D_toUse, PU_category, Pt_category, iEtaBin))
+                plt.close(fig)
+
+
+
+
+
+            # plot JES vs iEta
+            JES_iEtawise    = [ JES[iEtaBin]['value'] for iEtaBin in JES.keys()]
+            errJES_iEtawise = [ JES[iEtaBin]['error'] for iEtaBin in JES.keys()]
+
             fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-            axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
-            axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
-            axs.set_xlabel(sL1JetResponse)
-            axs.set_ylabel('Entries')
-            axs.set_title('%s %s iEta %s' % (PU_category, Pt_category, iEtaBin))
-            axs.legend(bbox_to_anchor=(0.0, 1.0), loc='upper left', borderaxespad=0.9)
-            axs.set_ylim(0, y_.max() * 1.4)
+            #axs.plot(list(JES.keys()), JES_iEtawise)
+            axs.errorbar(list(JES.keys()), JES_iEtawise, yerr=errJES_iEtawise, fmt='o', markersize=1)
+            axs.set_xlabel('iEta')
+            axs.set_ylabel(r'$\mu$ (%s)' % (sL1JetResponse))
+            axs.set_title('%s %s' % (PU_category, Pt_category))
+            axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
+            axs.margins(y=0.3)
             axs.grid()
-            
-            errJER_      = calculate_errorOfRatio(N=Sigma_, D=Mean_, eN=errSigma_, eD=errMean_)            
-            JES[iEtaBin] = {'value': Mean_,          'error': errMean_}
-            JER[iEtaBin] = {'value': Sigma_ / Mean_, 'error': errJER_}
-                                   
-            fig.savefig('%s/L1JetResponse_1D_%s_%s_ieta_%d.png' % (sOutDir1D_toUse, PU_category, Pt_category, iEtaBin))
+            fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Mean.png' % (sOutDir_toUse, PU_category, Pt_category))
             plt.close(fig)
-            
-                        
-            
-                    
-            
-        # plot JES vs iEta
-        JES_iEtawise    = [ JES[iEtaBin]['value'] for iEtaBin in JES.keys()]
-        errJES_iEtawise = [ JES[iEtaBin]['error'] for iEtaBin in JES.keys()]
-        
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-        #axs.plot(list(JES.keys()), JES_iEtawise)
-        axs.errorbar(list(JES.keys()), JES_iEtawise, yerr=errJES_iEtawise, fmt='o', markersize=1)
-        axs.set_xlabel('iEta')
-        axs.set_ylabel(r'$\mu$ (%s)' % (sL1JetResponse))
-        axs.set_title('%s %s' % (PU_category, Pt_category))
-        axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
-        axs.margins(y=0.3)
-        axs.grid()
-        fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Mean.png' % (sOutDir_toUse, PU_category, Pt_category))
-        plt.close(fig)
-        
-        
-        # plot JER vs iEta
-        JER_iEtawise    = [ JER[iEtaBin]['value'] for iEtaBin in JER.keys()]
-        errJER_iEtawise = [ JER[iEtaBin]['error'] for iEtaBin in JER.keys()]
-        
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-        #axs.plot(list(JES.keys()), JER_iEtawise)
-        axs.errorbar(list(JER.keys()), JER_iEtawise, yerr=errJER_iEtawise, fmt='o', markersize=1)
-        axs.set_xlabel('iEta')
-        axs.set_ylabel(r'$\sigma/\mu$ (%s)' % (sL1JetResponse))
-        axs.set_title('%s %s' % (PU_category, Pt_category))
-        axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
-        axs.margins(y=0.3)
-        axs.grid()
-        fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Resolution.png' % (sOutDir_toUse, PU_category, Pt_category))     
-        plt.close(fig)
 
 
-# In[22]:
+            # plot JER vs iEta
+            JER_iEtawise    = [ JER[iEtaBin]['value'] for iEtaBin in JER.keys()]
+            errJER_iEtawise = [ JER[iEtaBin]['error'] for iEtaBin in JER.keys()]
+
+            fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
+            #axs.plot(list(JES.keys()), JER_iEtawise)
+            axs.errorbar(list(JER.keys()), JER_iEtawise, yerr=errJER_iEtawise, fmt='o', markersize=1)
+            axs.set_xlabel('iEta')
+            axs.set_ylabel(r'$\sigma/\mu$ (%s)' % (sL1JetResponse))
+            axs.set_title('%s %s' % (PU_category, Pt_category))
+            axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
+            axs.margins(y=0.3)
+            axs.grid()
+            fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Resolution.png' % (sOutDir_toUse, PU_category, Pt_category))     
+            plt.close(fig)
+        
+
+
+# In[ ]:
 
 
 # L1Jet response vs RefJetPt before JEC
@@ -593,117 +606,117 @@ RefJetPtBins_forResolutionPlots = [
 ]
 print(f"RefJetPtBins_forResolutionPlots: {RefJetPtBins_forResolutionPlots}")
 
+if plotPerformancePlots:
+    for PU_category, PURange in PU_Cat_forResolutionPlots.items():
+        PURangeMin = PURange[0]
+        PURangeMax = PURange[1]
 
-for PU_category, PURange in PU_Cat_forResolutionPlots.items():
-    PURangeMin = PURange[0]
-    PURangeMax = PURange[1]
-    
-    for iEtaBin in iEtaBins: # 1 to 41 iEtaBins
-        
-        JES = OD()
-        JER = OD()
-        for iPtBin in range(len(RefJetPtBins_forResolutionPlots) - 1):
-            PtRangeMin = RefJetPtBins_forResolutionPlots[iPtBin]
-            PtRangeMax = RefJetPtBins_forResolutionPlots[iPtBin + 1]
-            PtMean = (PtRangeMin + PtRangeMax)/2
- 
-            data_toUse_ = data_all[
-                (data_all[sL1JetTowerIEtaAbs] == iEtaBin   ) & 
-                (data_all[sRefJetEt]               >= PtRangeMin) &
-                (data_all[sRefJetEt]               <  PtRangeMax) & 
-                (data_all[snVtx]                   >= PURangeMin) &
-                (data_all[snVtx]                   <  PURangeMax)
-            ]#.copy()
-            data_toUse_[sL1JetResponse] = data_toUse_[sL1JetEt_forResolutionPlots] / data_toUse_[sRefJetEt]
-        
-            h = hist.Hist.new.Regular(100,0,2.5, name=sL1JetResponse).Weight()            
-            h.fill(data_toUse_[sL1JetResponse])
-            
-            x_    = h.axes[0].centers
-            y_    = h.values()
-            yErr_ = np.sqrt(h.variances())
-            
+        for iEtaBin in iEtaBins: # 1 to 41 iEtaBins
+
+            JES = OD()
+            JER = OD()
+            for iPtBin in range(len(RefJetPtBins_forResolutionPlots) - 1):
+                PtRangeMin = RefJetPtBins_forResolutionPlots[iPtBin]
+                PtRangeMax = RefJetPtBins_forResolutionPlots[iPtBin + 1]
+                PtMean = (PtRangeMin + PtRangeMax)/2
+
+                data_toUse_ = data_all[
+                    (data_all[sL1JetTowerIEtaAbs] == iEtaBin   ) & 
+                    (data_all[sRefJetEt]               >= PtRangeMin) &
+                    (data_all[sRefJetEt]               <  PtRangeMax) & 
+                    (data_all[snVtx]                   >= PURangeMin) &
+                    (data_all[snVtx]                   <  PURangeMax)
+                ]#.copy()
+                data_toUse_[sL1JetResponse] = data_toUse_[sL1JetEt_forResolutionPlots] / data_toUse_[sRefJetEt]
+
+                h = hist.Hist.new.Regular(100,0,2.5, name=sL1JetResponse).Weight()            
+                h.fill(data_toUse_[sL1JetResponse])
+
+                x_    = h.axes[0].centers
+                y_    = h.values()
+                yErr_ = np.sqrt(h.variances())
+
+                fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
+                axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
+                #axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
+                axs.set_xlabel(sL1JetResponse)
+                axs.set_ylabel('Entries')
+                axs.set_title('%s iEta %d pT [%.1f, %.1f]' % (PU_category, iEtaBin, PtRangeMin, PtRangeMax))
+
+
+                # index of bins with y>0
+                idx_NonZeroY = np.nonzero(y_)
+
+                # Give initial parameters for Gaussian function fit
+                #pInitial = [y_.max(), 1, 0.3]
+                pInitial = [y_.max(), np.mean(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse]), np.std(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse])]
+                if printLevel >= 5:
+                    print(f"{PU_category = }, {iEtaBin = }, {PtRangeMin = }, {PtRangeMax = }, {pInitial = }")
+
+                #popt, pcov = curve_fit(GaussianFunction, xdata=x_, ydata=y_, p0=pInitial)
+                try:
+                    popt, pcov = curve_fit(GaussianFunction, xdata=x_[idx_NonZeroY], ydata=y_[idx_NonZeroY], p0=pInitial, sigma=yErr_[idx_NonZeroY])
+                except:
+                    print(f"{PU_category = }, {iEtaBin = }, {PtRangeMin = }, {PtRangeMax = }, {pInitial = }:  fit did not converge *** ")
+                    continue
+
+                poptErr    = np.sqrt(np.diag(pcov))
+                print(f"popt: {popt}, \npcov: \n{pcov},  \n{poptErr = }")
+
+                Mean_  = popt[1];    errMean_  = poptErr[1]
+                Sigma_ = popt[2];    errSigma_ = poptErr[2]
+
+                x1Dense_ = np.arange(x_.min(), x_.max(), 0.01)            
+
+                #fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
+                #axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
+                axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
+                #axs.set_xlabel(sL1JetResponse)
+                #axs.set_ylabel('Entries')
+                #axs.set_title('%s iEta %d pT [%.1f, %.1f]' % (PU_category, iEtaBin, PtRangeMin, PtRangeMax))
+                axs.legend(bbox_to_anchor=(0.0, 1.0), loc='upper left', borderaxespad=0.9)
+                axs.set_ylim(0, y_.max() * 1.4)
+                axs.grid()
+
+                errJER_      = calculate_errorOfRatio(N=Sigma_, D=Mean_, eN=errSigma_, eD=errMean_)            
+                JES[PtMean] = {'value': Mean_,          'error': errMean_}
+                JER[PtMean] = {'value': Sigma_ / Mean_, 'error': errJER_}
+
+                fig.savefig('%s/L1JetResponse_1D_%s_ieta_%d_Pt_%.1f.png' % (sOutDir1D_toUse, PU_category, iEtaBin, PtMean))
+                plt.close(fig)
+
+
+            # plot JES vs Pt
+            JES_Ptwise    = [ JES[Pt]['value'] for Pt in JES.keys()]
+            errJES_Ptwise = [ JES[Pt]['error'] for Pt in JES.keys()]
+
             fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-            axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
-            #axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
-            axs.set_xlabel(sL1JetResponse)
-            axs.set_ylabel('Entries')
-            axs.set_title('%s iEta %d pT [%.1f, %.1f]' % (PU_category, iEtaBin, PtRangeMin, PtRangeMax))
-
-                        
-            # index of bins with y>0
-            idx_NonZeroY = np.nonzero(y_)
-            
-            # Give initial parameters for Gaussian function fit
-            #pInitial = [y_.max(), 1, 0.3]
-            pInitial = [y_.max(), np.mean(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse]), np.std(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse])]
-            if printLevel >= 5:
-                print(f"{PU_category = }, {iEtaBin = }, {PtRangeMin = }, {PtRangeMax = }, {pInitial = }")
-            
-            #popt, pcov = curve_fit(GaussianFunction, xdata=x_, ydata=y_, p0=pInitial)
-            try:
-                popt, pcov = curve_fit(GaussianFunction, xdata=x_[idx_NonZeroY], ydata=y_[idx_NonZeroY], p0=pInitial, sigma=yErr_[idx_NonZeroY])
-            except:
-                print(f"{PU_category = }, {iEtaBin = }, {PtRangeMin = }, {PtRangeMax = }, {pInitial = }:  fit did not converge *** ")
-                continue
-                
-            poptErr    = np.sqrt(np.diag(pcov))
-            print(f"popt: {popt}, \npcov: \n{pcov},  \n{poptErr = }")
-            
-            Mean_  = popt[1];    errMean_  = poptErr[1]
-            Sigma_ = popt[2];    errSigma_ = poptErr[2]
-            
-            x1Dense_ = np.arange(x_.min(), x_.max(), 0.01)            
-            
-            #fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-            #axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
-            axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
-            #axs.set_xlabel(sL1JetResponse)
-            #axs.set_ylabel('Entries')
-            #axs.set_title('%s iEta %d pT [%.1f, %.1f]' % (PU_category, iEtaBin, PtRangeMin, PtRangeMax))
-            axs.legend(bbox_to_anchor=(0.0, 1.0), loc='upper left', borderaxespad=0.9)
-            axs.set_ylim(0, y_.max() * 1.4)
+            axs.errorbar(list(JES.keys()), JES_Ptwise, yerr=errJES_Ptwise, fmt='o', markersize=1)
+            axs.set_xlabel('%s [GeV]' % (sRefJetEt))
+            axs.set_ylabel(r'$\mu$ (%s)' % (sL1JetResponse))
+            axs.set_title('%s iEta %d' % (PU_category, iEtaBin))
+            axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
+            axs.margins(y=0.3)
             axs.grid()
-            
-            errJER_      = calculate_errorOfRatio(N=Sigma_, D=Mean_, eN=errSigma_, eD=errMean_)            
-            JES[PtMean] = {'value': Mean_,          'error': errMean_}
-            JER[PtMean] = {'value': Sigma_ / Mean_, 'error': errJER_}
-                                   
-            fig.savefig('%s/L1JetResponse_1D_%s_ieta_%d_Pt_%.1f.png' % (sOutDir1D_toUse, PU_category, iEtaBin, PtMean))
+            fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Mean.png' % (sOutDir_toUse, PU_category, iEtaBin))  
             plt.close(fig)
-            
-            
-        # plot JES vs Pt
-        JES_Ptwise    = [ JES[Pt]['value'] for Pt in JES.keys()]
-        errJES_Ptwise = [ JES[Pt]['error'] for Pt in JES.keys()]
-        
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-        axs.errorbar(list(JES.keys()), JES_Ptwise, yerr=errJES_Ptwise, fmt='o', markersize=1)
-        axs.set_xlabel('%s [GeV]' % (sRefJetEt))
-        axs.set_ylabel(r'$\mu$ (%s)' % (sL1JetResponse))
-        axs.set_title('%s iEta %d' % (PU_category, iEtaBin))
-        axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
-        axs.margins(y=0.3)
-        axs.grid()
-        fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Mean.png' % (sOutDir_toUse, PU_category, iEtaBin))  
-        plt.close(fig)
-        
-        # plot JER vs iEta
-        JER_Ptwise    = [ JER[Pt]['value'] for Pt in JER.keys()]
-        errJER_Ptwise = [ JER[Pt]['error'] for Pt in JER.keys()]
-        
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-        axs.errorbar(list(JER.keys()), JER_Ptwise, yerr=errJER_Ptwise, fmt='o', markersize=1)
-        axs.set_xlabel('%s [GeV]' % (sRefJetEt))
-        axs.set_ylabel(r'$\sigma/\mu$ (%s)' % (sL1JetResponse))
-        axs.set_title('%s iEta %d' % (PU_category, iEtaBin))
-        axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
-        axs.margins(y=0.3)
-        fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Resolution.png' % (sOutDir_toUse, PU_category, iEtaBin))
-        plt.close(fig)       
+
+            # plot JER vs iEta
+            JER_Ptwise    = [ JER[Pt]['value'] for Pt in JER.keys()]
+            errJER_Ptwise = [ JER[Pt]['error'] for Pt in JER.keys()]
+
+            fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
+            axs.errorbar(list(JER.keys()), JER_Ptwise, yerr=errJER_Ptwise, fmt='o', markersize=1)
+            axs.set_xlabel('%s [GeV]' % (sRefJetEt))
+            axs.set_ylabel(r'$\sigma/\mu$ (%s)' % (sL1JetResponse))
+            axs.set_title('%s iEta %d' % (PU_category, iEtaBin))
+            axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
+            axs.margins(y=0.3)
+            fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Resolution.png' % (sOutDir_toUse, PU_category, iEtaBin))
+            plt.close(fig)       
 
 
-# In[23]:
+# In[ ]:
 
 
 # nEntries per iEta bin 
@@ -725,7 +738,7 @@ if printLevel >= 11:
     
 
 
-# In[28]:
+# In[ ]:
 
 
 #%%time
@@ -755,12 +768,15 @@ Pt_Cat_forML = OD()
 #Pt_Cat_forML['Ptgt90']   = [90, L1JetPtMax]
 Pt_Cat_forML['PtAll'] = [0, L1JetPtMax]
 
-if printLevel >= 11:
+if printLevel >= 5:
     print("train_vars: {}, \ntarget_var: {}, \nsL1JetEt_forML_predict: {}, \nsL1JetEt_predict: {}, \nsSF: {}".format(
         train_vars, target_var, sL1JetEt_forML_predict, sL1JetEt_predict, sSF))
     
 varsOfInterest = train_vars.copy()
-varsOfInterest.extend([target_var, sL1JetEt, sRefJetEt])
+#varsOfInterest.extend([target_var, sL1JetEt, sRefJetEt])
+for var_ in [target_var, sL1JetEt, sRefJetEt]:
+    if var_ not in varsOfInterest:
+        varsOfInterest.append(var_)
 if printLevel >= 0:
     print("Going for BDT training: varsOfInterest: {}\n".format(varsOfInterest))
     print("After train_vars: {}, \ntarget_var: {}, \nsL1JetEt_forML_predict: {}, \nsL1JetEt_predict: {}, \nsSF: {}".format(
@@ -841,8 +857,8 @@ for iEta_category, iEtaBinRange in IEta_Cat_forML.items():
             (data_all[sL1JetEt] >= PtRangeMin) &
             (data_all[sL1JetEt] <  PtRangeMax)
         ][varsOfInterest]
-        if printLevel >= 10:
-            print("\niEta_category {}, iEtaBinRange {}, Pt_category {}, PtRange {}, data_all_iEtaBins.describe(): \n{}".format(
+        if printLevel >= 0:
+            print("\nbefore training iEta_category {}, iEtaBinRange {}, Pt_category {}, PtRange {}, data_all_iEtaBins.describe(): \n{}".format(
                 iEta_category, iEtaBinRange, Pt_category, PtRange, data_all_iEtaBins.describe()))
 
 
@@ -868,7 +884,7 @@ for iEta_category, iEtaBinRange in IEta_Cat_forML.items():
             data_all_iEtaBins[sL1JetEt_predict] = convert_logGenEtByL1Et_to_GenEt( data_all_iEtaBins[sL1JetEt_forML_predict], data_all_iEtaBins[sL1JetEt] )
                        
         if printLevel >= 0:
-            print("\niEta_category {}, iEtaBinRange {}, Pt_category {}, PtRange {}, data_all_iEtaBins.describe(): \n{}".format(
+            print("\nafter training iEta_category {}, iEtaBinRange {}, Pt_category {}, PtRange {}, data_all_iEtaBins.describe(): \n{}".format(
                 iEta_category, iEtaBinRange, Pt_category, PtRange, data_all_iEtaBins.describe()))
             print(f"\n{data_all_iEtaBins = }")
             
@@ -879,10 +895,11 @@ for iEta_category, iEtaBinRange in IEta_Cat_forML.items():
         #sTrain_vars_ = '_'.join()
         #sBDTModel_fileName = '../data/BDTModel_%s_vs_%s__%s_%s.pkl' % ('_'.join(train_vars), target_var, iEta_category, Pt_category)
         sBDTModel_fileName = '../data/BDTModel_%s_%s_%s.pkl' % (version, iEta_category, Pt_category)
-        pickle.dump(BDTModel_dict[iEta_category][Pt_category], open(sBDTModel_fileName, "wb"))    
+        pickle.dump(BDTModel_dict[iEta_category][Pt_category], open(sBDTModel_fileName, "wb"))   
+        print(f"\n\nWrote BDT model to {sBDTModel_fileName = }"); sys.stdout.flush()
 
 
-# In[29]:
+# In[ ]:
 
 
 def prepareDataframeForSFs(iEtaBinRange, PtRangeMin=L1JetPtThrsh, PtRangeMax=L1JetPtMax, nVtx=48):
@@ -917,7 +934,7 @@ def prepareDataframeForSFs(iEtaBinRange, PtRangeMin=L1JetPtThrsh, PtRangeMax=L1J
     return data_SFs
 
 
-# In[30]:
+# In[ ]:
 
 
 # Change nVertex to evaluate SF here ----------------
@@ -973,7 +990,7 @@ data_SFs.to_csv(sOpFileName_SFs, index=False)
 print("Wrote {}".format(sOpFileName_SFs))                
 
 
-# In[36]:
+# In[ ]:
 
 
 sL1JetEt_calib = '%s_calib' % (sL1JetEt)
@@ -1000,7 +1017,7 @@ if printLevel >= 10:
     print("data_copy1: {}".format(data_copy1))
 
 
-# In[37]:
+# In[ ]:
 
 
 # SF vs Et plots ----
@@ -1010,32 +1027,33 @@ sOutDir1D_toUse = '%s/SF_vs_Et' % (sOutDirAfterJEC)
 if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
 if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
 
-for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
-    #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
-    
-    for CaloTool_mpEta in CaloToolMPEtaRange: # runs each iEta in iEtaBinRange
-        iEtaBin = convert_CaloToolMPEta_to_IEta(CaloTool_mpEta)
-        data_SFs_iEtaBin = data_SFs[
-            (data_SFs[sL1JetTowerIEtaAbs] == iEtaBin) & 
-            (data_SFs[sL1JetEt] >=  calibSF_L1JetPtRange[0])
-        ].copy()
-        axs.plot(
-            data_SFs_iEtaBin[sL1JetEt],
-            data_SFs_iEtaBin[sSF],
-            label='iEta %d' % (iEtaBin)
-        )
-    axs.set_xlabel('L1JetEt [GeV]')
-    axs.set_ylabel('Scale factor')
-    axs.set_title('%s' % (sL1JetEt))
-    axs.legend()
-        
-        
-    fig.savefig('%s/SF_vs_Et_%s_ieta_%d_to_%d.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))
-    plt.close(fig)
+if plotPerformancePlots:    
+    for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
+        #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
+        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
+
+        for CaloTool_mpEta in CaloToolMPEtaRange: # runs each iEta in iEtaBinRange
+            iEtaBin = convert_CaloToolMPEta_to_IEta(CaloTool_mpEta)
+            data_SFs_iEtaBin = data_SFs[
+                (data_SFs[sL1JetTowerIEtaAbs] == iEtaBin) & 
+                (data_SFs[sL1JetEt] >=  calibSF_L1JetPtRange[0])
+            ].copy()
+            axs.plot(
+                data_SFs_iEtaBin[sL1JetEt],
+                data_SFs_iEtaBin[sSF],
+                label='iEta %d' % (iEtaBin)
+            )
+        axs.set_xlabel('L1JetEt [GeV]')
+        axs.set_ylabel('Scale factor')
+        axs.set_title('%s' % (sL1JetEt))
+        axs.legend()
 
 
-# In[38]:
+        fig.savefig('%s/SF_vs_Et_%s_ieta_%d_to_%d.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))
+        plt.close(fig)
+
+
+# In[ ]:
 
 
 # L1Jet response per iEta bin range after JEC
@@ -1045,30 +1063,31 @@ sOutDir1D_toUse = '%s/L1JetResponse_perEta' % (sOutDirAfterJEC)
 if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
 if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
 
-for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
-    #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
-    
-    for CaloTool_mpEta in CaloToolMPEtaRange: # runs each iEta in iEtaBinRange
-        iEtaBin = convert_CaloToolMPEta_to_IEta(CaloTool_mpEta)
-        data_copy1_iEtaBin = data_copy1[data_copy1[sL1JetTowerIEtaAbs] == iEtaBin]
-        axs.hist(
-            (data_copy1_iEtaBin[sL1JetEt_calib]/data_copy1_iEtaBin[sRefJetEt]), 
-            bins=100, range=(0, 2.6),
-            label='iEta %d' % (iEtaBin),
-            histtype='step',#, linewidth=2
-            density=True
-        )
-    axs.set_xlabel('L1JetEt / %s' % (sRefJetEt))
-    axs.set_ylabel('Normalized entries')
-    axs.set_title('%s: after JEC' % (sL1JetEt))
-    axs.legend()
-        
-    fig.savefig('%s/AfterJEC_%s_ieta_%d_to_%d.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))
-    plt.close(fig)
+if plotPerformancePlots:    
+    for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
+        #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
+        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
+
+        for CaloTool_mpEta in CaloToolMPEtaRange: # runs each iEta in iEtaBinRange
+            iEtaBin = convert_CaloToolMPEta_to_IEta(CaloTool_mpEta)
+            data_copy1_iEtaBin = data_copy1[data_copy1[sL1JetTowerIEtaAbs] == iEtaBin]
+            axs.hist(
+                (data_copy1_iEtaBin[sL1JetEt_calib]/data_copy1_iEtaBin[sRefJetEt]), 
+                bins=100, range=(0, 2.6),
+                label='iEta %d' % (iEtaBin),
+                histtype='step',#, linewidth=2
+                density=True
+            )
+        axs.set_xlabel('L1JetEt / %s' % (sRefJetEt))
+        axs.set_ylabel('Normalized entries')
+        axs.set_title('%s: after JEC' % (sL1JetEt))
+        axs.legend()
+
+        fig.savefig('%s/AfterJEC_%s_ieta_%d_to_%d.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))
+        plt.close(fig)
 
 
-# In[39]:
+# In[ ]:
 
 
 # L1Jet response per iEta bin range per Pt cat after JEC
@@ -1078,35 +1097,36 @@ sOutDir1D_toUse = '%s/L1JetResponse_perEta_perPtCat' % (sOutDirAfterJEC)
 if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
 if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
 
-for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
-    #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
-    fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
-    iEtaBin_first = convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0])
-    iEtaBin_last  = convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])
-    
-    for pt_cat, pt_range in PT_CAT.items(): 
-        data_copy1_iEtaBin = data_copy1[ (
-            (data_copy1[sL1JetTowerIEtaAbs] >= iEtaBin_first) & 
-            (data_copy1[sL1JetTowerIEtaAbs] <= iEtaBin_last) &
-            (data_copy1[sRefJetEt] >= pt_range[0]) & 
-            (data_copy1[sRefJetEt] <  pt_range[2]) )]
-        axs.hist(
-            (data_copy1_iEtaBin[sL1JetEt_calib]/data_copy1_iEtaBin[sRefJetEt]), 
-            bins=100, range=(0, 2.6),
-            label='%d <= %s < %d' % (pt_range[0], sRefJetEt, pt_range[2]),
-            histtype='step',#, linewidth=2
-            density=True
-        )
-    axs.set_xlabel('L1JetEt / %s' % (sRefJetEt))
-    axs.set_ylabel('Normalized entries')
-    axs.set_title('%s in %d <= iEta <= %d' % (sL1JetEt, iEtaBin_first, iEtaBin_last))
-    axs.legend()
-        
-    fig.savefig('%s/AfterJEC_%s_ieta_%d_to_%d_inPtCat.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))   
-    plt.close(fig)
+if plotPerformancePlots:    
+    for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
+        #print(f"iEtaBinCompressed: {iEtaBinCompressed}  iEtaBinRange {iEtaBinRange}")
+        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')  
+        iEtaBin_first = convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0])
+        iEtaBin_last  = convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])
+
+        for pt_cat, pt_range in PT_CAT.items(): 
+            data_copy1_iEtaBin = data_copy1[ (
+                (data_copy1[sL1JetTowerIEtaAbs] >= iEtaBin_first) & 
+                (data_copy1[sL1JetTowerIEtaAbs] <= iEtaBin_last) &
+                (data_copy1[sRefJetEt] >= pt_range[0]) & 
+                (data_copy1[sRefJetEt] <  pt_range[2]) )]
+            axs.hist(
+                (data_copy1_iEtaBin[sL1JetEt_calib]/data_copy1_iEtaBin[sRefJetEt]), 
+                bins=100, range=(0, 2.6),
+                label='%d <= %s < %d' % (pt_range[0], sRefJetEt, pt_range[2]),
+                histtype='step',#, linewidth=2
+                density=True
+            )
+        axs.set_xlabel('L1JetEt / %s' % (sRefJetEt))
+        axs.set_ylabel('Normalized entries')
+        axs.set_title('%s in %d <= iEta <= %d' % (sL1JetEt, iEtaBin_first, iEtaBin_last))
+        axs.legend()
+
+        fig.savefig('%s/AfterJEC_%s_ieta_%d_to_%d_inPtCat.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))   
+        plt.close(fig)
 
 
-# In[48]:
+# In[ ]:
 
 
 # L1JetResponse vs Eta after JEC
@@ -1127,126 +1147,127 @@ PU_Cat_forResolutionPlots['PUAll'] = [0, 99]
 sL1JetEt_forResolutionPlots = sL1JetEt_calib
 sL1JetResponse = 'L1JetEt/%s' % (sRefJetEt)
 
-for PU_category, PURange in PU_Cat_forResolutionPlots.items():
-    PURangeMin = PURange[0]
-    PURangeMax = PURange[1]
+if plotPerformancePlots:
+    for PU_category, PURange in PU_Cat_forResolutionPlots.items():
+        PURangeMin = PURange[0]
+        PURangeMax = PURange[1]
 
-    for Pt_category, PtRange in Pt_Cat_forResolutionPlots.items():
-        PtRangeMin = PtRange[0]
-        PtRangeMax = PtRange[1]
-        
-        JES = OD()
-        JER = OD()
-        for iEtaBin in iEtaBins:
-            data_toUse_ = data_copy1[
-                (data_copy1[sL1JetTowerIEtaAbs] == iEtaBin   ) & 
-                (data_copy1[sRefJetEt]               >= PtRangeMin) &
-                (data_copy1[sRefJetEt]               <  PtRangeMax) & 
-                (data_copy1[snVtx]                   >= PURangeMin) &
-                (data_copy1[snVtx]                   <  PURangeMax)
-            ]#.copy()
-            data_toUse_[sL1JetResponse] = data_toUse_[sL1JetEt_forResolutionPlots] / data_toUse_[sRefJetEt]
-            print(f"PU: {PURange}, Pt: {PtRange}, iEta: {iEtaBin}")
-            
-            h = hist.Hist.new.Regular(100,0,2.5, name=sL1JetResponse).Weight()            
-            h.fill(data_toUse_[sL1JetResponse])
-            
-            x_    = h.axes[0].centers
-            y_    = h.values()
-            yErr_ = np.sqrt(h.variances())
-                        
-            # index of bins with y>0
-            idx_NonZeroY = np.nonzero(y_)
-            
-            # Give initial parameters for Gaussian function fit
-            #pInitial = [y_.max(), 1, 0.3]
-            pInitial = [y_.max(), np.mean(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse]), np.std(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse])]
-            
-            #popt, pcov = curve_fit(GaussianFunction, xdata=x_, ydata=y_, p0=pInitial)
-            try:
-                popt, pcov = curve_fit(GaussianFunction, xdata=x_[idx_NonZeroY], ydata=y_[idx_NonZeroY], p0=pInitial, sigma=yErr_[idx_NonZeroY])
-            except:
-                print(f"{PU_category = }, {Pt_category = }, {iEtaBin = }, {pInitial = }:  fit did not converge *** ")
-                continue
-            poptErr    = np.sqrt(np.diag(pcov))
-            print(f"popt: {popt}, \npcov: \n{pcov},  \n{poptErr = }")
-            
-            Mean_  = popt[1];    errMean_  = poptErr[1]
-            Sigma_ = popt[2];    errSigma_ = poptErr[2]
-            
-            x1Dense_ = np.arange(x_.min(), x_.max(), 0.01)            
-            
+        for Pt_category, PtRange in Pt_Cat_forResolutionPlots.items():
+            PtRangeMin = PtRange[0]
+            PtRangeMax = PtRange[1]
+
+            JES = OD()
+            JER = OD()
+            for iEtaBin in iEtaBins:
+                data_toUse_ = data_copy1[
+                    (data_copy1[sL1JetTowerIEtaAbs] == iEtaBin   ) & 
+                    (data_copy1[sRefJetEt]               >= PtRangeMin) &
+                    (data_copy1[sRefJetEt]               <  PtRangeMax) & 
+                    (data_copy1[snVtx]                   >= PURangeMin) &
+                    (data_copy1[snVtx]                   <  PURangeMax)
+                ]#.copy()
+                data_toUse_[sL1JetResponse] = data_toUse_[sL1JetEt_forResolutionPlots] / data_toUse_[sRefJetEt]
+                print(f"PU: {PURange}, Pt: {PtRange}, iEta: {iEtaBin}")
+
+                h = hist.Hist.new.Regular(100,0,2.5, name=sL1JetResponse).Weight()            
+                h.fill(data_toUse_[sL1JetResponse])
+
+                x_    = h.axes[0].centers
+                y_    = h.values()
+                yErr_ = np.sqrt(h.variances())
+
+                # index of bins with y>0
+                idx_NonZeroY = np.nonzero(y_)
+
+                # Give initial parameters for Gaussian function fit
+                #pInitial = [y_.max(), 1, 0.3]
+                pInitial = [y_.max(), np.mean(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse]), np.std(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse])]
+
+                #popt, pcov = curve_fit(GaussianFunction, xdata=x_, ydata=y_, p0=pInitial)
+                try:
+                    popt, pcov = curve_fit(GaussianFunction, xdata=x_[idx_NonZeroY], ydata=y_[idx_NonZeroY], p0=pInitial, sigma=yErr_[idx_NonZeroY])
+                except:
+                    print(f"{PU_category = }, {Pt_category = }, {iEtaBin = }, {pInitial = }:  fit did not converge *** ")
+                    continue
+                poptErr    = np.sqrt(np.diag(pcov))
+                print(f"popt: {popt}, \npcov: \n{pcov},  \n{poptErr = }")
+
+                Mean_  = popt[1];    errMean_  = poptErr[1]
+                Sigma_ = popt[2];    errSigma_ = poptErr[2]
+
+                x1Dense_ = np.arange(x_.min(), x_.max(), 0.01)            
+
+                fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
+                axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
+                axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
+                axs.set_xlabel(sL1JetResponse)
+                axs.set_ylabel('Entries')
+                axs.set_title('%s %s iEta %s' % (PU_category, Pt_category, iEtaBin))            
+                axs.legend(bbox_to_anchor=(0.0, 1.0), loc='upper left', borderaxespad=0.9)
+                axs.set_ylim(0, y_.max() * 1.4)
+                axs.grid()
+
+                errJER_      = calculate_errorOfRatio(N=Sigma_, D=Mean_, eN=errSigma_, eD=errMean_)            
+                JES[iEtaBin] = {'value': Mean_,          'error': errMean_}
+                JER[iEtaBin] = {'value': Sigma_ / Mean_, 'error': errJER_}
+
+                fig.savefig('%s/L1JetResponse_1D_%s_%s_ieta_%d.png' % (sOutDir1D_toUse, PU_category, Pt_category, iEtaBin))
+                plt.close(fig)
+
+
+
+
+
+            # plot JES vs iEta
+            JES_iEtawise    = [ JES[iEtaBin]['value'] for iEtaBin in JES.keys()]
+            errJES_iEtawise = [ JES[iEtaBin]['error'] for iEtaBin in JES.keys()]
+
+            yMin_ = np.min(np.array(JES_iEtawise) - np.array(errJES_iEtawise))
+            yMax_ = np.max(np.array(JES_iEtawise) + np.array(errJES_iEtawise))
+
             fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-            axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
-            axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
-            axs.set_xlabel(sL1JetResponse)
-            axs.set_ylabel('Entries')
-            axs.set_title('%s %s iEta %s' % (PU_category, Pt_category, iEtaBin))            
-            axs.legend(bbox_to_anchor=(0.0, 1.0), loc='upper left', borderaxespad=0.9)
-            axs.set_ylim(0, y_.max() * 1.4)
+            #axs.plot(list(JES.keys()), JES_iEtawise)
+            axs.errorbar(list(JES.keys()), JES_iEtawise, yerr=errJES_iEtawise, fmt='o', markersize=1)
+            axs.set_xlabel('iEta')
+            axs.set_ylabel(r'$\mu$ (%s)' % (sL1JetResponse))
+            axs.set_title('%s %s' % (PU_category, Pt_category))
+            if yMin_ < 0.5 or yMax_ > 1.3:
+                axs.set_ylim(0.5, 1.3)
+            else:
+                axs.set_ylim(yMin_, yMax_)
+            #axs.axhline(y=1, linestyle='--')
+            axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
+            axs.margins(y=0.3)
             axs.grid()
-            
-            errJER_      = calculate_errorOfRatio(N=Sigma_, D=Mean_, eN=errSigma_, eD=errMean_)            
-            JES[iEtaBin] = {'value': Mean_,          'error': errMean_}
-            JER[iEtaBin] = {'value': Sigma_ / Mean_, 'error': errJER_}
-                                   
-            fig.savefig('%s/L1JetResponse_1D_%s_%s_ieta_%d.png' % (sOutDir1D_toUse, PU_category, Pt_category, iEtaBin))
+            fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Mean.png' % (sOutDir_toUse, PU_category, Pt_category))
             plt.close(fig)
-            
-                        
-            
-                    
-            
-        # plot JES vs iEta
-        JES_iEtawise    = [ JES[iEtaBin]['value'] for iEtaBin in JES.keys()]
-        errJES_iEtawise = [ JES[iEtaBin]['error'] for iEtaBin in JES.keys()]
-        
-        yMin_ = np.min(np.array(JES_iEtawise) - np.array(errJES_iEtawise))
-        yMax_ = np.max(np.array(JES_iEtawise) + np.array(errJES_iEtawise))
-        
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-        #axs.plot(list(JES.keys()), JES_iEtawise)
-        axs.errorbar(list(JES.keys()), JES_iEtawise, yerr=errJES_iEtawise, fmt='o', markersize=1)
-        axs.set_xlabel('iEta')
-        axs.set_ylabel(r'$\mu$ (%s)' % (sL1JetResponse))
-        axs.set_title('%s %s' % (PU_category, Pt_category))
-        if yMin_ < 0.5 or yMax_ > 1.3:
-            axs.set_ylim(0.5, 1.3)
-        else:
-            axs.set_ylim(yMin_, yMax_)
-        #axs.axhline(y=1, linestyle='--')
-        axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
-        axs.margins(y=0.3)
-        axs.grid()
-        fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Mean.png' % (sOutDir_toUse, PU_category, Pt_category))
-        plt.close(fig)
-        
-        
-        # plot JER vs iEta
-        JER_iEtawise    = [ JER[iEtaBin]['value'] for iEtaBin in JER.keys()]
-        errJER_iEtawise = [ JER[iEtaBin]['error'] for iEtaBin in JER.keys()]
-        
-        yMin_ = np.min(np.array(JER_iEtawise) - np.array(errJER_iEtawise))
-        yMax_ = np.max(np.array(JER_iEtawise) + np.array(errJER_iEtawise))
-        
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-        #axs.plot(list(JES.keys()), JER_iEtawise)
-        axs.errorbar(list(JER.keys()), JER_iEtawise, yerr=errJER_iEtawise, fmt='o', markersize=1)
-        axs.set_xlabel('iEta')
-        axs.set_ylabel(r'$\sigma/\mu$ (%s)' % (sL1JetResponse))
-        axs.set_title('%s %s' % (PU_category, Pt_category))
-        if yMin_ < 0. or yMax_ > 1.:
-            axs.set_ylim(0., 1.)
-        else:
-            axs.set_ylim(yMin_, yMax_)                
-        axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
-        axs.margins(y=0.3)
-        axs.grid()
-        fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Resolution.png' % (sOutDir_toUse, PU_category, Pt_category)) 
-        plt.close(fig)
 
 
-# In[49]:
+            # plot JER vs iEta
+            JER_iEtawise    = [ JER[iEtaBin]['value'] for iEtaBin in JER.keys()]
+            errJER_iEtawise = [ JER[iEtaBin]['error'] for iEtaBin in JER.keys()]
+
+            yMin_ = np.min(np.array(JER_iEtawise) - np.array(errJER_iEtawise))
+            yMax_ = np.max(np.array(JER_iEtawise) + np.array(errJER_iEtawise))
+
+            fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
+            #axs.plot(list(JES.keys()), JER_iEtawise)
+            axs.errorbar(list(JER.keys()), JER_iEtawise, yerr=errJER_iEtawise, fmt='o', markersize=1)
+            axs.set_xlabel('iEta')
+            axs.set_ylabel(r'$\sigma/\mu$ (%s)' % (sL1JetResponse))
+            axs.set_title('%s %s' % (PU_category, Pt_category))
+            if yMin_ < 0. or yMax_ > 1.:
+                axs.set_ylim(0., 1.)
+            else:
+                axs.set_ylim(yMin_, yMax_)                
+            axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
+            axs.margins(y=0.3)
+            axs.grid()
+            fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Resolution.png' % (sOutDir_toUse, PU_category, Pt_category)) 
+            plt.close(fig)
+
+
+# In[ ]:
 
 
 # L1Jet response vs RefJetPt before JEC
@@ -1265,116 +1286,116 @@ RefJetPtBins_forResolutionPlots = [
 ]
 print(f"RefJetPtBins_forResolutionPlots: {RefJetPtBins_forResolutionPlots}")
 
+if plotPerformancePlots:
+    for PU_category, PURange in PU_Cat_forResolutionPlots.items():
+        PURangeMin = PURange[0]
+        PURangeMax = PURange[1]
 
-for PU_category, PURange in PU_Cat_forResolutionPlots.items():
-    PURangeMin = PURange[0]
-    PURangeMax = PURange[1]
-    
-    for iEtaBin in iEtaBins: # 1 to 41 iEtaBins
-        
-        JES = OD()
-        JER = OD()
-        for iPtBin in range(len(RefJetPtBins_forResolutionPlots) - 1):
-            PtRangeMin = RefJetPtBins_forResolutionPlots[iPtBin]
-            PtRangeMax = RefJetPtBins_forResolutionPlots[iPtBin + 1]
-            PtMean = (PtRangeMin + PtRangeMax)/2
- 
-            data_toUse_ = data_copy1[
-                (data_copy1[sL1JetTowerIEtaAbs] == iEtaBin   ) & 
-                (data_copy1[sRefJetEt]               >= PtRangeMin) &
-                (data_copy1[sRefJetEt]               <  PtRangeMax) & 
-                (data_copy1[snVtx]                   >= PURangeMin) &
-                (data_copy1[snVtx]                   <  PURangeMax)
-            ]#.copy()
-            data_toUse_[sL1JetResponse] = data_toUse_[sL1JetEt_forResolutionPlots] / data_toUse_[sRefJetEt]
-        
-            h = hist.Hist.new.Regular(100,0,2.5, name=sL1JetResponse).Weight()            
-            h.fill(data_toUse_[sL1JetResponse])
-            
-            x_    = h.axes[0].centers
-            y_    = h.values()
-            yErr_ = np.sqrt(h.variances())
-                        
-            # index of bins with y>0
-            idx_NonZeroY = np.nonzero(y_)
-            
-            # Give initial parameters for Gaussian function fit
-            #pInitial = [y_.max(), 1, 0.3]
-            pInitial = [y_.max(), np.mean(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse]), np.std(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse])]
-            
-            #popt, pcov = curve_fit(GaussianFunction, xdata=x_, ydata=y_, p0=pInitial)
-            try:
-                popt, pcov = curve_fit(GaussianFunction, xdata=x_[idx_NonZeroY], ydata=y_[idx_NonZeroY], p0=pInitial, sigma=yErr_[idx_NonZeroY])
-            except:
-                print(f"{PU_category = }, {iEtaBin = }, {PtRangeMin = }, {PtRangeMax = }, {pInitial = }:  fit did not converge *** ")
-                continue
-            poptErr    = np.sqrt(np.diag(pcov))
-            print(f"popt: {popt}, \npcov: \n{pcov},  \n{poptErr = }")
-            
-            Mean_  = popt[1];    errMean_  = poptErr[1]
-            Sigma_ = popt[2];    errSigma_ = poptErr[2]
-            
-            x1Dense_ = np.arange(x_.min(), x_.max(), 0.01)            
-            
+        for iEtaBin in iEtaBins: # 1 to 41 iEtaBins
+
+            JES = OD()
+            JER = OD()
+            for iPtBin in range(len(RefJetPtBins_forResolutionPlots) - 1):
+                PtRangeMin = RefJetPtBins_forResolutionPlots[iPtBin]
+                PtRangeMax = RefJetPtBins_forResolutionPlots[iPtBin + 1]
+                PtMean = (PtRangeMin + PtRangeMax)/2
+
+                data_toUse_ = data_copy1[
+                    (data_copy1[sL1JetTowerIEtaAbs] == iEtaBin   ) & 
+                    (data_copy1[sRefJetEt]               >= PtRangeMin) &
+                    (data_copy1[sRefJetEt]               <  PtRangeMax) & 
+                    (data_copy1[snVtx]                   >= PURangeMin) &
+                    (data_copy1[snVtx]                   <  PURangeMax)
+                ]#.copy()
+                data_toUse_[sL1JetResponse] = data_toUse_[sL1JetEt_forResolutionPlots] / data_toUse_[sRefJetEt]
+
+                h = hist.Hist.new.Regular(100,0,2.5, name=sL1JetResponse).Weight()            
+                h.fill(data_toUse_[sL1JetResponse])
+
+                x_    = h.axes[0].centers
+                y_    = h.values()
+                yErr_ = np.sqrt(h.variances())
+
+                # index of bins with y>0
+                idx_NonZeroY = np.nonzero(y_)
+
+                # Give initial parameters for Gaussian function fit
+                #pInitial = [y_.max(), 1, 0.3]
+                pInitial = [y_.max(), np.mean(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse]), np.std(data_toUse_.loc[data_toUse_[sL1JetResponse] < 2.5][sL1JetResponse])]
+
+                #popt, pcov = curve_fit(GaussianFunction, xdata=x_, ydata=y_, p0=pInitial)
+                try:
+                    popt, pcov = curve_fit(GaussianFunction, xdata=x_[idx_NonZeroY], ydata=y_[idx_NonZeroY], p0=pInitial, sigma=yErr_[idx_NonZeroY])
+                except:
+                    print(f"{PU_category = }, {iEtaBin = }, {PtRangeMin = }, {PtRangeMax = }, {pInitial = }:  fit did not converge *** ")
+                    continue
+                poptErr    = np.sqrt(np.diag(pcov))
+                print(f"popt: {popt}, \npcov: \n{pcov},  \n{poptErr = }")
+
+                Mean_  = popt[1];    errMean_  = poptErr[1]
+                Sigma_ = popt[2];    errSigma_ = poptErr[2]
+
+                x1Dense_ = np.arange(x_.min(), x_.max(), 0.01)            
+
+                fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
+                axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
+                axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
+                axs.set_xlabel(sL1JetResponse)
+                axs.set_ylabel('Entries')
+                axs.set_title('%s iEta %d pT [%.1f, %.1f]' % (PU_category, iEtaBin, PtRangeMin, PtRangeMax))
+                axs.legend(bbox_to_anchor=(0.0, 1.0), loc='upper left', borderaxespad=0.9)
+                axs.set_ylim(0, y_.max() * 1.4)
+                axs.grid()
+
+                errJER_      = calculate_errorOfRatio(N=Sigma_, D=Mean_, eN=errSigma_, eD=errMean_)            
+                JES[PtMean] = {'value': Mean_,          'error': errMean_}
+                JER[PtMean] = {'value': Sigma_ / Mean_, 'error': errJER_}
+
+                fig.savefig('%s/L1JetResponse_1D_%s_ieta_%d_Pt_%.1f.png' % (sOutDir1D_toUse, PU_category, iEtaBin, PtMean))
+                plt.close(fig)
+
+
+            # plot JES vs Pt
+            JES_Ptwise    = [ JES[Pt]['value'] for Pt in JES.keys()]
+            errJES_Ptwise = [ JES[Pt]['error'] for Pt in JES.keys()]
+
+            yMin_ = np.min(np.array(JES_Ptwise) - np.array(errJES_Ptwise))
+            yMax_ = np.max(np.array(JES_Ptwise) + np.array(errJES_Ptwise))
+
             fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-            axs.errorbar(x_, y_, yerr=yErr_, label='Entries', fmt='o', markersize=1)
-            axs.plot(x1Dense_, GaussianFunction(x1Dense_, *popt), label=r'Gaussian fit, $\mu:\,  %.2f \pm %.2f$, $\sigma:\, %.2f \pm %.2f$'%(Mean_,errMean_, Sigma_,errSigma_))
-            axs.set_xlabel(sL1JetResponse)
-            axs.set_ylabel('Entries')
-            axs.set_title('%s iEta %d pT [%.1f, %.1f]' % (PU_category, iEtaBin, PtRangeMin, PtRangeMax))
-            axs.legend(bbox_to_anchor=(0.0, 1.0), loc='upper left', borderaxespad=0.9)
-            axs.set_ylim(0, y_.max() * 1.4)
+            axs.errorbar(list(JES.keys()), JES_Ptwise, yerr=errJES_Ptwise, fmt='o', markersize=1)
+            axs.set_xlabel('%s [GeV]' % (sRefJetEt))
+            axs.set_ylabel(r'$\mu$ (%s)' % (sL1JetResponse))
+            axs.set_title('%s iEta %d' % (PU_category, iEtaBin))
+            if yMin_ < 0.5 or yMax_ > 1.3:
+                axs.set_ylim(0.5, 1.3)
+            else:
+                axs.set_ylim(yMin_, yMax_)
+            axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
+            axs.margins(y=0.3)
             axs.grid()
-            
-            errJER_      = calculate_errorOfRatio(N=Sigma_, D=Mean_, eN=errSigma_, eD=errMean_)            
-            JES[PtMean] = {'value': Mean_,          'error': errMean_}
-            JER[PtMean] = {'value': Sigma_ / Mean_, 'error': errJER_}
-                                   
-            fig.savefig('%s/L1JetResponse_1D_%s_ieta_%d_Pt_%.1f.png' % (sOutDir1D_toUse, PU_category, iEtaBin, PtMean))
+            fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Mean.png' % (sOutDir_toUse, PU_category, iEtaBin))   
             plt.close(fig)
-            
-            
-        # plot JES vs Pt
-        JES_Ptwise    = [ JES[Pt]['value'] for Pt in JES.keys()]
-        errJES_Ptwise = [ JES[Pt]['error'] for Pt in JES.keys()]
-        
-        yMin_ = np.min(np.array(JES_Ptwise) - np.array(errJES_Ptwise))
-        yMax_ = np.max(np.array(JES_Ptwise) + np.array(errJES_Ptwise))
-        
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-        axs.errorbar(list(JES.keys()), JES_Ptwise, yerr=errJES_Ptwise, fmt='o', markersize=1)
-        axs.set_xlabel('%s [GeV]' % (sRefJetEt))
-        axs.set_ylabel(r'$\mu$ (%s)' % (sL1JetResponse))
-        axs.set_title('%s iEta %d' % (PU_category, iEtaBin))
-        if yMin_ < 0.5 or yMax_ > 1.3:
-            axs.set_ylim(0.5, 1.3)
-        else:
-            axs.set_ylim(yMin_, yMax_)
-        axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
-        axs.margins(y=0.3)
-        axs.grid()
-        fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Mean.png' % (sOutDir_toUse, PU_category, iEtaBin))   
-        plt.close(fig)
-        
-        # plot JER vs iEta
-        JER_Ptwise    = [ JER[Pt]['value'] for Pt in JER.keys()]
-        errJER_Ptwise = [ JER[Pt]['error'] for Pt in JER.keys()]
 
-        yMin_ = np.min(np.array(JER_Ptwise) - np.array(errJER_Ptwise))
-        yMax_ = np.max(np.array(JER_Ptwise) + np.array(errJER_Ptwise))        
-        
-        fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
-        axs.errorbar(list(JER.keys()), JER_Ptwise, yerr=errJER_Ptwise, fmt='o', markersize=1)
-        axs.set_xlabel('%s [GeV]' % (sRefJetEt))
-        axs.set_ylabel(r'$\sigma/\mu$ (%s)' % (sL1JetResponse))
-        axs.set_title('%s iEta %d' % (PU_category, iEtaBin))
-        if yMin_ < 0. or yMax_ > 1.:
-            axs.set_ylim(0., 1.)
-        else:
-            axs.set_ylim(yMin_, yMax_)        
-        axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
-        axs.margins(y=0.3)
-        axs.grid()
-        fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Resolution.png' % (sOutDir_toUse, PU_category, iEtaBin))
-        plt.close(fig)
+            # plot JER vs iEta
+            JER_Ptwise    = [ JER[Pt]['value'] for Pt in JER.keys()]
+            errJER_Ptwise = [ JER[Pt]['error'] for Pt in JER.keys()]
+
+            yMin_ = np.min(np.array(JER_Ptwise) - np.array(errJER_Ptwise))
+            yMax_ = np.max(np.array(JER_Ptwise) + np.array(errJER_Ptwise))        
+
+            fig, axs = plt.subplots(nrows=1, ncols=1, figsize=(5,4), layout='constrained')
+            axs.errorbar(list(JER.keys()), JER_Ptwise, yerr=errJER_Ptwise, fmt='o', markersize=1)
+            axs.set_xlabel('%s [GeV]' % (sRefJetEt))
+            axs.set_ylabel(r'$\sigma/\mu$ (%s)' % (sL1JetResponse))
+            axs.set_title('%s iEta %d' % (PU_category, iEtaBin))
+            if yMin_ < 0. or yMax_ > 1.:
+                axs.set_ylim(0., 1.)
+            else:
+                axs.set_ylim(yMin_, yMax_)        
+            axs.legend(bbox_to_anchor=(0.1, 1), loc='upper left', borderaxespad=0.9)
+            axs.margins(y=0.3)
+            axs.grid()
+            fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Resolution.png' % (sOutDir_toUse, PU_category, iEtaBin))
+            plt.close(fig)
 

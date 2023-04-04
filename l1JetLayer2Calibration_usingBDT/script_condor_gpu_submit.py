@@ -123,8 +123,8 @@ for PUS, command0 in commands.items():
             #f.write(" \n")
             f.write("conda activate ana_htoaa \n")
             #f.write("time python3 %s/%s  %s \n" % (pwd,sAnalysis, sConfig_to_use))
-            f.write('echo "GPU information:" \n')
-            f.write("nvidia-smi \n")
+            #f.write('echo "GPU information:" \n')
+            #f.write("nvidia-smi \n")
             
             f.write("%s \n" % (command0))
             
@@ -141,13 +141,13 @@ for PUS, command0 in commands.items():
             f.write("notification = never \n")
             f.write("should_transfer_files = YES \n")
             f.write("when_to_transfer_output = ON_EXIT \n")
-            f.write("request_gpus = 2 \n")
+            #f.write("request_gpus = 2 \n")
             #f.write("+JobFlavour = \"workday\" \n")
             #f.write("+JobFlavour = \"espresso\" \n") # 20 mins
             #f.write("+JobFlavour = \"microcentury\" \n") # 1 hours
             #f.write("+JobFlavour = \"longlunch\" \n") # 2 hours
-            #f.write("+JobFlavour = \"workday\" \n") # 8 hours
-            f.write("+JobFlavour = \"tomorrow\" \n") # 1 day
+            f.write("+JobFlavour = \"workday\" \n") # 8 hours
+            #f.write("+JobFlavour = \"tomorrow\" \n") # 1 day
             f.write("queue \n")
 
 
