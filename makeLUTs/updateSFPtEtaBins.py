@@ -37,14 +37,14 @@ calibSFLable = ['SF'][icalibSF]
 sipFileCalibSF = {
     'Default': {
        'RawPUS': { # Chunky donut
-           'fileName': '../data/L1T_Jet_SFs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925_v3_HyperOpt_L1JetEt_PUS_ChunkyDonut.csv', 
+           'fileName': '../data/L1T_Jet_SFs_2023_QCDP_126X_mcRun3_2023_13_1_0_pre2_HBZS0p5_20230330_L1JetEt_PUS_ChunkyDonut_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33_woHyperParamOptmz.csv', 
            'SFLabel': ['SF'][icalibSF],
            'L1JetPtVarName':'L1JetEt_PUS_ChunkyDonut',
            'additionalCorrForLUT': 1.0,
        },
        
        'RawPUS_phiDefault': {
-           'fileName': '../data/L1T_Jet_SFs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925_v3_HyperOpt_L1JetEt_PUS_PhiRing.csv',
+           'fileName': '../data/L1T_Jet_SFs_2023_QCDP_126X_mcRun3_2023_13_1_0_pre2_HBZS0p5_20230330_L1JetEt_PUS_PhiRing_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33_woHyperParamOptmz.csv',
            'SFLabel': ['SF'][icalibSF],
            'L1JetPtVarName':'L1JetEt_PUS_PhiRing',
            'additionalCorrForLUT': 8.0/7.0, # 8/7 factor is needed for PhiRing as different PU estimation considered in CMSSW and Andrew's computation
@@ -61,8 +61,8 @@ PtCompressedLUTVersion = 'v2018' # 'v2018',  'v2022'
 EtaCompressedLUT = True; EtaCompressedLUTVersion = 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged'
 
 
-sLUTVersion = '2022v5'
-JECSF_boundary = [0.9, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0]
+sLUTVersion = '2023v0'
+JECSF_boundary = [0.0, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0]
 nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
 makeLUTForIEta29 = [False, 1.0]
 makeLUTForIEta41 = [False] # SFs for iEta=41 are missing in SFv6. Copy SFs from IEta=40
@@ -72,7 +72,7 @@ sFOut_LUT_pt_compress    = 'lut_pt_compress_%s.txt' % (sLUTVersion)
 sFOut_LUT_eta_compress   = 'lut_eta_compress_%s.txt' % (sLUTVersion)
 sFOut_LUT_calib_compress = 'lut_calib_%s_ECALZS_decimal.txt' % (sLUTVersion)
 
-makeLUTsInUncompressedBins = False # make LUTs without compressing Pt and Eta bins
+makeLUTsInUncompressedBins = True # make LUTs without compressing Pt and Eta bins
 sFOut_LUT_pt_uncompress  = 'lut_pt_uncompress_%s.txt' % (sLUTVersion)
 sFOut_LUT_eta_uncompress = 'lut_eta_uncompress_%s.txt' % (sLUTVersion)
 sFOut_LUT_calib_uncompress = 'lut_calib_%s_ECALZS_decimal_uncompress.txt' % (sLUTVersion)
@@ -771,24 +771,32 @@ if __name__ == '__main__':
 
                 # write headers
                 fOut_LUT_eta_uncompress.write('# MP ieta compression LUT\n')
-                fOut_LUT_eta_uncompress.write('# Converts abs(MP ieta) (6 bits) into 4 bit index\n')
+                fOut_LUT_eta_uncompress.write('# Converts abs(MP ieta) (6 bits) into 6 bit index\n')
                 fOut_LUT_eta_uncompress.write('# This is NOT calo ieta\n')
                 fOut_LUT_eta_uncompress.write('# anything after # is ignored with the exception of the header\n')
                 fOut_LUT_eta_uncompress.write('# the header is first valid line starting with #<header> versionStr nrBitsAddress nrBitsData </header>\n')
-                fOut_LUT_eta_uncompress.write('#<header> v1 6 4 </header>\n')
+                fOut_LUT_eta_uncompress.write('#<header> v1 6 6 </header>\n')
 
                 fOut_LUT_pt_uncompress.write('# PT compression LUT\n')
-                fOut_LUT_pt_uncompress.write('# maps 8 bits to 4 bits\n')
+                fOut_LUT_pt_uncompress.write('# maps 8 bits to 8 bits\n')
                 fOut_LUT_pt_uncompress.write('# the 1st column is the integer value after selecting bits 1:8\n')
                 fOut_LUT_pt_uncompress.write('# anything after # is ignored with the exception of the header\n')
                 fOut_LUT_pt_uncompress.write('# the header is first valid line starting with #<header> versionStr nrBitsAddress nrBitsData </header>\n')
-                fOut_LUT_pt_uncompress.write('#<header> v1 8 4 </header>\n')
+                fOut_LUT_pt_uncompress.write('#<header> v1 8 8 </header>\n')
                 
                 
-
+                IEtaBin_forLUT_col0 = None
+                
                 for IEta in EtaBins_sorted:
-                    IEtaBin_forLUT = IEta - 1
-                    fOut_LUT_eta_uncompress.write('%d %d\n' % (int(IEtaBin_forLUT), int(IEtaBin_forLUT)))
+                    CaloTool_mpEta      = map_CaloIEta_to_CaloTool_mpEta[IEta]
+                    IEtaBin_forLUT_col0 = CaloTool_mpEta
+                    IEtaBin_forLUT_col1 = CaloTool_mpEta - 1
+                    IEtaBin_forLUT      = IEtaBin_forLUT_col1
+                    
+                    if IEta == EtaBins_sorted[0]:
+                        fOut_LUT_eta_uncompress.write('0 0  # dummy ieta_bin\n')                        
+                    fOut_LUT_eta_uncompress.write('%d %d  # ieta %d\n' % (int(IEtaBin_forLUT_col0), int(IEtaBin_forLUT_col1), IEta))
+                    
                     
                     for Pt in PtBins_forLUT:
                         PtBin_forLUT = Pt
@@ -799,7 +807,7 @@ if __name__ == '__main__':
                             
                         sComments = ""
                         if Pt == PtBins_forLUT[0]:
-                            sComments = "   # eta_bin %d, pt %d" % (IEtaBin_forLUT, PtBin_forLUT)
+                            sComments = "   # ieta %d, pt %d" % (IEta, PtBin_forLUT)
 
                         bin_eta_pt_forLUT = (nPtBins_forLUT * IEtaBin_forLUT) + PtBin_forLUT
                         #fOut_LUT_calib_uncompress.write('%d %f%s\n' % (int(bin_eta_pt_forLUT), data_calibSFs[IEta][Pt], sComments ))
@@ -814,6 +822,15 @@ if __name__ == '__main__':
                             ))
             
 
+                IEtaBin_forLUT_col0 += 1 # the next bin = 42
+                while IEtaBin_forLUT_col0 < nBinsMaxForEtaCompressionLUT:
+                    IEtaBin_forLUT_col1 = IEtaBin_forLUT_col0 - 1 
+                    #fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT_col0), int(IEtaBin_forLUT_col1)))
+                    fOut_LUT_eta_uncompress.write('%d %d\n' % (int(IEtaBin_forLUT_col0), int(0)))
+                    IEtaBin_forLUT_col0 += 1
+
+
+                            
                 fOut_LUT_pt_uncompress.close()
                 fOut_LUT_eta_uncompress.close()
                 fOut_LUT_calib_uncompress.close()
@@ -1188,6 +1205,9 @@ if __name__ == '__main__':
                     if iPtQuant == 0:
                         #sComments = "   # ieta %d, pt %d" % (IEtaBin, PtBin_forLUT)
                         sComments = "   # ieta {}, pt {}".format(CaloToolMPEtaRange, PtBin_forLUT)
+                        if int(CaloToolMPEtaBin_forLUT) == 0:
+                            fOut_LUT_calib_compress.write('# columns \n')
+                            fOut_LUT_calib_compress.write('# %s %s %s %s %s %s %s\n' % ('CaloToolMPEtaBin', 'PtMin', 'PtMax', 'avgPt', 'IEtaBin_forLUT_col1', 'PtBin_forLUT', 'SF' ))
                     fOut_LUT_calib_compress.write('%d %d %d %d %d %d %f%s\n' % (int(CaloToolMPEtaBin_forLUT), int(PtMin_iPtQuant + 0.5), int(PtMax_iPtQuant + 0.5), int(avgPt_iPtQuant + 0.5), int(IEtaBin_forLUT_col1), int(PtBin_forLUT), avgSF_iPtQuant, sComments ))
 
 

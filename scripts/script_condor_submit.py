@@ -35,6 +35,9 @@ commands = {
     #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut_JEC2022v4_test":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_JECLUT2022v4_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/220928_161945/0000/L1Ntuple_101.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ", 
     #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut_JEC2022v4_test":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_JECLUT2022v4_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/220928_161945/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
     #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut_JEC2022v5_test":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_JECLUT2022v5_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/221007_181344/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    "PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut_JEC2022v5_test":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_JECLUT2022v5_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/221007_181344/0000/L1Ntuple_1-*.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut_JEC2022v5_test":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_JECLUT2022v5_Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/221007_181344/0000/L1Ntuple_1-99.root'   --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+
 
     #"2022_Default_l1NtupleChunkyDonut_JEC2022v7":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_0_0_pre4_Run2022G-ZMu-PromptReco-v1/230221_161135/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut ",
     #"2022_Default_l1NtupleChunkyDonut_JEC2022v7":  "time python L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_0_0_pre4_Run2022G-ZMu-PromptReco-v1/230221_161135/0000/L1Ntuple_1-1.root'   --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut ",
@@ -42,13 +45,14 @@ commands = {
 
     # 13_1_0_pre2_HBZS0p5
     #"2023_MC_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/230328_213104/0000/L1Ntuple_*'   --PUrangeTag nVtxAll  --l1MatchGen  --l1NtupleChunkyDonut    ",
+    #"2023_MC_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/230328_213104/0000/L1Ntuple_1*'   --PUrangeTag nVtxAll  --l1MatchGen  --l1NtupleChunkyDonut    ",
     #"2023_MC_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/230328_213104/0000/L1Ntuple_982.root'   --PUrangeTag nVtxAll  --l1MatchGen  --l1NtupleChunkyDonut  ",
-    "2022_Data_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run2022G-ZMu-PromptReco-v1/230329_100000/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtupleChunkyDonut    ",
+    #"2022_Data_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run2022G-ZMu-PromptReco-v1/230329_100000/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtupleChunkyDonut    ",
     #"2022_Data_l1NtupleChunkyDonut_JEC2023v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run2022G-ZMu-PromptReco-v1/230329_100000/0000/L1Ntuple_9.root'   --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtupleChunkyDonut    ",
 } 
 
-runLocally = False 
-nSplitsInput = 1 if runLocally else 50
+runLocally = False  
+nSplitsInput = 1 if runLocally else 100
 
 
 
@@ -168,9 +172,9 @@ for PUS, command0 in commands.items():
             f.write("when_to_transfer_output = ON_EXIT \n")
             #f.write("+JobFlavour = \"workday\" \n")
             #f.write("+JobFlavour = \"espresso\" \n") # 20 mins
-            #f.write("+JobFlavour = \"microcentury\" \n") # 1 hours
+            f.write("+JobFlavour = \"microcentury\" \n") # 1 hours
             #f.write("+JobFlavour = \"longlunch\" \n") # 2 hours
-            f.write("+JobFlavour = \"workday\" \n") # 8 hours
+            #f.write("+JobFlavour = \"workday\" \n") # 8 hours
             #f.write("+JobFlavour = \"tomorrow\" \n") # 1 day
             f.write("queue \n")
 

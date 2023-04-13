@@ -23,8 +23,10 @@ config.JobType.psetName = 'l1ntuple_maker_run3_mc_13_1_0_pre2_HBZS0p5.py'
 #config.JobType.pyCfgParams = ['maxEvt=-1', 'prtEvt=10000', 'nVtxMin=50', 'HCALPFA=%s' % (scheme)] 
 #config.JobType.outputFiles = ['L1Ntuple_HCAL.root']
 
-config.Data.inputDataset = '/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/GEN-SIM-RAW' # '/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/GEN-SIM-DIGI-RAW' #'/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Summer21DR-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/AODSIM'
+#config.Data.inputDataset = '/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1/GEN-SIM-RAW' # '/QCD_Pt15to7000_TuneCP5_13p6TeV-pythia8/Run3Winter22DR-L1TPU0to99FEVT_castor_122X_mcRun3_2021_realistic_v9-v2/GEN-SIM-DIGI-RAW' #'/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Summer21DR-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/AODSIM'
 #config.Data.secondaryInputDataset = '/QCD_Pt15to7000_TuneCP5_14TeV-pythia8/Run3Summer21DR-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1/GEN-SIM-DIGI-RAW'
+
+config.Data.inputDataset = '/SinglePionGun_E0p2to200/Run3Winter23Digi-NoPU_126X_mcRun3_2023_forPU65_v1-v2/GEN-SIM-RAW'
 
 config.General.requestName = config.Data.inputDataset.split('/')[2]
 #config.Data.outputDatasetTag = 'Run3Summer21DR-FlatPU0to80FEVT_castor_120X_mcRun3_2021_realistic_v6-v1_'

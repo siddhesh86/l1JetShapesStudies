@@ -52,7 +52,7 @@ TrigThshs_OffMuPt = [ 24 ] # For e.g. for IsoMu24: [ 24 ], for DiMu24: [24, 24],
 GoldenJSONForData_list=["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json"] #["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_eraG_362433_362760_Golden.json"]
 
 
-runMode = 'makeInputForML' # makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
+runMode = '' # makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
 # 'test'           # run on L1Ntuple_*_1.root ntuple for tests
 # ''               # 1st round to make jet resolution plots
 # 'CalCalibSF'     # set true to fill PFjetPt vs L1jetPt histograms to calculate calibration SFs
@@ -82,7 +82,7 @@ time awk '
 
 MASS_MUON     = 0.1056584 # GeV https://pdglive.lbl.gov/Particle.action?node=S004&init=0
 MASS_ELECTRON = 0.0005110 # GeV https://pdglive.lbl.gov/Particle.action?node=S003&init=0
-
+SFToConvertInGeV = 0.5
 
 # PU reweighting ----------------------------------------- 
 usePUReweighting_0   = False;
@@ -635,6 +635,8 @@ def run():
     hDummy.SetDefaultSumw2()
 
     pt_bins  = [20,    0, 200]
+    ptHigh_bins  = [200,    0, 1000]
+    ptMid_bins   = [200,    0, 200]
     res_bins = [80, -1.5, 2.5]
     dR_bins  = [35,  0.0, 0.35]
     puEt_bins = [60,   0, 120]
@@ -686,7 +688,7 @@ def run():
             for iEta in ETA_CAT.keys():
                 hist[dist][algo][iEta] = {}
                 ## Loop over pT ranges
-                for iPt in PT_CAT.keys()+['PtAllBins']:
+                for iPt in list(PT_CAT.keys())+['PtAllBins']:
                     hist[dist][algo][iEta][iPt] = {}
                     ## Loop over unpacked and emulated
                     for src in ['unp','emu']:
@@ -1097,6 +1099,41 @@ def run():
                                                   100, 0, 2) )
     
 
+    # dists8
+    dists8 = [
+        'L1JetPtRawPUS', 'TT_iet', 'ECALTP_et', 'ECALTP_compEt', 'HCALTP_et', 'HCALTP_compEt',
+        'L1JetPtRawPUS_vs_RefJetPt'
+    ]
+    hist8 = {}
+    for dist in dists8:
+        hist8[dist] = {}
+
+        ## Loop over unpacked and emulated
+        for src in ['unp','emu']:
+            hist8[dist][src] = {}
+
+            for iEta in ETA_Bins:
+
+                if   dist in ['L1JetPtRawPUS', 'TT_iet']:
+                    hist8[dist][src][iEta] = R.TH1D( 'h%s_iEta%s_%s' % (dist, iEta, src),
+                                                      '%s iEta%s %s' % (dist, iEta, src),
+                                                      ptHigh_bins[0], ptHigh_bins[1], ptHigh_bins[2] )
+                    
+                if   dist in ['ECALTP_et', 'ECALTP_compEt', 'HCALTP_et', 'HCALTP_compEt']:
+                    hist8[dist][src][iEta] = R.TH1D( 'h%s_iEta%s_%s' % (dist, iEta, src),
+                                                      '%s iEta%s %s' % (dist, iEta, src),
+                                                      ptMid_bins[0], ptMid_bins[1], ptMid_bins[2] )
+                    
+                elif dist in ['L1JetPtRawPUS_vs_RefJetPt']:
+                    hist8[dist][src][iEta] = R.TH2D( 'h%s_iEta%s_%s' % (dist, iEta, src),
+                                                      '%s iEta%s %s' % (dist, iEta, src),
+                                                      ptHigh_bins[0], ptHigh_bins[1], ptHigh_bins[2],
+                                                      ptHigh_bins[0], ptHigh_bins[1], ptHigh_bins[2])
+                
+
+
+
+                
     hCaloTTi_iEta_vs_Phi_tmplate = R.TH2D( 'hCaloTT_iEta_vs_iPhi', '', 83,-41.5,41.5, 72,0.5,72.5, ) # iEta on xaxis and iPhi on y-axis
 
     hCaloTowers_iEta_vs_iPhi_list = []
@@ -1609,6 +1646,32 @@ def run():
             hnVts_vs_nTT_unp.Fill(nVtx, nUnpTTs)
             hnVts_vs_nTT_emu.Fill(nVtx, nEmuTTs)
 
+            # TT, TP plots --------------------------------------------------------------------------------------------------------------------
+            for src in ['unp','emu']:
+                TT_br_toUse = None
+                TP_br_toUse = None
+                if src == 'unp':
+                    TT_br_toUse = uTT_br 
+                    TP_br_toUse = uTP_br 
+                else:
+                    TT_br_toUse = eTT_br
+                    TP_br_toUse = eTP_br                    
+                
+                for iTT in range(TT_br_toUse.nTower):
+                    sIEta = str(abs(TT_br_toUse.ieta[iTT]))
+                    hist8['TT_iet'][src][sIEta].Fill(TT_br_toUse.iet[iTT])
+                
+                for iTP in range(TP_br_toUse.nECALTP):
+                    sIEta = str(abs(TP_br_toUse.ecalTPieta[iTP]))
+                    hist8['ECALTP_et'    ][src][sIEta].Fill(TP_br_toUse.ecalTPet[iTP])
+                    hist8['ECALTP_compEt'][src][sIEta].Fill(TP_br_toUse.ecalTPcompEt[iTP])
+                   
+                for iTP in range(TP_br_toUse.nHCALTP):
+                    sIEta = str(abs(TP_br_toUse.hcalTPieta[iTP]))
+                    hist8['HCALTP_et'    ][src][sIEta].Fill(TP_br_toUse.hcalTPet[iTP])
+                    hist8['HCALTP_compEt'][src][sIEta].Fill(TP_br_toUse.hcalTPcompEt[iTP])
+            # -----------------------------------------------------------------------------------------------------------------------------
+            
 
             # Mimic trigger conditions in offline objects ---------------------------------------------------------------------------------
             if not isMC and len(HLT_Triggers_Required) > 0:
@@ -2196,6 +2259,7 @@ def run():
 
                     hdR_OffJet_L1Jet[src].Fill(vOff.DeltaR(vL1Jet))
 
+
                     
                     #print "src: {}, l1jet_idx: {}, l1jet_br.nJets: {}".format(src,l1jet_idx,l1jet_br.nJets)
                     jetEtPUS_L1JetDefault = l1jet_br.jetEt[l1jet_idx]
@@ -2261,6 +2325,14 @@ def run():
                     hist_nPV_vs_L1JetDefaultPUS_SF[src]['HBEF'     ].Fill(nVtx,  l1jet_br.jetEt[l1jet_idx]    / Jet_br.etCorr[iOff])
                     '''
 
+
+                    
+                    hist8['L1JetPtRawPUS'][src][sjetIEtaAbs].Fill( (l1jet_br.jetRawEt[l1jet_idx] - l1jet_br.jetPUEt[l1jet_idx])*SFToConvertInGeV )
+                    hist8['L1JetPtRawPUS'][src]['HBEF'     ].Fill( (l1jet_br.jetRawEt[l1jet_idx] - l1jet_br.jetPUEt[l1jet_idx])*SFToConvertInGeV )
+                    
+                    hist8['L1JetPtRawPUS_vs_RefJetPt'][src][sjetIEtaAbs].Fill(vOff.Pt(), (l1jet_br.jetRawEt[l1jet_idx] - l1jet_br.jetPUEt[l1jet_idx])*SFToConvertInGeV )
+                    hist8['L1JetPtRawPUS_vs_RefJetPt'][src]['HBEF'     ].Fill(vOff.Pt(), (l1jet_br.jetRawEt[l1jet_idx] - l1jet_br.jetPUEt[l1jet_idx])*SFToConvertInGeV )
+                                        
 
                     l1J_computationStarted = False # flag used to stoge L1J PU as histogram name
                     
@@ -3136,6 +3208,19 @@ def run():
 
         hTTEtMax_forL1JetPUEt0.Write()
         hL1JetRawEt_vs_L1JetEt_forL1JetPUEt0.Write()
+        
+
+    # hist8
+    if runMode in ['', 'makeInputForML']:
+        out_file.cd()
+        outDir1 = out_file.mkdir( "L1JetPt" )
+        outDir1.cd()
+
+        for src in ['unp','emu']:
+            for iEta in ETA_Bins:
+                for dist in dists8:
+                    hist8[dist][src][iEta].Write()
+  
         
 
     out_file.cd()

@@ -1,6 +1,7 @@
 from collections import OrderedDict as OD
 
 import numpy as np
+import pandas as pd
 
 map_CaloIEta_to_CaloTool_mpEta = OD([
     (1, 1),
@@ -73,6 +74,25 @@ def convert_GenEt_to_logGenEtByL1Et(GenEt, L1Et):
 
 def convert_logGenEtByL1Et_to_GenEt(logGenEtByL1Et, L1Et):
     return L1Et * np.exp(logGenEtByL1Et)
+#--------------------------------------------------------
+
+
+def prepareDataframeForSFs(sL1JetTowerIEtaAbs, iEtaBinRange, sL1JetEt, PtRangeMin=10.0, PtRangeMax=255.0, snVtx='', nVtx=48):
+    dict_iEta_Et = OD([ (sL1JetTowerIEtaAbs, []), (sL1JetEt, []) ])
+    if snVtx:
+        dict_iEta_Et[snVtx] = []
+        
+    for iEta in iEtaBinRange:
+        list_pt      = np.arange(PtRangeMin, PtRangeMax+1.0)
+        list_ietabin = [iEta] * len(list_pt)
+        dict_iEta_Et[sL1JetTowerIEtaAbs].extend(list_ietabin) 
+        dict_iEta_Et[sL1JetEt].extend(list_pt) 
+        if snVtx:
+            list_nVtx = [nVtx] * len(list_pt)
+            dict_iEta_Et[snVtx].extend(list_nVtx) 
+            
+    data_SFs = pd.DataFrame(dict_iEta_Et)
+    return data_SFs
 #--------------------------------------------------------
 
 

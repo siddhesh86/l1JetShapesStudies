@@ -48,13 +48,13 @@ const bool capLowPtSFAt2 = true; // if SF(pT<15 GeV) > 2 then SF(pT<15 GeV) = 2
 
 /*
 // RawPUS
-std::string sInFile_SFs = "LUTs/Default_RawPUS_SF/lut_calib_2022v5_ECALZS_decimal.txt";
-std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2022v5_ECALZS.txt"; 
-*/
+std::string sInFile_SFs = "LUTs/Default_RawPUS_SF/lut_calib_2023v0_ECALZS_decimal.txt";
+std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2023v0_ECALZS.txt"; 
+*/ 
 
 // RawPUS_phiDefault
-std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2022v5_ECALZS_decimal.txt";
-std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2022v5_ECALZS.txt"; 
+std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023v0_ECALZS_decimal.txt";
+std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023v0_ECALZS.txt"; 
 
 
 
@@ -160,7 +160,8 @@ unsigned int calculateSFInBits(unsigned int jet_hwPt, double SFInDecimal) {
   //unsigned int jet_calibPt_target = (unsigned int)( ( ((double)jet_hwPt) * SFInDecimal ) + 0.5); // 0.5 to round off fractional part of the number
   unsigned int jet_calibPt_target = (unsigned int)( round( ((double)jet_hwPt) * SFInDecimal ) ); // 0.5 to round off fractional part of the number
   if (printLevel >= 2) {
-    std::cout << ((double)jet_hwPt)
+    std::cout << "calculateSFInBits():: "
+	      << ((double)jet_hwPt)
 	      << ", " << SFInDecimal
 	      << ", PtCorr: " <<  ( ((double)jet_hwPt) * SFInDecimal )
 	      << " / " << jet_calibPt_target
@@ -240,12 +241,13 @@ unsigned int calculateSFInBits(unsigned int jet_hwPt, double SFInDecimal) {
 
 
 unsigned int calculateSFInBits_addendZero(unsigned int jet_hwPt, double SFInDecimal) {
-  if (printLevel >= 2)
+  if (printLevel >= 20)
     printf("calculateSFInBits_addendZero():: \n");
   
   unsigned int jet_calibPt_target = (unsigned int)( ( ((double)jet_hwPt) * SFInDecimal ) + 0.5); // 0.5 to round off fractional part of the number
-  if (printLevel >= 2) {
-  std::cout << ((double)jet_hwPt)
+  if (printLevel >= 4) {
+    std::cout << "calculateSFInBits_addendZero():: "
+	      << ((double)jet_hwPt)
 	    << ", " << SFInDecimal
 	    << ", PtCorr: " <<  ( ((double)jet_hwPt) * SFInDecimal )
 	    << " / " << jet_calibPt_target
@@ -499,13 +501,16 @@ int main ()
   }
 
   // Read data from 2nd line ---------------------------
-  printf("\n\nRead data: \n");
+  printf("\n\nRead data: \n"); std::cout << std::endl;
   while (std::getline(infile, line)) {
     // used for breaking words
-    std::istringstream iss(line);
+    //std::istringstream iss(line);
     std::stringstream ss(line);
     if (printLevel >= 5) {
       std::cout << "Line " << count << ": " << line << "\n";
+      //std::cout << "iss :" << iss << "\n";
+      //std::cout << "ss :" << ss << "\n";
+      std::cout << std::endl;
     }
     
     
@@ -514,17 +519,25 @@ int main ()
     // read every column data of a row and
     // store it in a string variable, 'word'
     while (std::getline(ss, word, ' ')) {
+      if (printLevel >= 5) {
+	std::cout << ">" << word << "<" ; std::cout << std::endl;
+      }
+      if ( ! word.compare("#")) break;   // skip reading line after #
+      if ( ! word.compare("")) continue; // ignore white spaces
+      
       double n = std::stod( word );
       if (printLevel >= 5) {
-	std::cout << ">" << word << " | " << n << "<" << std::endl;
+	std::cout << ">" << word << " | " << n << "<" << std::endl; std::cout << std::endl;
       }
       //row.push_back(word);
       //data[iColm].push_back(n);
       dataInRow.push_back(n);
       iColm++;
 
-      if (iColm >= nColsToRead) break;
+      //if (iColm >= nColsToRead) break;
     }
+
+    if (dataInRow.size() == 0) continue;
     
     data.push_back(dataInRow);
     count++;
@@ -535,6 +548,7 @@ int main ()
   std::cout << "data.size(): " << data.size()
 	    << ", data[0].size(): " << data[0].size()
 	    << std::endl;
+  
 
   std::ofstream outfile(sOutFile.c_str());
 
@@ -576,7 +590,7 @@ int main ()
     else if (Mode_calculateSFInBits == 2)  SFInBits    = calculateSFInBits_stableSFsOverPtBin(jetHwPt, jetHwPtMin, jetHwPtMax, SFInDecimal);
     unsigned int jetHwPtCorr     = calibrateJet(jetHwPt, SFInBits);
     unsigned int jetHwPtCorr_Exp = calculateTargetJetPtCorr(jetHwPt, SFInDecimal); //static_cast<unsigned int>( ((double)(jetHwPt) * SFInDecimal) + 0.5);
-    std::cout << ", SFInBits: " << SFInBits << " (m: " << (SFInBits & 0x3ff) << ", a: " << (SFInBits >> 10) << ") \n";
+    //std::cout << ", SFInBits: " << SFInBits << " (m: " << (SFInBits & 0x3ff) << ", a: " << (SFInBits >> 10) << ") \n";
     
     std::string sComment = "";
     if ( ptBin == 0) {
