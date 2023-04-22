@@ -51,7 +51,7 @@ parseGroup2 = parser.add_mutually_exclusive_group(required=True)
 parseGroup2.add_argument('--l1MatchOffline', action='store_true')
 parseGroup2.add_argument('--l1MatchGen',     action='store_true')
 
-runLocally = False
+runLocally = True
 
 args = None
 if not runLocally:
@@ -59,7 +59,7 @@ if not runLocally:
     args = parser.parse_args()
 else:
     #args = parser.parse_args("--ChunkyDonut --l1MatchGen --MLTarget logGenEt --fracOfDataToUse 0.01".split()) # to run in jupyter-notebook     
-    args = parser.parse_args("--ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et --fracOfDataToUse 0.01".split()) # to run in jupyter-notebook     
+    args = parser.parse_args("--ChunkyDonut --l1MatchGen --MLTarget GenEt --fracOfDataToUse 0.01".split()) # to run in jupyter-notebook     
     from IPython.display import display, HTML
     display(HTML("<style>.container { width:100% !important; }</style>"))
 
@@ -82,7 +82,8 @@ sGenJetEt                = 'GenJetEt'
 sL1JetTowerIEtaAbs       = 'L1JetTowerIEtaAbs'
 L1JetPtThrsh             = 10.0 # GeV
 L1JetPtMax               = 255.0 # GeV
-RefJetPtThrsh            = 10.0 # GeV
+RefJetPtLowThrsh         = 10.0 # GeV
+RefJetPtHighThrsh        = 400.0 # GeV
 snVtx                    = 'nVertexReco'
 
 NCompPtBins = 16 # 16 # No. of compressed pT bins
@@ -95,7 +96,7 @@ SF_forZeroPt = 1.0
 sL1JetEt  = sL1JetEt_PUS_ChunkyDonut if l1Jet_ChunkyDonut else sL1JetEt_PUS_PhiRing
 sRefJetEt = sOfflineJetEt if l1MatchOffline else sGenJetEt 
 
-version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230403" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse) 
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230403_wRefJetPtHighThrsh400GeV" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse) 
 sIpFileName     = "../data/L1T_Jet_MLInputs_2023_QCDPT-15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1_13_1_0_pre2_HBZS0p5_20230330.csv"
 #sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCDPT-15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1_13_1_0_pre2_HBZS0p5_20230330_%s.csv" % (version)
 sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCDP_126X_mcRun3_2023_13_1_0_pre2_HBZS0p5_20230330_%s.csv" % (version)
@@ -179,19 +180,19 @@ print("l1Jet_ChunkyDonut {}, l1Jet_PhiRing {}, l1MatchOffline {}, l1MatchGen {}"
     l1Jet_ChunkyDonut, l1Jet_PhiRing, l1MatchOffline, l1MatchGen)); sys.stdout.flush();    
 
 
-# In[ ]:
+# In[2]:
 
 
 data_all = pd.read_csv(sIpFileName)
 
 
-# In[ ]:
+# In[3]:
 
 
 print("Original sample: data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
 
 
-# In[ ]:
+# In[4]:
 
 
 data_all[sL1JetEt_PUS_ChunkyDonut] = data_all['L1Jet9x9_RawEt'] - data_all['L1Jet9x9_PUEt_ChunkyDonut']
@@ -199,7 +200,7 @@ data_all[sL1JetEt_PUS_ChunkyDonut] = data_all['L1Jet9x9_RawEt'] - data_all['L1Je
 data_all[sL1JetEt_PUS_PhiRing]     = data_all['L1Jet9x9_RawEt'] - (data_all['L1Jet9x9_EtSum7PUTowers'] / 7.0 )
 
 
-# In[ ]:
+# In[5]:
 
 
 #%%script false --no-raise-error
@@ -233,7 +234,7 @@ if plotPerformancePlots:
         plt.close(fig) 
 
 
-# In[ ]:
+# In[6]:
 
 
 ## data cleaning--------
@@ -241,7 +242,8 @@ if plotPerformancePlots:
 # Drop entries with L1JetEt < L1JetPtThrsh
 data_all_L1EtBelowThrsh = data_all[(
     (data_all[sL1JetEt]  < L1JetPtThrsh) | 
-    (data_all[sRefJetEt] < RefJetPtThrsh)
+    (data_all[sRefJetEt] < RefJetPtLowThrsh) |
+    (data_all[sRefJetEt] > RefJetPtHighThrsh)
 )]
 if printLevel >= 8:
     print("data_all[ data_all['{}'] < {} ]: \n{}".format(sL1JetEt, L1JetPtThrsh, data_all_L1EtBelowThrsh))
@@ -252,25 +254,25 @@ if printLevel >= 5:
     print("\nAfter cleaning, data_all.describe(): \n{}".format(data_all.describe()))
 
 
-# In[ ]:
+# In[7]:
 
 
 print("After data cleaning: data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
 
 
-# In[ ]:
+# In[8]:
 
 
 data_all = data_all.sample(frac=fracOfDataToUse, random_state=1)
 
 
-# In[ ]:
+# In[9]:
 
 
 print("Sample to use: data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
 
 
-# In[ ]:
+# In[10]:
 
 
 #%%script false --no-raise-error
@@ -304,7 +306,7 @@ if plotPerformancePlots:
         plt.close(fig)
 
 
-# In[ ]:
+# In[11]:
 
 
 # Closer for Et_to_logEt
@@ -317,7 +319,7 @@ if printLevel >= 15:
     print(f"{ np.max(abs(data_all['closure_logRefJetEt__tmp'])) = }")
 
 
-# In[ ]:
+# In[12]:
 
 
 # Closer for GenEt_to_GenEtByL1Et
@@ -330,7 +332,7 @@ if printLevel >= 15:
     print(f"{ np.max(abs(data_all['closure_GenEtByL1Et_tmp'])) = }")
 
 
-# In[ ]:
+# In[13]:
 
 
 # Closer for GenEt_to_logGenEtByL1Et
@@ -343,7 +345,7 @@ if printLevel >= 15:
     print(f"{ np.max(abs(data_all['closure_logGenEtByL1Et_tmp'])) = }")
 
 
-# In[ ]:
+# In[14]:
 
 
 # set trainning and target variables
@@ -385,7 +387,7 @@ if printLevel >= 1:
     print("data_all.describe(): \n{}".format(data_all.describe()))
 
 
-# In[ ]:
+# In[15]:
 
 
 ## L1Jet response per iEta before JEC
@@ -420,7 +422,7 @@ if plotPerformancePlots:
         plt.close(fig)    
 
 
-# In[ ]:
+# In[16]:
 
 
 ## L1Jet response per iEta bin range before JEC
@@ -460,7 +462,7 @@ if plotPerformancePlots:
         plt.close(fig)    
 
 
-# In[ ]:
+# In[17]:
 
 
 # L1JetResponse vs Eta before JEC
@@ -587,7 +589,7 @@ if plotPerformancePlots:
         
 
 
-# In[ ]:
+# In[18]:
 
 
 # L1Jet response vs RefJetPt before JEC
@@ -716,7 +718,7 @@ if plotPerformancePlots:
             plt.close(fig)       
 
 
-# In[ ]:
+# In[19]:
 
 
 # nEntries per iEta bin 
@@ -738,7 +740,7 @@ if printLevel >= 11:
     
 
 
-# In[ ]:
+# In[20]:
 
 
 #%%time
@@ -899,7 +901,7 @@ for iEta_category, iEtaBinRange in IEta_Cat_forML.items():
         print(f"\n\nWrote BDT model to {sBDTModel_fileName = }"); sys.stdout.flush()
 
 
-# In[ ]:
+# In[21]:
 
 
 def prepareDataframeForSFs(iEtaBinRange, PtRangeMin=L1JetPtThrsh, PtRangeMax=L1JetPtMax, nVtx=48):
@@ -934,7 +936,7 @@ def prepareDataframeForSFs(iEtaBinRange, PtRangeMin=L1JetPtThrsh, PtRangeMax=L1J
     return data_SFs
 
 
-# In[ ]:
+# In[22]:
 
 
 # Change nVertex to evaluate SF here ----------------
@@ -990,7 +992,7 @@ data_SFs.to_csv(sOpFileName_SFs, index=False)
 print("Wrote {}".format(sOpFileName_SFs))                
 
 
-# In[ ]:
+# In[23]:
 
 
 sL1JetEt_calib = '%s_calib' % (sL1JetEt)
@@ -1017,7 +1019,7 @@ if printLevel >= 10:
     print("data_copy1: {}".format(data_copy1))
 
 
-# In[ ]:
+# In[24]:
 
 
 # SF vs Et plots ----
@@ -1053,7 +1055,7 @@ if plotPerformancePlots:
         plt.close(fig)
 
 
-# In[ ]:
+# In[25]:
 
 
 # L1Jet response per iEta bin range after JEC
@@ -1087,7 +1089,7 @@ if plotPerformancePlots:
         plt.close(fig)
 
 
-# In[ ]:
+# In[26]:
 
 
 # L1Jet response per iEta bin range per Pt cat after JEC
@@ -1126,7 +1128,7 @@ if plotPerformancePlots:
         plt.close(fig)
 
 
-# In[ ]:
+# In[27]:
 
 
 # L1JetResponse vs Eta after JEC
@@ -1267,7 +1269,7 @@ if plotPerformancePlots:
             plt.close(fig)
 
 
-# In[ ]:
+# In[28]:
 
 
 # L1Jet response vs RefJetPt before JEC

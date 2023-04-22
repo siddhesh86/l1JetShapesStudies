@@ -85,10 +85,28 @@ if __name__ == '__main__':
     #sVersion = "QCD_122X_sample"
     #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_QCD_122X_hadded.root"
     
-    sVersion = "QCD_126X_sample"
-    sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_QCD_126X_hadded.root"
+    #sVersion = "QCD_126X_sample"
+    #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_QCD_126X_hadded.root"
 
-    sOpDir = "plots_TrblshtTT28LowSFs/L1JetPtRawPUS_vs_RefJetPt"
+    #sVersion = "SinglePion_Pt0to200_122X_sample"
+    #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePion_Pt-0to200_122X_hadded.root"
+    
+    #sVersion = "SinglePion_E0to500_126X_sample"
+    #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePion_E0to500_126X_hadded.root"
+
+    #sVersion = "SinglePhoton_Pt0to200_122X_sample"
+    #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePhoton_Pt-0to200_122X_hadded.root"
+
+    #sVersion = "SinglePhoton_Pt0to200_126X_sample"
+    #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePhoton_Pt-0to200_126X_hadded.root"
+
+    #sVersion = "SinglePhoton_Pt0to200_122X_sample"
+    #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePhoton_Pt-0to200_122X_hadded_v2.root"
+
+    sVersion = "SinglePhoton_Pt0to200_126X_sample"
+    sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePhoton_Pt-0to200_126X_hadded_v2.root"
+    
+    sOpDir = "plots_TrblshtTT28LowSFs/SinglePhoton_Pt0to200_v2/L1JetPtRawPUS_vs_RefJetPt"
            
     sHistos_dict = OD()
     for src in ['emu']: # ['unp','emu']:

@@ -36,38 +36,38 @@ commands = {
     #"PhiRing": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen ",
 
     # BDT training 13_1_0_pre2_HBZS0p5 
-    "ChunkyDonut_GenEt_0.01":          "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.01",
-    "ChunkyDonut_logGenEt_0.01":       "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.01",
-    "ChunkyDonut_GenEtByL1Et_0.01":    "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.01",
-    "ChunkyDonut_logGenEtByL1Et_0.01": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.01",
+    #"ChunkyDonut_GenEt_0.01":          "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.01",
+    #"ChunkyDonut_logGenEt_0.01":       "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.01",
+    #"ChunkyDonut_GenEtByL1Et_0.01":    "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.01",
+    #"ChunkyDonut_logGenEtByL1Et_0.01": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.01",
 
-    "PhiRing_GenEt_0.01":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.01",
-    "PhiRing_logGenEt_0.01":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.01",
-    "PhiRing_GenEtByL1Et_0.01":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.01",
-    "PhiRing_logGenEtByL1Et_0.01":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.01",
+    #"PhiRing_GenEt_0.01":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.01",
+    #"PhiRing_logGenEt_0.01":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.01",
+    #"PhiRing_GenEtByL1Et_0.01":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.01",
+    #"PhiRing_logGenEtByL1Et_0.01":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.01",
     
 
-    "ChunkyDonut_GenEt_0.10":          "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.10",
-    "ChunkyDonut_logGenEt_0.10":       "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.10",
-    "ChunkyDonut_GenEtByL1Et_0.10":    "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.10",
-    "ChunkyDonut_logGenEtByL1Et_0.10": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.10",
+    #"ChunkyDonut_GenEt_0.10":          "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.10",
+    #"ChunkyDonut_logGenEt_0.10":       "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.10",
+    #"ChunkyDonut_GenEtByL1Et_0.10":    "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.10",
+    #"ChunkyDonut_logGenEtByL1Et_0.10": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.10",
 
-    "PhiRing_GenEt_0.10":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.10",
-    "PhiRing_logGenEt_0.10":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.10",
-    "PhiRing_GenEtByL1Et_0.10":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.10",
-    "PhiRing_logGenEtByL1Et_0.10":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.10",
+    #"PhiRing_GenEt_0.10":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.10",
+    #"PhiRing_logGenEt_0.10":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.10",
+    #"PhiRing_GenEtByL1Et_0.10":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.10",
+    #"PhiRing_logGenEtByL1Et_0.10":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.10",
     
 
     
-    "ChunkyDonut_GenEt_0.50":          "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.50",
-    "ChunkyDonut_logGenEt_0.50":       "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.50",
-    "ChunkyDonut_GenEtByL1Et_0.50":    "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.50",
-    "ChunkyDonut_logGenEtByL1Et_0.50": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.50",
+    #"ChunkyDonut_GenEt_0.50":          "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.50",
+    #"ChunkyDonut_logGenEt_0.50":       "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.50",
+    #"ChunkyDonut_GenEtByL1Et_0.50":    "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.50",
+    #"ChunkyDonut_logGenEtByL1Et_0.50": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.50",
 
-    "PhiRing_GenEt_0.50":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.50",
-    "PhiRing_logGenEt_0.50":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.50",
-    "PhiRing_GenEtByL1Et_0.50":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.50",
-    "PhiRing_logGenEtByL1Et_0.50":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.50",
+    #"PhiRing_GenEt_0.50":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 0.50",
+    #"PhiRing_logGenEt_0.50":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 0.50",
+    #"PhiRing_GenEtByL1Et_0.50":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 0.50",
+    #"PhiRing_logGenEtByL1Et_0.50":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 0.50",
 
     
 

@@ -30,7 +30,7 @@ import numpy as np
 from operator import xor
 
 PRT_EVT  = 1000  ## Print every Nth event
-MAX_EVT  = -1     ## Number of events to process per chain
+MAX_EVT  = 500000     ## Number of events to process per chain
 VERBOSE  = False  ## Verbose print-out
 PrintLevel = 0
 JetClustByHand =  True # True ## Run jet clustering by hand
@@ -50,6 +50,7 @@ TrigThshs_OffMuPt = [ 24 ] # For e.g. for IsoMu24: [ 24 ], for DiMu24: [24, 24],
 
 #GoldenJSONForData_list=["Cert_Collisions2022_eraG_362433_362760_Golden.json"]
 GoldenJSONForData_list=["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json"] #["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_eraG_362433_362760_Golden.json"]
+useCutGenNVtxEq0 = True # Set False. Only for troubleshoot perfose. When set True: analyze (GEN.nVtx == 0) events from SinglePhoton_EpsilonPU sample to trouble-shoot high SFs in iEta 28
 
 
 runMode = '' # makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
@@ -414,6 +415,7 @@ def run():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--l1ntuple',              type=str, dest='l1ntuplePath', required=True, help="L1T ntuples")
+    parser.add_argument('--sampleName',            type=str, dest='sampleName'  , help="sampleName for o/p file name", default='QCD')
     parser.add_argument('--HcalPUS',               type=str, dest='OOT_PU_scheme', help="HCAL OOT PUS scheme", default='PFA1p')
     parser.add_argument('--PUrangeTag',            type=str, dest='PUrangeTag', help="PU range tag", default='None')
     parser.add_argument('--N_parts',               type=int, dest='N_parts', help="Split i/p l1ntuples into N_parts", default='1')
@@ -436,15 +438,16 @@ def run():
     l1MatchGen            = args.l1MatchGen
     l1NtupleChunkyDonut   = args.l1NtupleChunkyDonut
     l1NtuplePhiRing       = args.l1NtuplePhiRing
-
-    print("Inputs: \n\t l1ntuplePath: {}, \n\t OOT_PU_scheme: {}, \n\t PUrangeTag: {}, \n\t N_parts: {}, \n\t M_quantilesIpFilesSet: {}, \n\t l1MatchOffline: {}, \n\t l1MatchGen: {}, \n\t l1NtupleChunkyDonut: {}, \n\t l1NtuplePhiRing: {})".format(
-        l1ntuplePath, OOT_PU_scheme, PUrangeTag, N_parts, M_quantilesIpFilesSet, l1MatchOffline, l1MatchGen, l1NtupleChunkyDonut, l1NtuplePhiRing
+    sampleName            = args.sampleName
+    
+    print("Inputs: \n\t l1ntuplePath: {}, \n\t sampleName: {}, \n\t  OOT_PU_scheme: {}, \n\t PUrangeTag: {}, \n\t N_parts: {}, \n\t M_quantilesIpFilesSet: {}, \n\t l1MatchOffline: {}, \n\t l1MatchGen: {}, \n\t l1NtupleChunkyDonut: {}, \n\t l1NtuplePhiRing: {})".format(
+        l1ntuplePath, sampleName, OOT_PU_scheme, PUrangeTag, N_parts, M_quantilesIpFilesSet, l1MatchOffline, l1MatchGen, l1NtupleChunkyDonut, l1NtuplePhiRing
     ))
 
     in_file_names = [ l1ntuplePath ]
 
     sL1Ntuple = "l1NtupleChunkyDonut" if l1NtupleChunkyDonut else "l1NtuplePhiRing"
-    out_file_str  = "L1T_HCALL2Calib_stage1_%s_%s_%s.root" % (sL1Ntuple, OOT_PU_scheme, PUrangeTag)
+    out_file_str  = "L1T_HCALL2Calib_stage1_%s_%s_%s_%s.root" % (sampleName, sL1Ntuple, OOT_PU_scheme, PUrangeTag)
     if runMode in ['CalCalibSF']:
         out_file_str = out_file_str.replace(".root", "_CalCalibSF.root")
     if runMode in ['CalibJetByHand']:
@@ -520,7 +523,7 @@ def run():
     # GoldenJSON -----------------------------------------------------------------------------
     goldenJSON = None
     #if type(GoldenJSONForData_list)
-    if isinstance(GoldenJSONForData_list, list) and len(GoldenJSONForData_list) > 0:
+    if isinstance(GoldenJSONForData_list, list) and len(GoldenJSONForData_list) > 0 and (not isMC):
         for GoldenJSONForData_ in GoldenJSONForData_list:
             #with open(GoldenJSONForData_) as fGoldenJSON_:
             #    goldenJSON_tmp = json.load(fGoldenJSON_)
@@ -1102,7 +1105,11 @@ def run():
     # dists8
     dists8 = [
         'L1JetPtRawPUS', 'TT_iet', 'ECALTP_et', 'ECALTP_compEt', 'HCALTP_et', 'HCALTP_compEt',
-        'L1JetPtRawPUS_vs_RefJetPt'
+        'L1JetPtRawPUS_vs_RefJetPt',
+
+        'TT_iet_nRefJetsEq1', 'ECALTP_et_nRefJetsEq1', 'ECALTP_compEt_nRefJetsEq1', 'HCALTP_et_nRefJetsEq1', 'HCALTP_compEt_nRefJetsEq1',
+        'TT_iet_RefJetEtalt2p5', 'ECALTP_et_RefJetEtalt2p5', 'ECALTP_compEt_RefJetEtalt2p5', 'HCALTP_et_RefJetEtalt2p5', 'HCALTP_compEt_RefJetEtalt2p5',
+        'TT_iet_RefJetEtaBtw2p5And3p1', 'ECALTP_et_RefJetEtaBtw2p5And3p1', 'ECALTP_compEt_RefJetEtaBtw2p5And3p1', 'HCALTP_et_RefJetEtaBtw2p5And3p1', 'HCALTP_compEt_RefJetEtaBtw2p5And3p1',        
     ]
     hist8 = {}
     for dist in dists8:
@@ -1114,12 +1121,22 @@ def run():
 
             for iEta in ETA_Bins:
 
-                if   dist in ['L1JetPtRawPUS', 'TT_iet']:
+                if   dist in [
+                        'L1JetPtRawPUS', 'TT_iet',
+                        'TT_iet_nRefJetsEq1',
+                        'TT_iet_RefJetEtalt2p5',
+                        'TT_iet_RefJetEtaBtw2p5And3p1',                        
+                ]:
                     hist8[dist][src][iEta] = R.TH1D( 'h%s_iEta%s_%s' % (dist, iEta, src),
                                                       '%s iEta%s %s' % (dist, iEta, src),
                                                       ptHigh_bins[0], ptHigh_bins[1], ptHigh_bins[2] )
                     
-                if   dist in ['ECALTP_et', 'ECALTP_compEt', 'HCALTP_et', 'HCALTP_compEt']:
+                if   dist in [
+                        'ECALTP_et', 'ECALTP_compEt', 'HCALTP_et', 'HCALTP_compEt',
+                        'ECALTP_et_nRefJetsEq1', 'ECALTP_compEt_nRefJetsEq1', 'HCALTP_et_nRefJetsEq1', 'HCALTP_compEt_nRefJetsEq1',
+                        'ECALTP_et_RefJetEtalt2p5', 'ECALTP_compEt_RefJetEtalt2p5', 'HCALTP_et_RefJetEtalt2p5', 'HCALTP_compEt_RefJetEtalt2p5',
+                        'ECALTP_et_RefJetEtaBtw2p5And3p1', 'ECALTP_compEt_RefJetEtaBtw2p5And3p1', 'HCALTP_et_RefJetEtaBtw2p5And3p1', 'HCALTP_compEt_RefJetEtaBtw2p5And3p1',
+                ]:
                     hist8[dist][src][iEta] = R.TH1D( 'h%s_iEta%s_%s' % (dist, iEta, src),
                                                       '%s iEta%s %s' % (dist, iEta, src),
                                                       ptMid_bins[0], ptMid_bins[1], ptMid_bins[2] )
@@ -1480,15 +1497,8 @@ def run():
         nTotalEvents_byChains.append( 0 )
         for jEvt in range(Ntot):
             if PrintLevel > 0: print("jEvt: {}".format(jEvt))
-            
-            iEvt += 1
-            nTotalEvents_byChains[iCh] += 1
-            
-            if jEvt > MAX_EVT and MAX_EVT > 0: break
-            if iEvt % PRT_EVT == 0: print('\nEvent # %d (%dth in chain)' % (iEvt, jEvt+1)); sys.stdout.flush();
 
-            hStat.Fill(0)
-            
+            # Read branches --------------------------------------------------------------------------------
             chains['Evt'][iCh].GetEntry(jEvt)
             if presentTree_l1RecoTree:        chains['Vtx'][iCh].GetEntry(jEvt)
             if presentTree_l1JetRecoTree:     chains['Jet'][iCh].GetEntry(jEvt)
@@ -1498,8 +1508,7 @@ def run():
             chains['Emu'][iCh].GetEntry(jEvt)
             chains['uTP'][iCh].GetEntry(jEvt)
             chains['eTP'][iCh].GetEntry(jEvt)
-            if presentTree_l1GeneratorTree:   chains['Gen'][iCh].GetEntry(jEvt) 
-            
+            if presentTree_l1GeneratorTree:   chains['Gen'][iCh].GetEntry(jEvt)             
 
             # ## Use these lines if you don't explicitly define the DataFormat and then do SetBranchAddress above
             # Evt_br = chains['Evt'][iCh].Event
@@ -1507,6 +1516,26 @@ def run():
             # Jet_br = chains['Jet'][iCh].Vertex
             # Unp_br = chains['Unp'][iCh].L1Upgrade
             # Emu_br = chains['Emu'][iCh].L1Upgrade
+            # ----------------------------------------------------------------------------------------------
+            
+
+
+            
+            # nalyze (GEN.nVtx == 0) events from SinglePhoton_EpsilonPU sample to trouble-shoot high SFs in iEta 28 ----
+            if isMC and useCutGenNVtxEq0:
+                if Gen_br.nVtx > 0: continue
+            # ----------------------------------------------------------------------------------------------------------
+            
+
+            
+            iEvt += 1
+            nTotalEvents_byChains[iCh] += 1
+            
+            if jEvt > MAX_EVT and MAX_EVT > 0: break
+            if iEvt % PRT_EVT == 0: print('\nEvent # %d (%dth in chain)' % (iEvt, jEvt+1)); sys.stdout.flush();
+
+            hStat.Fill(0)
+            
 
 
             # Apply GoldenJSON selection for data --------------------------------------------
@@ -1578,7 +1607,9 @@ def run():
             hnVtx.Fill(nVtx);    
             hnVtx_ReWtd.Fill(nVtx, puWeight);
 
-            if runMode in ['makePUHisto']: continue # run quick to make PU histograms
+            if runMode in ['makePUHisto']: continue # run quick to make PU histograms               
+
+            
             
             nOffJets = int(Jet_br.nJets)
             nOffMuons = int(Muon_br.nMuons)
@@ -1670,6 +1701,23 @@ def run():
                     sIEta = str(abs(TP_br_toUse.hcalTPieta[iTP]))
                     hist8['HCALTP_et'    ][src][sIEta].Fill(TP_br_toUse.hcalTPet[iTP])
                     hist8['HCALTP_compEt'][src][sIEta].Fill(TP_br_toUse.hcalTPcompEt[iTP])
+
+
+                if nRefJets == 1:
+                    for iTT in range(TT_br_toUse.nTower):
+                        sIEta = str(abs(TT_br_toUse.ieta[iTT]))
+                        hist8['TT_iet_nRefJetsEq1'][src][sIEta].Fill(TT_br_toUse.iet[iTT])
+
+                    for iTP in range(TP_br_toUse.nECALTP):
+                        sIEta = str(abs(TP_br_toUse.ecalTPieta[iTP]))
+                        hist8['ECALTP_et_nRefJetsEq1'    ][src][sIEta].Fill(TP_br_toUse.ecalTPet[iTP])
+                        hist8['ECALTP_compEt_nRefJetsEq1'][src][sIEta].Fill(TP_br_toUse.ecalTPcompEt[iTP])
+
+                    for iTP in range(TP_br_toUse.nHCALTP):
+                        sIEta = str(abs(TP_br_toUse.hcalTPieta[iTP]))
+                        hist8['HCALTP_et_nRefJetsEq1'    ][src][sIEta].Fill(TP_br_toUse.hcalTPet[iTP])
+                        hist8['HCALTP_compEt_nRefJetsEq1'][src][sIEta].Fill(TP_br_toUse.hcalTPcompEt[iTP])
+                   
             # -----------------------------------------------------------------------------------------------------------------------------
             
 
@@ -1906,6 +1954,90 @@ def run():
 
                 # -----------------------------------------------------------------------------------------
 
+
+
+                # TT, TP plots --------------------------------------------------------------------------------------------------------------------
+                if isMC and useCutGenNVtxEq0 and (nRefJets == 1):
+                    for src in ['emu']: #['unp','emu']:
+                        TT_br_toUse = None
+                        TP_br_toUse = None
+                        TC_br_toUse = None
+                        if src == 'unp':
+                            TT_br_toUse = uTT_br 
+                            TP_br_toUse = uTP_br
+                            TC_br_toUse = uTC_br
+                        else:
+                            TT_br_toUse = eTT_br
+                            TP_br_toUse = eTP_br
+                            TC_br_toUse = eTC_br
+
+                        TT28Abv125 = False
+                        RefJetEtaAbs = abs(vOff.Eta())
+                        if RefJetEtaAbs > 2.5 and RefJetEtaAbs < 3.1:
+                            for iTT in range(TT_br_toUse.nTower):
+                                sIEta = str(abs(TT_br_toUse.ieta[iTT]))
+                                hist8['TT_iet_RefJetEtaBtw2p5And3p1'][src][sIEta].Fill(TT_br_toUse.iet[iTT])
+                                
+                                if abs(TT_br_toUse.ieta[iTT]) in [ 28] and TT_br_toUse.iet[iTT] > 125:
+                                       TT28Abv125 = True
+                                       
+
+                            for iTP in range(TP_br_toUse.nECALTP):
+                                sIEta = str(abs(TP_br_toUse.ecalTPieta[iTP]))
+                                hist8['ECALTP_et_RefJetEtaBtw2p5And3p1'    ][src][sIEta].Fill(TP_br_toUse.ecalTPet[iTP])
+                                hist8['ECALTP_compEt_RefJetEtaBtw2p5And3p1'][src][sIEta].Fill(TP_br_toUse.ecalTPcompEt[iTP])
+
+                            for iTP in range(TP_br_toUse.nHCALTP):
+                                sIEta = str(abs(TP_br_toUse.hcalTPieta[iTP]))
+                                hist8['HCALTP_et_RefJetEtaBtw2p5And3p1'    ][src][sIEta].Fill(TP_br_toUse.hcalTPet[iTP])
+                                hist8['HCALTP_compEt_RefJetEtaBtw2p5And3p1'][src][sIEta].Fill(TP_br_toUse.hcalTPcompEt[iTP])
+
+                                
+                        if RefJetEtaAbs < 2.5:
+                            for iTT in range(TT_br_toUse.nTower):
+                                sIEta = str(abs(TT_br_toUse.ieta[iTT]))
+                                hist8['TT_iet_RefJetEtalt2p5'][src][sIEta].Fill(TT_br_toUse.iet[iTT])
+
+                            for iTP in range(TP_br_toUse.nECALTP):
+                                sIEta = str(abs(TP_br_toUse.ecalTPieta[iTP]))
+                                hist8['ECALTP_et_RefJetEtalt2p5'    ][src][sIEta].Fill(TP_br_toUse.ecalTPet[iTP])
+                                hist8['ECALTP_compEt_RefJetEtalt2p5'][src][sIEta].Fill(TP_br_toUse.ecalTPcompEt[iTP])
+
+                            for iTP in range(TP_br_toUse.nHCALTP):
+                                sIEta = str(abs(TP_br_toUse.hcalTPieta[iTP]))
+                                hist8['HCALTP_et_RefJetEtalt2p5'    ][src][sIEta].Fill(TP_br_toUse.hcalTPet[iTP])
+                                hist8['HCALTP_compEt_RefJetEtalt2p5'][src][sIEta].Fill(TP_br_toUse.hcalTPcompEt[iTP])
+
+                        if PrintLevel >= 0:
+                            if RefJetEtaAbs > 2.5 and RefJetEtaAbs < 3.1  and TT28Abv125:
+                                print(f"RefJet: pt {vOff.Pt()}, eta {vOff.Eta()}, phi {vOff.Phi()}.   {src}, {nEmuTTs = }, {nEmuTCs = }, {nEmuETPs = }, {nEmuHTPs = } ")
+                                for iTT in range(TT_br_toUse.nTower):
+                                    #if abs(TT_br_toUse.ieta[iTT]) not in [27, 28]: continue
+                                    print(f"    TT {iTT}: iet {TT_br_toUse.iet[iTT]},  ieta {TT_br_toUse.ieta[iTT]}, iphi {TT_br_toUse.iphi[iTT]},  iem {TT_br_toUse.iem[iTT]}, ihad {TT_br_toUse.ihad[iTT]}, iqual {TT_br_toUse.iqual[iTT]}")
+                                print(" ")
+
+                                for iTC in range(TC_br_toUse.nCluster):
+                                    #if abs(TC_br_toUse.ieta[iTC]) not in [27, 28]: continue
+                                    print(f"    TC {iTC}: iet {TC_br_toUse.iet[iTC]}, ieta {TC_br_toUse.ieta[iTC]}, iphi {TC_br_toUse.iphi[iTC]},")
+                                print(" ")
+                                       
+                                for iTP in range(TP_br_toUse.nECALTP):
+                                    #if abs(TP_br_toUse.ecalTPieta[iTP]) not in [27, 28]: continue
+                                    print(f"   TPECAL {iTP}: ecalTPet {TP_br_toUse.ecalTPet[iTP]}, ecalTPcompEt {TP_br_toUse.ecalTPcompEt[iTP]}, ecalTPieta {TP_br_toUse.ecalTPieta[iTP]} , ecalTPiphi {TP_br_toUse.ecalTPiphi[iTP]}, ecalTPCaliphi {TP_br_toUse.ecalTPCaliphi[iTP]} ")
+                                print(" ")
+                                    
+                                for iTP in range(TP_br_toUse.nHCALTP):
+                                    #if abs(TP_br_toUse.hcalTPieta[iTP]) not in [27, 28]: continue
+                                    print(f"   TPHCAL {iTP}: hcalTPet {TP_br_toUse.hcalTPet[iTP]}, hcalTPcompEt {TP_br_toUse.hcalTPcompEt[iTP]}, hcalTPieta {TP_br_toUse.hcalTPieta[iTP]}, hcalTPiphi {TP_br_toUse.hcalTPiphi[iTP]}, hcalTPCaliphi {TP_br_toUse.hcalTPCaliphi[iTP]}")
+
+                                    
+                # -----------------------------------------------------------------------------------------------------------------------------
+                
+
+
+
+
+                
                 
                 jetIEta_offlineJet     = calculateJetIEta(vOff.Eta())
                 jetIEtaAbs_offlineJet  = abs(jetIEta_offlineJet)
