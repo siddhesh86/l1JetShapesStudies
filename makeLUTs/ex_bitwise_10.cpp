@@ -39,7 +39,7 @@ using namespace std;
 const int printLevel = 2;
 const int nLineToRead = -1;
 const int nColsToRead = 7; // No. of columns to read from input lut_SFInDecimal file. File format: <col0: IEtaBin> <col1: QuantileMinPtInGeV> <col2: QuantileMaxPtInGeV> <col3: CalibrationAtPtInGeV> <col4: IEtaBin_forLUT> <col5: Pt_forLUT> <col6: SF_Decimal>
-const unsigned int nBitsCompBin = 12; // 11, 12
+const unsigned int nBitsCompBin = 12; // 11: for 16 pT compression bins,    12: for 64 pT compression bins
 
 const int IEtaBinOffsetForEtaCompressedLUT = 0; // 0: IEtaBin_forLUT = IEtaBin = [1, 41];  -1: IEtaBin_forLUT = IEtaBin - 1 = [0, 40]. # 0 give correct calibration.
 const int Mode_calculateSFInBits = 1; // 0: calculate 'multiplier' such that 'addend' need not be zero ,
@@ -49,13 +49,13 @@ const bool capLowPtSFAt2 = true; // if SF(pT<15 GeV) > 2 then SF(pT<15 GeV) = 2
 
 /*
 // RawPUS
-std::string sInFile_SFs = "LUTs/Default_RawPUS_SF/lut_calib_2023_v1_ECALZS_decimal.txt"; 
-std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2023_v1_ECALZS.txt"; 
+std::string sInFile_SFs = "LUTs/Default_RawPUS_SF/lut_calib_2023_v3_ECALZS_decimal.txt"; 
+std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2023_v3_ECALZS.txt"; 
 */
 
 // RawPUS_phiDefault
-std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v2_ECALZS_decimal.txt"; 
-std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v2_ECALZS.txt"; 
+std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v3_ECALZS_decimal.txt"; 
+std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v3_ECALZS.txt"; 
 
 
 
@@ -556,7 +556,8 @@ int main ()
 
   // LUT JEC header --------------------------------------------
   outfile << "# address to addend+multiplicative factor LUT\n"
-	  << "# maps 11 bits to 18 bits\n"
+    //<< "# maps 11 bits to 18 bits\n"
+	  << "# maps " << nBitsCompBin << " bits to 18 bits\n"
 	  << "# 18 bits = (addend<<10) + multiplier)\n"
 	  << "# addend is signed 8 bits, multiplier is 10 bits\n"
 	  << "# anything after # is ignored with the exception of the header\n"
