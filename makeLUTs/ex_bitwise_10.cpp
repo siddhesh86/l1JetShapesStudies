@@ -40,23 +40,24 @@ const int printLevel = 2;
 const int nLineToRead = -1;
 const int nColsToRead = 7; // No. of columns to read from input lut_SFInDecimal file. File format: <col0: IEtaBin> <col1: QuantileMinPtInGeV> <col2: QuantileMaxPtInGeV> <col3: CalibrationAtPtInGeV> <col4: IEtaBin_forLUT> <col5: Pt_forLUT> <col6: SF_Decimal>
 const unsigned int nBitsCompBin = 12; // 11: for 16 pT compression bins,    12: for 64 pT compression bins
+const unsigned int nBitsPtComp  =  6; // pT compression bits: 4, 6 
 
 const int IEtaBinOffsetForEtaCompressedLUT = 0; // 0: IEtaBin_forLUT = IEtaBin = [1, 41];  -1: IEtaBin_forLUT = IEtaBin - 1 = [0, 40]. # 0 give correct calibration.
 const int Mode_calculateSFInBits = 1; // 0: calculate 'multiplier' such that 'addend' need not be zero ,
                                       // 1: calculate 'multiplier' such that 'addend=0'. Best performer with capLowPtSFAt2 = true;
                                       // 2: calculate 'multiplier' and 'addend' so as to have least (pTCorr - pTCorrTarget). Set 'capLowPtSFAt2 = false'. plot_checkJEC_v6p5. Not working properly.
-const bool capLowPtSFAt2 = true; // if SF(pT<15 GeV) > 2 then SF(pT<15 GeV) = 2
+const bool capLowPtSFAt2 = true; // if SF(pT<15 GeV) > 2 then SF(pT<15 GeV) = 2 
 
-/*
+
 // RawPUS
 std::string sInFile_SFs = "LUTs/Default_RawPUS_SF/lut_calib_2023_v3_ECALZS_decimal.txt"; 
 std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2023_v3_ECALZS.txt"; 
-*/
 
+/*
 // RawPUS_phiDefault
 std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v3_ECALZS_decimal.txt"; 
 std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v3_ECALZS.txt"; 
-
+*/
 
 
 
@@ -579,7 +580,8 @@ int main ()
     
     unsigned int etaBin        = static_cast<unsigned int>(data[iData][4]);
     unsigned int ptBin         = static_cast<unsigned int>(data[iData][5]);
-    unsigned int compBin       = (etaBin << 4) | ptBin;
+    //unsigned int compBin       = (etaBin << 4) | ptBin;
+    unsigned int compBin       = (etaBin << nBitsPtComp) | ptBin;
     
     double       SFInDecimal   = data[iData][6];
     
