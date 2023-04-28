@@ -38,24 +38,24 @@ commands = {
     # BDT training 13_1_0_pre2_HBZS0p5 
     
 
-    #"ChunkyDonut_GenEt_1.00":          "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 1.00",
-    #"ChunkyDonut_logGenEt_1.00":       "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 1.00",
-    #"ChunkyDonut_GenEtByL1Et_1.00":    "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 1.00",
-    #"ChunkyDonut_logGenEtByL1Et_1.00": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00",
+    "ChunkyDonut_GenEt_1.00_11":          "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 1.00",
+    "ChunkyDonut_logGenEt_1.00_11":       "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 1.00",
+    "ChunkyDonut_GenEtByL1Et_1.00_11":    "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 1.00",
+    "ChunkyDonut_logGenEtByL1Et_1.00_11": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00",
 
-    #"PhiRing_GenEt_1.00":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 1.00",
-    #"PhiRing_logGenEt_1.00":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 1.00",
-    #"PhiRing_GenEtByL1Et_1.00":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 1.00",
-    #"PhiRing_logGenEtByL1Et_1.00":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00",
+    "PhiRing_GenEt_1.00_11":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 1.00",
+    "PhiRing_logGenEt_1.00_11":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 1.00",
+    "PhiRing_GenEtByL1Et_1.00_11":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 1.00",
+    "PhiRing_logGenEtByL1Et_1.00_11":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00",
 
 
-    "ChunkyDonut_logGenEtByL1Et_1.00_33": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 33 ",
-    "ChunkyDonut_logGenEtByL1Et_1.00_48": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 48 ",
-    "ChunkyDonut_logGenEtByL1Et_1.00_63": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 63 ",
+    #"ChunkyDonut_logGenEtByL1Et_1.00_33": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 33 ",
+    #"ChunkyDonut_logGenEtByL1Et_1.00_48": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 48 ",
+    #"ChunkyDonut_logGenEtByL1Et_1.00_63": "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --ChunkyDonut --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 63 ",
     
-    "PhiRing_logGenEtByL1Et_1.00_33":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 33 ",
-    "PhiRing_logGenEtByL1Et_1.00_48":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 48 ",
-    "PhiRing_logGenEtByL1Et_1.00_63":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 63 ",
+    #"PhiRing_logGenEtByL1Et_1.00_33":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 33 ",
+    #"PhiRing_logGenEtByL1Et_1.00_48":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 48 ",
+    #"PhiRing_logGenEtByL1Et_1.00_63":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 check_BDT_performance.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00  --PUForSFComputation 63 ",
     
 } 
 

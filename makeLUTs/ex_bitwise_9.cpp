@@ -48,13 +48,13 @@ const bool capLowPtSFAt2 = true; // if SF(pT<15 GeV) > 2 then SF(pT<15 GeV) = 2
 
 /*
 // RawPUS
-std::string sInFile_SFs = "LUTs/Default_RawPUS_SF/lut_calib_2023v0_ECALZS_decimal.txt";
-std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2023v0_ECALZS.txt"; 
-*/ 
+std::string sInFile_SFs = "LUTs/Default_RawPUS_SF/lut_calib_2023_v0_ECALZS_decimal.txt"; 
+std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2023_v0_ECALZS.txt"; 
+*/
 
 // RawPUS_phiDefault
-std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023v0_ECALZS_decimal.txt";
-std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023v0_ECALZS.txt"; 
+std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v0_ECALZS_decimal.txt"; 
+std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v0_ECALZS.txt"; 
 
 
 

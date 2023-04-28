@@ -42,7 +42,7 @@ from CommonTools import (
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--MLTarget',           type=str,   dest='MLTarget',  default='logGenEt', choices=['GenEt', 'logGenEt', 'GenEtByL1Et', 'logGenEtByL1Et'])
-parser.add_argument('--PUForSFComputation', type=int,   dest='PUForSFComputation', help="PU at which SFs to compute", default='48')
+parser.add_argument('--PUForSFComputation', type=int,   dest='PUForSFComputation', help="PU at which SFs to compute", default='33')
 parser.add_argument('--fracOfDataToUse',    type=float, dest='fracOfDataToUse', help="fraction of data to use", default='1.0')
 parseGroup1 = parser.add_mutually_exclusive_group(required=True)
 parseGroup1.add_argument('--ChunkyDonut',    action='store_true')
@@ -51,7 +51,7 @@ parseGroup2 = parser.add_mutually_exclusive_group(required=True)
 parseGroup2.add_argument('--l1MatchOffline', action='store_true')
 parseGroup2.add_argument('--l1MatchGen',     action='store_true')
 
-runLocally = True
+runLocally = False
 
 args = None
 if not runLocally:
@@ -83,7 +83,7 @@ sL1JetTowerIEtaAbs       = 'L1JetTowerIEtaAbs'
 L1JetPtThrsh             = 10.0 # GeV
 L1JetPtMax               = 255.0 # GeV
 RefJetPtLowThrsh         = 10.0 # GeV
-RefJetPtHighThrsh        = 400.0 # GeV
+RefJetPtHighThrsh        = 999999 #400.0 # GeV
 snVtx                    = 'nVertexReco'
 
 NCompPtBins = 16 # 16 # No. of compressed pT bins
@@ -96,10 +96,9 @@ SF_forZeroPt = 1.0
 sL1JetEt  = sL1JetEt_PUS_ChunkyDonut if l1Jet_ChunkyDonut else sL1JetEt_PUS_PhiRing
 sRefJetEt = sOfflineJetEt if l1MatchOffline else sGenJetEt 
 
-version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230403_wRefJetPtHighThrsh400GeV" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse) 
-sIpFileName     = "../data/L1T_Jet_MLInputs_2023_QCDPT-15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1_13_1_0_pre2_HBZS0p5_20230330.csv"
-#sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCDPT-15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1_13_1_0_pre2_HBZS0p5_20230330_%s.csv" % (version)
-sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCDP_126X_mcRun3_2023_13_1_0_pre2_HBZS0p5_20230330_%s.csv" % (version)
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230403_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCD_122X_mcRun3_2021_realistic_v9_12_6_0_pre1_20220925_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 
 
@@ -163,12 +162,12 @@ sOutDirBeforeJEC    = "%s/beforeJEC" % (sOutDir)
 sOutDirAfterJEC     = "%s/afterJEC_atPU%d" % (sOutDir,PUForSFComputation)
 sOutDirBeforeJEC_1D = '%s/1D' % (sOutDirBeforeJEC)
 sOutDirAfterJEC_1D  = '%s/1D' % (sOutDirAfterJEC)
-if not os.path.exists(sOutDir):             os.mkdir( sOutDir )
-if not os.path.exists(sOutDirBeforeJEC):    os.mkdir( sOutDirBeforeJEC )
-if not os.path.exists(sOutDirAfterJEC):     os.mkdir( sOutDirAfterJEC )    
-if not os.path.exists(sOutDirBeforeJEC_1D): os.mkdir( sOutDirBeforeJEC_1D )    
-if not os.path.exists(sOutDirAfterJEC_1D):  os.mkdir( sOutDirAfterJEC_1D )
-if not os.path.exists("../data"):           os.mkdir("../data")
+if not os.path.exists(sOutDir):             os.makedirs( sOutDir, exist_ok = True )
+if not os.path.exists(sOutDirBeforeJEC):    os.makedirs( sOutDirBeforeJEC, exist_ok = True )
+if not os.path.exists(sOutDirAfterJEC):     os.makedirs( sOutDirAfterJEC, exist_ok = True )    
+if not os.path.exists(sOutDirBeforeJEC_1D): os.makedirs( sOutDirBeforeJEC_1D, exist_ok = True )    
+if not os.path.exists(sOutDirAfterJEC_1D):  os.makedirs( sOutDirAfterJEC_1D, exist_ok = True )
+if not os.path.exists("../data"):           os.makedirs("../data", exist_ok = True)
     
 print("Input file: %s" % (sIpFileName))
 print(f"{fracOfDataToUse = }")
@@ -208,8 +207,8 @@ data_all[sL1JetEt_PUS_PhiRing]     = data_all['L1Jet9x9_RawEt'] - (data_all['L1J
 
 sOutDir_toUse   = sOutDirBeforeJEC
 sOutDir1D_toUse = '%s/L1JetEt' % (sOutDirBeforeJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
 if plotPerformancePlots:    
     for iEta in ETA_Bins:
@@ -280,8 +279,8 @@ print("Sample to use: data_all.columns: {}, \ndata_all.shape: {}".format(data_al
 
 sOutDir_toUse   = sOutDirBeforeJEC
 sOutDir1D_toUse = '%s/L1JetEt' % (sOutDirBeforeJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
 if plotPerformancePlots:    
     for iEta in ETA_Bins:
@@ -394,8 +393,8 @@ if printLevel >= 1:
 
 sOutDir_toUse   = sOutDirBeforeJEC
 sOutDir1D_toUse = '%s/L1JetResponse_perEtaBin' % (sOutDirBeforeJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
 if plotPerformancePlots:    
 #print("".format())
@@ -429,8 +428,8 @@ if plotPerformancePlots:
 
 sOutDir_toUse   = sOutDirBeforeJEC
 sOutDir1D_toUse = '%s/L1JetResponse_perEtaBinRange' % (sOutDirBeforeJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
 if plotPerformancePlots:
     for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
@@ -469,8 +468,8 @@ if plotPerformancePlots:
 
 sOutDir_toUse   = '%s/L1JetResponse_vs_Eta_perPU_perPtEtaCat' % (sOutDirBeforeJEC)
 sOutDir1D_toUse = '%s/L1JetResponse_vs_Eta_perPU_perPtEtaCat/1D' % (sOutDirBeforeJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
 
 Pt_Cat_forResolutionPlots = OD()
@@ -596,8 +595,8 @@ if plotPerformancePlots:
 
 sOutDir_toUse   = '%s/L1JetResponse_vs_Pt_perPU_perPtEtaCat' % (sOutDirBeforeJEC)
 sOutDir1D_toUse = '%s/L1JetResponse_vs_Pt_perPU_perPtEtaCat/1D' % (sOutDirBeforeJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
     
 RefJetPtBins_forResolutionPlots = [
@@ -789,13 +788,13 @@ def train_MLModel_wHyperopt(X, y):
     X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.3, random_state=0)
     
     hyperparameter_space = { 
-        #'n_estimators': hp.choice('n_estimators', np.arange(500, 2001, 100, dtype=int)),
-        'n_estimators': hp.choice('n_estimators', np.arange(700, 701, 100, dtype=int)),
-        #'learning_rate':hp.quniform('learning_rate', 0.01, 0.2, 0.01),
-        'learning_rate':hp.quniform('learning_rate', 0.05, 0.055, 0.01),
+        'n_estimators': hp.choice('n_estimators', np.arange(500, 2001, 100, dtype=int)),
+        #'n_estimators': hp.choice('n_estimators', np.arange(700, 701, 100, dtype=int)),
+        'learning_rate':hp.quniform('learning_rate', 0.01, 0.2, 0.01),
+        #'learning_rate':hp.quniform('learning_rate', 0.05, 0.055, 0.01),
         'early_stopping_rounds': 10
     }    
-    max_evals = 1 # 30
+    max_evals = 30 #1 # 30
     
     def ML_score(params):
         model = XGBRegressor(**params)
@@ -1026,8 +1025,8 @@ if printLevel >= 10:
 
 sOutDir_toUse   = sOutDirAfterJEC
 sOutDir1D_toUse = '%s/SF_vs_Et' % (sOutDirAfterJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
 if plotPerformancePlots:    
     for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
@@ -1062,8 +1061,8 @@ if plotPerformancePlots:
 
 sOutDir_toUse   = sOutDirAfterJEC
 sOutDir1D_toUse = '%s/L1JetResponse_perEta' % (sOutDirAfterJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
 if plotPerformancePlots:    
     for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
@@ -1096,8 +1095,8 @@ if plotPerformancePlots:
 
 sOutDir_toUse   = sOutDirAfterJEC
 sOutDir1D_toUse = '%s/L1JetResponse_perEta_perPtCat' % (sOutDirAfterJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
 if plotPerformancePlots:    
     for iEtaBinCompressed, CaloToolMPEtaRange in CaloToolMPEtaBinsMerge_forEtaCompressedLUT.items():
@@ -1135,8 +1134,8 @@ if plotPerformancePlots:
 
 sOutDir_toUse   = '%s/L1JetResponse_vs_Eta_perPU_perPtEtaCat' % (sOutDirAfterJEC)
 sOutDir1D_toUse = '%s/L1JetResponse_vs_Eta_perPU_perPtEtaCat/1D' % (sOutDirAfterJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
 
 Pt_Cat_forResolutionPlots = OD()
@@ -1276,8 +1275,8 @@ if plotPerformancePlots:
 
 sOutDir_toUse   = '%s/L1JetResponse_vs_Pt_perPU_perPtEtaCat' % (sOutDirAfterJEC)
 sOutDir1D_toUse = '%s/L1JetResponse_vs_Pt_perPU_perPtEtaCat/1D' % (sOutDirAfterJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdir( sOutDir_toUse )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdir( sOutDir1D_toUse )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse, exist_ok = True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse, exist_ok = True )    
 
     
 RefJetPtBins_forResolutionPlots = [

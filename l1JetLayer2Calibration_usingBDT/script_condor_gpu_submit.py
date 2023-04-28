@@ -146,8 +146,8 @@ for PUS, command0 in commands.items():
             #f.write("+JobFlavour = \"espresso\" \n") # 20 mins
             #f.write("+JobFlavour = \"microcentury\" \n") # 1 hours
             #f.write("+JobFlavour = \"longlunch\" \n") # 2 hours
-            f.write("+JobFlavour = \"workday\" \n") # 8 hours
-            #f.write("+JobFlavour = \"tomorrow\" \n") # 1 day
+            #f.write("+JobFlavour = \"workday\" \n") # 8 hours
+            f.write("+JobFlavour = \"tomorrow\" \n") # 1 day
             f.write("queue \n")
 
 

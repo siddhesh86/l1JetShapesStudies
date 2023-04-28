@@ -37,14 +37,14 @@ calibSFLable = ['SF'][icalibSF]
 sipFileCalibSF = {
     'Default': {
        'RawPUS': { # Chunky donut
-           'fileName': '../data/L1T_Jet_SFs_2023_QCDP_126X_mcRun3_2023_13_1_0_pre2_HBZS0p5_20230330_L1JetEt_PUS_ChunkyDonut_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33_woHyperParamOptmz.csv', 
+           'fileName': '../data/L1T_Jet_SFs_2023_QCD_122X_mcRun3_2021_realistic_v9_12_6_0_pre1_20220925_L1JetEt_PUS_ChunkyDonut_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv', 
            'SFLabel': ['SF'][icalibSF],
            'L1JetPtVarName':'L1JetEt_PUS_ChunkyDonut',
            'additionalCorrForLUT': 1.0,
        },
        
        'RawPUS_phiDefault': {
-           'fileName': '../data/L1T_Jet_SFs_2023_QCDP_126X_mcRun3_2023_13_1_0_pre2_HBZS0p5_20230330_L1JetEt_PUS_PhiRing_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33_woHyperParamOptmz.csv',
+           'fileName': '../data/L1T_Jet_SFs_2023_QCD_122X_mcRun3_2021_realistic_v9_12_6_0_pre1_20220925_L1JetEt_PUS_PhiRing_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv',
            'SFLabel': ['SF'][icalibSF],
            'L1JetPtVarName':'L1JetEt_PUS_PhiRing',
            'additionalCorrForLUT': 8.0/7.0, # 8/7 factor is needed for PhiRing as different PU estimation considered in CMSSW and Andrew's computation
@@ -55,13 +55,14 @@ sipFileCalibSF = {
 }
 
 
-sFilePtCompressedLUT_Ref = '/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs_2018/lut_pt_compress_2017v1.txt'
+sFilePtCompressedLUT_Ref = '' #'/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs_2018/lut_pt_compress_2017v1.txt'
 
-PtCompressedLUTVersion = 'v2018' # 'v2018',  'v2022'
-EtaCompressedLUT = True; EtaCompressedLUTVersion = 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged'
+PtCompressedLUTVersion = '' # 'v2018' # 'v2018',  'v2022'
+EtaCompressedLUT = False; #True;
+EtaCompressedLUTVersion = '' # 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged'
 
 
-sLUTVersion = '2023v0'
+sLUTVersion = '2023_v2'
 JECSF_boundary = [0.0, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0]
 nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
 makeLUTForIEta29 = [False, 1.0]
@@ -72,22 +73,23 @@ sFOut_LUT_pt_compress    = 'lut_pt_compress_%s.txt' % (sLUTVersion)
 sFOut_LUT_eta_compress   = 'lut_eta_compress_%s.txt' % (sLUTVersion)
 sFOut_LUT_calib_compress = 'lut_calib_%s_ECALZS_decimal.txt' % (sLUTVersion)
 
-makeLUTsInUncompressedBins = True # make LUTs without compressing Pt and Eta bins
+makeLUTsInUncompressedBins = False # True # make LUTs without compressing Pt and Eta bins
 sFOut_LUT_pt_uncompress  = 'lut_pt_uncompress_%s.txt' % (sLUTVersion)
 sFOut_LUT_eta_uncompress = 'lut_eta_uncompress_%s.txt' % (sLUTVersion)
 sFOut_LUT_calib_uncompress = 'lut_calib_%s_ECALZS_decimal_uncompress.txt' % (sLUTVersion)
 
-
-NCompPtBins = 16 # 16 # No. of compressed pT bins
+nBitsForPtComp = 6 # 4 or 6
+NCompPtBins = int(2**nBitsForPtComp) # 16 # No. of compressed pT bins
 calibSF_L1JetPtRange = [15., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
 LUT_PtRange = [0., 255., 1.] # pT range for SFs for LUT
 SF_forZeroPt = 1.0
-
+ 
 
 if PtCompressedLUTVersion == 'v2018':
     separatePtBinForLowPt = False
     # '2018PtCompression has 1st bins from 1 <= pT <= 19, so set SF(pT <= 19) = SF(pT(19))
-    calibSF_L1JetPtRange = [19., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
+    #calibSF_L1JetPtRange = [15., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
+    calibSF_L1JetPtRange = [15., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
 
 map_CaloIEta_to_CaloTool_mpEta = OrderedDict([
     (1, 1),
@@ -597,6 +599,8 @@ def convert_CaloToolMPEta_to_IEta(CaloToolMPEta):
 if __name__ == '__main__':
 
 
+    print(f"{sLUTVersion = }, {PUSAlgosAll = }, \n{EtaCompressedLUT = }, {EtaCompressedLUTVersion = }, \n{nBitsForPtComp = }, {NCompPtBins = }, {PtCompressedLUTVersion = }, {LUT_PtRange = }, {calibSF_L1JetPtRange = }, \n\n")
+
     calibSF_L1JetPtRangeMin = calibSF_L1JetPtRange[0]
     calibSF_L1JetPtRangeMax = calibSF_L1JetPtRange[1]
     calibSF_L1JetPtBinWidth = calibSF_L1JetPtRange[2]
@@ -1013,6 +1017,7 @@ if __name__ == '__main__':
             # -------------------------------------------------------------------------------------
 
 
+            # Review: It has not effect, I think
             ## EtaCompresses LUT ------------------------------------------------------------------
             if EtaCompressedLUT:
                 if PrintLevel >= 0: print("\n\nMake EtaCompressedLUT:")
@@ -1048,11 +1053,13 @@ if __name__ == '__main__':
                 fOut_LUT_eta_compress.write('#<header> v1 6 6 </header>\n') # eta uncompresses LUT
 
             fOut_LUT_pt_compress.write('# PT compression LUT\n')
-            fOut_LUT_pt_compress.write('# maps 8 bits to 4 bits\n')
+            #fOut_LUT_pt_compress.write('# maps 8 bits to 4 bits\n')
+            fOut_LUT_pt_compress.write('# maps 8 bits to %d bits\n' % (nBitsForPtComp))
             fOut_LUT_pt_compress.write('# the 1st column is the integer value after selecting bits 1:8\n')
             fOut_LUT_pt_compress.write('# anything after # is ignored with the exception of the header\n')
             fOut_LUT_pt_compress.write('# the header is first valid line starting with #<header> versionStr nrBitsAddress nrBitsData </header>\n')
-            fOut_LUT_pt_compress.write('#<header> v1 8 4 </header>\n')
+            #fOut_LUT_pt_compress.write('#<header> v1 8 4 </header>\n')
+            fOut_LUT_pt_compress.write('#<header> v1 8 %d </header>\n' % (nBitsForPtComp))
 
 
             ## Update SFs in each IEta bin to have in pT_quantiles --------------------------------

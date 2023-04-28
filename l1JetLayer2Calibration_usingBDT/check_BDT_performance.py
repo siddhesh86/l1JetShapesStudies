@@ -95,11 +95,12 @@ SF_forZeroPt = 1.0
 sL1JetEt  = sL1JetEt_PUS_ChunkyDonut if l1Jet_ChunkyDonut else sL1JetEt_PUS_PhiRing
 sRefJetEt = sOfflineJetEt if l1MatchOffline else sGenJetEt 
 
-version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230403" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse) 
-sIpFileName     = "../data/L1T_Jet_MLInputs_2023_QCDPT-15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1_13_1_0_pre2_HBZS0p5_20230330.csv"
-#sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCDPT-15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter23Digi-FlatPU0to80_126X_mcRun3_2023_forPU65_v1-v1_13_1_0_pre2_HBZS0p5_20230330_%s.csv" % (version)
-sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCDP_126X_mcRun3_2023_13_1_0_pre2_HBZS0p5_20230330_%s.csv" % (version)
-sOutDir         = "./plots_%s" % (version)
+
+#version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20220925" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse) 
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20220925_wRefJetPtHighThrsh400GeV" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCD_122X_mcRun3_2021_realistic_v9_12_6_0_pre1_20220925_%s.csv" % (version)
+sOutDir         = "./plots_check_BDT_performance_%s" % (version)
 
 
 #sOpFileName_SFs = sOpFileName_SFs.replace('.csv', '_%s.csv' % (sL1JetEt))
@@ -110,25 +111,29 @@ BDTFileNames_dict = {
     sL1JetEt_PUS_ChunkyDonut: {
         'GenEt': {
             'HBEF': {
-                'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_GenEt_dataFrac1.00_20230403_HBEF_PtAll.pkl',                
+                #'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_GenEt_dataFrac1.00_20230403_wRefJetPtHighThrsh999999GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
+                'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_GenEt_dataFrac1.00_20220925_wRefJetPtHighThrsh400GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
             },            
         },
         
         'logGenEt': {
             'HBEF': {
-                'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_logGenEt_dataFrac1.00_20230403_HBEF_PtAll.pkl',                
+                #'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_logGenEt_dataFrac1.00_20230403_wRefJetPtHighThrsh999999GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
+                'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_logGenEt_dataFrac1.00_20220925_wRefJetPtHighThrsh400GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
             },            
         },
         
         'GenEtByL1Et': {
             'HBEF': {
-                'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_GenEtByL1Et_dataFrac1.00_20230403_HBEF_PtAll.pkl',                
+                #'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_GenEtByL1Et_dataFrac1.00_20230403_wRefJetPtHighThrsh999999GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
+                'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_GenEtByL1Et_dataFrac1.00_20220925_wRefJetPtHighThrsh400GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
             },            
         },
         
         'logGenEtByL1Et': {
             'HBEF': {
-                'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_logGenEtByL1Et_dataFrac1.00_20230403_HBEF_PtAll.pkl',                
+                #'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_logGenEtByL1Et_dataFrac1.00_20230403_wRefJetPtHighThrsh999999GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
+                'PtAll': '../data/BDTModel_vL1JetEt_PUS_ChunkyDonut_GenJetEt_MLTarget_logGenEtByL1Et_dataFrac1.00_20220925_wRefJetPtHighThrsh400GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
             },            
         },        
     },
@@ -136,25 +141,29 @@ BDTFileNames_dict = {
     sL1JetEt_PUS_PhiRing: {
         'GenEt': {
             'HBEF': {
-                'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_GenEt_dataFrac1.00_20230403_HBEF_PtAll.pkl',                
+                #'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_GenEt_dataFrac1.00_20230403_wRefJetPtHighThrsh999999GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
+                'PtAll': '.../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_GenEt_dataFrac1.00_20220925_wRefJetPtHighThrsh400GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
             },            
         },
         
         'logGenEt': {
             'HBEF': {
-                'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_logGenEt_dataFrac1.00_20230403_HBEF_PtAll.pkl',                
+                #'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_logGenEt_dataFrac1.00_20230403_wRefJetPtHighThrsh999999GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
+                'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_logGenEt_dataFrac1.00_20220925_wRefJetPtHighThrsh400GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
             },            
         },
         
         'GenEtByL1Et': {
             'HBEF': {
-                'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_GenEtByL1Et_dataFrac1.00_20230403_HBEF_PtAll.pkl',                
+                #'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_GenEtByL1Et_dataFrac1.00_20230403_wRefJetPtHighThrsh999999GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
+                'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_GenEtByL1Et_dataFrac1.00_20220925_wRefJetPtHighThrsh400GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
             },            
         },
         
         'logGenEtByL1Et': {
             'HBEF': {
-                'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_logGenEtByL1Et_dataFrac1.00_20230403_HBEF_PtAll.pkl',                
+                #'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_logGenEtByL1Et_dataFrac1.00_20230403_wRefJetPtHighThrsh999999GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
+                'PtAll': '../data/BDTModel_vL1JetEt_PUS_PhiRing_GenJetEt_MLTarget_logGenEtByL1Et_dataFrac1.00_20220925_wRefJetPtHighThrsh400GeV_wOptimizedHyperparams_HBEF_PtAll.pkl',                
             },            
         },        
     },    
@@ -220,12 +229,12 @@ sOutDirBeforeJEC    = "%s/beforeJEC" % (sOutDir)
 sOutDirAfterJEC     = "%s/afterJEC" % (sOutDir)
 sOutDirBeforeJEC_1D = '%s/1D' % (sOutDirBeforeJEC)
 sOutDirAfterJEC_1D  = '%s/1D' % (sOutDirAfterJEC)
-if not os.path.exists(sOutDir):             os.mkdirs( sOutDir , exist_ok=True )
-if not os.path.exists(sOutDirBeforeJEC):    os.mkdirs( sOutDirBeforeJEC , exist_ok=True )
-if not os.path.exists(sOutDirAfterJEC):     os.mkdirs( sOutDirAfterJEC , exist_ok=True )    
-if not os.path.exists(sOutDirBeforeJEC_1D): os.mkdirs( sOutDirBeforeJEC_1D , exist_ok=True )    
-if not os.path.exists(sOutDirAfterJEC_1D):  os.mkdirs( sOutDirAfterJEC_1D , exist_ok=True )
-if not os.path.exists("../data"):           os.mkdirs("../data", exist_ok=True )
+if not os.path.exists(sOutDir):             os.makedirs( sOutDir , exist_ok=True )
+if not os.path.exists(sOutDirBeforeJEC):    os.makedirs( sOutDirBeforeJEC , exist_ok=True )
+if not os.path.exists(sOutDirAfterJEC):     os.makedirs( sOutDirAfterJEC , exist_ok=True )    
+if not os.path.exists(sOutDirBeforeJEC_1D): os.makedirs( sOutDirBeforeJEC_1D , exist_ok=True )    
+if not os.path.exists(sOutDirAfterJEC_1D):  os.makedirs( sOutDirAfterJEC_1D , exist_ok=True )
+if not os.path.exists("../data"):           os.makedirs("../data", exist_ok=True )
     
 print("Input file: %s" % (sIpFileName))
 print(f"{fracOfDataToUse = }")
@@ -667,8 +676,8 @@ if printLevel >= 5:
 
 sOutDir_toUse   = '%s/L1JetResponse_vs_Eta_perPU_perPtEtaCat' % (sOutDirAfterJEC)
 sOutDir1D_toUse = '%s/L1JetResponse_vs_Eta_perPU_perPtEtaCat/1D' % (sOutDirAfterJEC)
-if not os.path.exists(sOutDir_toUse):             os.mkdirs( sOutDir_toUse , exist_ok=True )
-if not os.path.exists(sOutDir1D_toUse):           os.mkdirs( sOutDir1D_toUse , exist_ok=True )    
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse , exist_ok=True )
+if not os.path.exists(sOutDir1D_toUse):           os.makedirs( sOutDir1D_toUse , exist_ok=True )    
 
 Pt_Cat_forResolutionPlots = OD()
 Pt_Cat_forResolutionPlots['Pt25to35']   = [ 25,  35]
@@ -688,7 +697,7 @@ marker_color_list = ['r', 'b', 'darkviolet', 'c', 'orange', 'green']
 marker_style_list = ["o", "X", '>', '^', 'v', "s", "+", 'x', '*']
 marker_size_list  = [5, 5, 3, 3, 3, 3, 2, 2, 2]
 
-'''
+
 for PU_category, PURange in PU_Cat_forResolutionPlots.items():
     PURangeMin = PURange[0]
     PURangeMax = PURange[1]
@@ -761,7 +770,7 @@ for PU_category, PURange in PU_Cat_forResolutionPlots.items():
                 JER[iEtaBin] = {'value': Sigma_ / Mean_, 'error': errJER_}
 
                 sOutDir1D_toUse_ = '%s/MLAtPU%d' % (sOutDir1D_toUse, PUPoint_ForMLEvaluation)
-                if not os.path.exists(sOutDir1D_toUse_):           os.mkdirs( sOutDir1D_toUse_ , exist_ok=True )    
+                if not os.path.exists(sOutDir1D_toUse_):           os.makedirs( sOutDir1D_toUse_ , exist_ok=True )    
                 fig.savefig('%s/L1JetResponse_1D_%s_%s_ieta_%d.png' % (sOutDir1D_toUse_, PU_category, Pt_category, iEtaBin))
                 plt.close(fig)
                 
@@ -835,16 +844,17 @@ for PU_category, PURange in PU_Cat_forResolutionPlots.items():
         axs.grid()
         fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Resolution.png' % (sOutDir_toUse, PU_category, Pt_category)) 
         plt.close(fig)
-'''
 
 
-# In[ ]:
+# In[18]:
 
 
 # L1JetResponse vs Pt after JEC
 
+exit(0)
+
 sOutDir_toUse   = '%s/L1JetResponse_vs_Pt_perPU_perEtaCat_BDTAtPU%d' % (sOutDirAfterJEC, PUPointForMLEvaluation_selected)
-if not os.path.exists(sOutDir_toUse):             os.mkdirs( sOutDir_toUse , exist_ok=True )   
+if not os.path.exists(sOutDir_toUse):             os.makedirs( sOutDir_toUse , exist_ok=True )   
 
 sL1JetEt_forResolutionPlots = '%s_wBDTAtPU%d' % (sL1JetEt_calib, PUPointForMLEvaluation_selected)
 
