@@ -30,7 +30,7 @@ import numpy as np
 from operator import xor
 
 PRT_EVT  = 1000  ## Print every Nth event
-MAX_EVT  = 500000     ## Number of events to process per chain
+MAX_EVT  = 100000     ## Number of events to process per chain
 VERBOSE  = False  ## Verbose print-out
 PrintLevel = 0
 JetClustByHand =  True # True ## Run jet clustering by hand
@@ -2008,7 +2008,7 @@ def run():
                                 hist8['HCALTP_et_RefJetEtalt2p5'    ][src][sIEta].Fill(TP_br_toUse.hcalTPet[iTP])
                                 hist8['HCALTP_compEt_RefJetEtalt2p5'][src][sIEta].Fill(TP_br_toUse.hcalTPcompEt[iTP])
 
-                        if PrintLevel >= 0:
+                        if PrintLevel >= 10:
                             if RefJetEtaAbs > 2.5 and RefJetEtaAbs < 3.1  and TT28Abv125:
                                 print(f"RefJet: pt {vOff.Pt()}, eta {vOff.Eta()}, phi {vOff.Phi()}.   {src}, {nEmuTTs = }, {nEmuTCs = }, {nEmuETPs = }, {nEmuHTPs = } ")
                                 for iTT in range(TT_br_toUse.nTower):

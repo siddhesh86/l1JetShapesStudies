@@ -102,11 +102,13 @@ if __name__ == '__main__':
 
     #sVersion = "SinglePhoton_Pt0to200_122X_sample"
     #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePhoton_Pt-0to200_122X_hadded_v2.root"
+    #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePhoton_Pt-0to200_122X_100k.root"
 
-    sVersion = "SinglePhoton_Pt0to200_126X_sample"
-    sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePhoton_Pt-0to200_126X_hadded_v2.root"
+    sVersion = "SinglePhoton_Pt0to200_126X_sample_GT126X_mcRun3_2023_forPU65_v4"
+    #sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePhoton_Pt-0to200_126X_hadded_v2.root"
+    sInFile  = "L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_SinglePhoton_Pt-0to200_126X_GT126X_mcRun3_2023_forPU65_v4_100k.root"
     
-    sOpDir = "plots_TrblshtTT28LowSFs/SinglePhoton_Pt0to200_v2/L1JetPtRawPUS_vs_RefJetPt"
+    sOpDir = "plots_TrblshtTT28LowSFs/SinglePhoton_Pt0to200_v3/L1JetPtRawPUS_vs_RefJetPt"
            
     sHistos_dict = OD()
     for src in ['emu']: # ['unp','emu']:
