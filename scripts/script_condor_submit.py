@@ -40,7 +40,7 @@ commands = {
     #"SinglePion_Pt-0to200_122X_l1NtupleChunkyDonut":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SinglePion_Pt-0to200-gun/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_Run3Winter22DR-L1TNoPUFEVT_122X_mcRun3_2021_realistic_v9-v3/230413_095117/0000/L1Ntuple_*.root' --sampleName SinglePion_Pt-0to200_122X  --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
     #"PFA1p_Run3_QCD_Pt15to7000_l1NtupleChunkyDonut_JEC2022v5_test":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SinglePion_Pt-0to200-gun/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_Run3Winter22DR-L1TNoPUFEVT_122X_mcRun3_2021_realistic_v9-v3/230413_095117/0000/L1Ntuple_9.root' --sampleName SinglePion_Pt-0to200_122X  --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
     #"SinglePhoton_Pt-0to200_122X_l1NtupleChunkyDonut":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SinglePhoton_Pt-0To200-gun/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_Run3Winter22DR-L1TNoPUFEVT_122X_mcRun3_2021_realistic_v9-v3/230418_160444/0000/L1Ntuple_*.root' --sampleName SinglePhoton_Pt-0to200_122X  --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
-    "SinglePhoton_Pt-0to200_122X_l1NtupleChunkyDonut":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SinglePhoton_Pt-0To200-gun/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_Run3Winter22DR-L1TNoPUFEVT_122X_mcRun3_2021_realistic_v9-v3/230418_160444/0000/L1Ntuple_9.root' --sampleName SinglePhoton_Pt-0to200_122X  --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+    #"SinglePhoton_Pt-0to200_122X_l1NtupleChunkyDonut":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SinglePhoton_Pt-0To200-gun/L1TNtuple_forL1JetL2Calib_12_6_0_pre1_Run3Winter22DR-L1TNoPUFEVT_122X_mcRun3_2021_realistic_v9-v3/230418_160444/0000/L1Ntuple_9.root' --sampleName SinglePhoton_Pt-0to200_122X  --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
 
     
     #"2022_Default_l1NtupleChunkyDonut_JEC2022v7":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_0_0_pre4_Run2022G-ZMu-PromptReco-v1/230221_161135/0000/L1Ntuple_*.root'   --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut ",
@@ -57,9 +57,16 @@ commands = {
     #"SinglePion_E200to500_126X_l1NtupleChunkyDonut":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SinglePionGun_E200to500/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run3Winter23Digi-NoPU_126X_mcRun3_2023_forPU65_v1-v2/230414_190224/0000/L1Ntuple_*.root' --sampleName SinglePion_E200to500_126X  --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
     #"SinglePhoton_Pt-0to200_126X_l1NtupleChunkyDonut":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SinglePhoton_Pt-0To200_gun/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run3Winter23Digi-EpsilonPU_126X_mcRun3_2023_forPU65_v1-v1/230418_160732/0000/L1Ntuple_*.root' --sampleName SinglePhoton_Pt-0to200_126X  --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
     #"SinglePhoton_Pt-0to200_126X_l1NtupleChunkyDonut":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/SinglePhoton_Pt-0To200_gun/L1TNtuple_forL1JetL2Calib_13_1_0_pre2_HBZS0p5_Run3Winter23Digi-EpsilonPU_126X_mcRun3_2023_forPU65_v1-v1/230418_160732/0000/L1Ntuple_9.root' --sampleName SinglePhoton_Pt-0to200_126X  --PUrangeTag nVtxAll  --l1MatchGen --l1NtupleChunkyDonut ",
+
+    # 13_1_0_pre4
+    #"2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_1_0_pre4_Layer1SFFromOlivier_Run2022G-ZMu-PromptReco-v1/230713_144615/0000/L1Ntuple_*.root' --sampleName 2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier  --PUrangeTag nVtxAll  --l1MatchOffline --l1NtuplePhiRing  ",
+    #"2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_1_0_pre4_Layer1SFFromOlivier_Run2022G-ZMu-PromptReco-v1/230713_144615/0000/L1Ntuple_9.root' --sampleName 2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier  --PUrangeTag nVtxAll  --l1MatchOffline --l1NtuplePhiRing  ",
+    #"2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_1_0_pre4_Layer1SFFromOlivier_v2_Run2022G-ZMu-PromptReco-v1/230812_113225/0000/L1Ntuple_9.root' --sampleName 2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2  --PUrangeTag nVtxAll  --l1MatchOffline --l1NtuplePhiRing  --offlinePUPPIJet ",
+    "2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_1_0_pre4_Layer1SFFromOlivier_v2_Run2022G-ZMu-PromptReco-v1/230812_113225/0000/L1Ntuple_*.root' --sampleName 2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2  --PUrangeTag nVtxAll  --l1MatchOffline --l1NtuplePhiRing  --offlinePUPPIJet ",
+    
 } 
 
-runLocally = True  
+runLocally = False
 nSplitsInput = 1 if runLocally else 10
 
 
@@ -149,7 +156,8 @@ for PUS, command0 in commands.items():
             f.write("echo PYTHONPATH: $PYTHONPATH  \n")
             '''
             
-            f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v6_20230213/CMSSW_13_0_0_pre4/src   \n")
+            #f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v6_20230213/CMSSW_13_0_0_pre4/src   \n")
+            f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v6_20230213/CMSSW_13_1_0_pre4/src   \n")
             f.write("pwd   \n")
             f.write("cmsenv   \n")
             f.write('eval `scramv1 runtime -sh` \n') # which is alias for cmsenv

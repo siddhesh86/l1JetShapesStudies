@@ -30,7 +30,7 @@ import numpy as np
 from operator import xor
 
 PRT_EVT  = 1000  ## Print every Nth event
-MAX_EVT  = 500000     ## Number of events to process per chain
+MAX_EVT  = -1     ## Number of events to process per chain
 VERBOSE  = False  ## Verbose print-out
 PrintLevel = 0
 JetClustByHand =  True # True ## Run jet clustering by hand
@@ -50,10 +50,10 @@ TrigThshs_OffMuPt = [ 24 ] # For e.g. for IsoMu24: [ 24 ], for DiMu24: [24, 24],
 
 #GoldenJSONForData_list=["Cert_Collisions2022_eraG_362433_362760_Golden.json"]
 GoldenJSONForData_list=["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json"] #["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_eraG_362433_362760_Golden.json"]
-useCutGenNVtxEq0 = True # Set False. Only for troubleshoot perfose. When set True: analyze (GEN.nVtx == 0) events from SinglePhoton_EpsilonPU sample to trouble-shoot high SFs in iEta 28
+useCutGenNVtxEq0 = False # Set False. Only for troubleshoot perfose. When set True: analyze (GEN.nVtx == 0) events from SinglePhoton_EpsilonPU sample to trouble-shoot high SFs in iEta 28
+#offlineJetType = 'PUPPI' # 'CHS', 'PUPPI'  offlineCHSJet, offlinePUPPIJet. Set it as a command line argument 
 
-
-runMode = '' # makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
+runMode = 'makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
 # 'test'           # run on L1Ntuple_*_1.root ntuple for tests
 # ''               # 1st round to make jet resolution plots
 # 'CalCalibSF'     # set true to fill PFjetPt vs L1jetPt histograms to calculate calibration SFs
@@ -426,6 +426,9 @@ def run():
     parseGroup2 = parser.add_mutually_exclusive_group(required=True)
     parseGroup2.add_argument('--l1NtupleChunkyDonut', action='store_true', default=False)
     parseGroup2.add_argument('--l1NtuplePhiRing', action='store_true', default=False)
+    parseGroup3 = parser.add_mutually_exclusive_group(required=True)
+    parseGroup3.add_argument('--offlineCHSJet', action='store_true')
+    parseGroup3.add_argument('--offlinePUPPIJet', action='store_true')
     
     args = parser.parse_args()
     print("args: {}".format(args))
@@ -439,10 +442,14 @@ def run():
     l1NtupleChunkyDonut   = args.l1NtupleChunkyDonut
     l1NtuplePhiRing       = args.l1NtuplePhiRing
     sampleName            = args.sampleName
+    offlineCHSJet         = args.offlineCHSJet
+    offlinePUPPIJet       = args.offlinePUPPIJet
+
     
     print("Inputs: \n\t l1ntuplePath: {}, \n\t sampleName: {}, \n\t  OOT_PU_scheme: {}, \n\t PUrangeTag: {}, \n\t N_parts: {}, \n\t M_quantilesIpFilesSet: {}, \n\t l1MatchOffline: {}, \n\t l1MatchGen: {}, \n\t l1NtupleChunkyDonut: {}, \n\t l1NtuplePhiRing: {})".format(
         l1ntuplePath, sampleName, OOT_PU_scheme, PUrangeTag, N_parts, M_quantilesIpFilesSet, l1MatchOffline, l1MatchGen, l1NtupleChunkyDonut, l1NtuplePhiRing
     ))
+    print(f"offlineCHSJet: {offlineCHSJet},  offlinePUPPIJet: {offlinePUPPIJet} ")
 
     in_file_names = [ l1ntuplePath ]
 
@@ -1609,7 +1616,9 @@ def run():
 
             if runMode in ['makePUHisto']: continue # run quick to make PU histograms               
 
-            
+            if PrintLevel >= 100:
+                print(f"Jet_br: {Jet_br}"); sys.stdout.flush()
+                print(f"{Jet_br.puppi_nJets = }"); sys.stdout.flush()
             
             nOffJets = int(Jet_br.nJets)
             nOffMuons = int(Muon_br.nMuons)
@@ -1633,10 +1642,19 @@ def run():
             phi_RefJets = None
             if   l1MatchOffline:
                 l1JetRef_br  = Jet_br
-                nRefJets     = Jet_br.nJets
-                et_RefJets   = Jet_br.etCorr
-                eta_RefJets  = Jet_br.eta
-                phi_RefJets  = Jet_br.phi                
+                #if offlineJetType == 'PUPPI':
+                if offlinePUPPIJet:
+                    nRefJets     = Jet_br.puppi_nJets
+                    et_RefJets   = Jet_br.puppi_etCorr
+                    eta_RefJets  = Jet_br.puppi_eta
+                    phi_RefJets  = Jet_br.puppi_phi
+                    #print(f"PUPPI jets")
+                else:
+                    # PF CHS jets
+                    nRefJets     = Jet_br.nJets
+                    et_RefJets   = Jet_br.etCorr
+                    eta_RefJets  = Jet_br.eta
+                    phi_RefJets  = Jet_br.phi                    
             elif l1MatchGen:
                 l1JetRef_br  = Gen_br
                 nRefJets     = Gen_br.nJet
@@ -1945,7 +1963,11 @@ def run():
                     off_vec_matchedTo_gen_vec.SetPtEtaPhiM(0, 0, 0, 0)
                     for iOff in range(nOffJets):
                         iOff_vec = R.TLorentzVector()
-                        iOff_vec.SetPtEtaPhiM(Jet_br.etCorr[iOff], Jet_br.eta[iOff], Jet_br.phi[iOff], 0)
+                        #if offlineJetType == 'PUPPI':
+                        if offlinePUPPIJet:
+                            iOff_vec.SetPtEtaPhiM(Jet_br.puppi_etCorr[iOff], Jet_br.puppi_eta[iOff], Jet_br.puppi_phi[iOff], 0)
+                        else:
+                            iOff_vec.SetPtEtaPhiM(Jet_br.etCorr[iOff], Jet_br.eta[iOff], Jet_br.phi[iOff], 0)
 
                         if vOff.DeltaR(iOff_vec) < DR_MAX and iOff_vec.Pt() > off_vec_matchedTo_gen_vec.Pt():
                             off_vec_matchedTo_gen_vec = iOff_vec
