@@ -26,4 +26,8 @@ scripts/plot*/
 */*.png
 */*/*.png
 */*.root
+scripts/condor_*.sh
+scripts/.__afs2F9A
+scripts/.__afs5515
+scripts/ssawant.cc
 

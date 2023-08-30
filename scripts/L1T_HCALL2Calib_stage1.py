@@ -42,6 +42,7 @@ JetShapesType2 = [] # ['L1TauDefault']
 PUSAlgosAll      = ['Raw', 'RawPUS', 'RawPUS_phiDefault']
 PUSAlgosSelected = [] #['Raw', 'RawPUS', 'RawPUS_phiDefault']
 PUSAlgosAllType2 = [] # ['Et', 'RawEt']
+MatchEmulatedJetsWithUnpacked = False # set True while computing JEC LUT with L1Ntuples produced with exactly same conditions (layer 1 SF etc)  as during data taking runs. Set to False to be on safer side
 
 HLT_Triggers_Required = [
     'HLT_IsoMu24_v' # HLT_IsoMu24_v15
@@ -52,6 +53,7 @@ TrigThshs_OffMuPt = [ 24 ] # For e.g. for IsoMu24: [ 24 ], for DiMu24: [24, 24],
 GoldenJSONForData_list=["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json"] #["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_eraG_362433_362760_Golden.json"]
 useCutGenNVtxEq0 = False # Set False. Only for troubleshoot perfose. When set True: analyze (GEN.nVtx == 0) events from SinglePhoton_EpsilonPU sample to trouble-shoot high SFs in iEta 28
 #offlineJetType = 'PUPPI' # 'CHS', 'PUPPI'  offlineCHSJet, offlinePUPPIJet. Set it as a command line argument 
+nJetFilters = 14
 
 runMode = 'makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML', 'trbshtPhiRingPUS'
 # 'test'           # run on L1Ntuple_*_1.root ntuple for tests
@@ -62,6 +64,15 @@ runMode = 'makeInputForML' # '', 'CalCalibSF', 'CalibJetByHand', 'makeInputForML
 # 'makePUHisto'    # run quick to make PU histograms
 # 'trbshtPhiRingPUS' # to troubleshoot PhiRing PU Et
 sOutExt = ""
+
+
+dataErasRunRange = {
+    '2022C': [356426, 357482],
+    '2022D': [357538, 359017], # [357538, 357733,  357734, 357930,  358381, 359017]
+    '2022E': [359045, 360327], 
+    '2022F': [360335, 362167], 
+    '2022G': [362362, 362760], 
+}
 
 L1TEffiTurnOn_TrigThrshs = [12.0, 35.0, 60.0, 90.0, 120.0, 180.0] # L1T eT threshold for L1T efficiency turn-on curve
 
@@ -1156,8 +1167,44 @@ def run():
                 
 
 
+    hnL1JetUnp_0 = R.TH1D('hnL1JetUnp_0', 'hnL1JetUnp_0', 31, -0.5, 30.5)
+    hL1JetUnp_Pt_0 = R.TH1D('hL1JetUnp_Pt_0', 'hL1JetUnp_Pt_0', 100, 0, 300)
+    hL1JetUnp_Eta_0 = R.TH1D('hL1JetUnp_Eta_0', 'hL1JetUnp_Eta_0', 100, -6, 6)
+    hL1JetUnp_Phi_0 = R.TH1D('hL1JetUnp_Phi_0', 'hL1JetUnp_Phi_0', 100, -3.14, 3.14)
 
-                
+    hnL1JetEmu_0 = R.TH1D('hnL1JetEmu_0', 'hnL1JetEmu_0', 31, -0.5, 30.5)
+    hL1JetEmu_Pt_0 = R.TH1D('hL1JetEmu_Pt_0', 'hL1JetEmu_Pt_0', 100, 0, 300)
+    hL1JetEmu_Eta_0 = R.TH1D('hL1JetEmu_Eta_0', 'hL1JetEmu_Eta_0', 100, -6, 6)
+    hL1JetEmu_Phi_0 = R.TH1D('hL1JetEmu_Phi_0', 'hL1JetEmu_Phi_0', 100, -3.14, 3.14)
+
+    hnOfflineJet_0 = R.TH1D('hnhOfflineJet_0', 'hnhOfflineJet_0', 31, -0.5, 30.5)
+    hOfflineJet_Pt_0 = R.TH1D('hhOfflineJet_Pt_0', 'hhOfflineJet_Pt_0', 100, 0, 300)
+    hOfflineJet_Eta_0 = R.TH1D('hhOfflineJet_Eta_0', 'hhOfflineJet_Eta_0', 100, -6, 6)
+    hOfflineJet_Phi_0 = R.TH1D('hhOfflineJet_Phi_0', 'hhOfflineJet_Phi_0', 100, -3.14, 3.14)
+
+    #
+    hnL1JetUnp_1 = R.TH1D('hnL1JetUnp_1', 'hnL1JetUnp_1', 31, -0.5, 30.5)
+    hL1JetUnp_Pt_1 = R.TH1D('hL1JetUnp_Pt_1', 'hL1JetUnp_Pt_1', 100, 0, 300)
+    hL1JetUnp_Eta_1 = R.TH1D('hL1JetUnp_Eta_1', 'hL1JetUnp_Eta_1', 100, -6, 6)
+    hL1JetUnp_Phi_1 = R.TH1D('hL1JetUnp_Phi_1', 'hL1JetUnp_Phi_1', 100, -3.14, 3.14)
+
+    hnL1JetEmu_1 = R.TH1D('hnL1JetEmu_1', 'hnL1JetEmu_1', 31, -0.5, 30.5)
+    hL1JetEmu_Pt_1 = R.TH1D('hL1JetEmu_Pt_1', 'hL1JetEmu_Pt_1', 100, 0, 300)
+    hL1JetEmu_Eta_1 = R.TH1D('hL1JetEmu_Eta_1', 'hL1JetEmu_Eta_1', 100, -6, 6)
+    hL1JetEmu_Phi_1 = R.TH1D('hL1JetEmu_Phi_1', 'hL1JetEmu_Phi_1', 100, -3.14, 3.14)
+
+    #
+    hnL1JetUnp_2 = R.TH1D('hnL1JetUnp_2', 'hnL1JetUnp_2', 31, -0.5, 30.5)
+    hL1JetUnp_Pt_2 = R.TH1D('hL1JetUnp_Pt_2', 'hL1JetUnp_Pt_2', 100, 0, 300)
+    hL1JetUnp_Eta_2 = R.TH1D('hL1JetUnp_Eta_2', 'hL1JetUnp_Eta_2', 100, -6, 6)
+    hL1JetUnp_Phi_2 = R.TH1D('hL1JetUnp_Phi_2', 'hL1JetUnp_Phi_2', 100, -3.14, 3.14)
+
+    hnL1JetEmu_2 = R.TH1D('hnL1JetEmu_2', 'hnL1JetEmu_2', 31, -0.5, 30.5)
+    hL1JetEmu_Pt_2 = R.TH1D('hL1JetEmu_Pt_2', 'hL1JetEmu_Pt_2', 100, 0, 300)
+    hL1JetEmu_Eta_2 = R.TH1D('hL1JetEmu_Eta_2', 'hL1JetEmu_Eta_2', 100, -6, 6)
+    hL1JetEmu_Phi_2 = R.TH1D('hL1JetEmu_Phi_2', 'hL1JetEmu_Phi_2', 100, -3.14, 3.14)
+
+
     hCaloTTi_iEta_vs_Phi_tmplate = R.TH2D( 'hCaloTT_iEta_vs_iPhi', '', 83,-41.5,41.5, 72,0.5,72.5, ) # iEta on xaxis and iPhi on y-axis
 
     hCaloTowers_iEta_vs_iPhi_list = []
@@ -1174,9 +1221,55 @@ def run():
     # Check JEC SFs
     hJEC_iEta_vs_Pt = R.TH2D('hJEC_iEta_vs_Pt', 'hJEC_iEta_vs_Pt', 41,0.5,41.5, 257*2,-0.25,256.75 )
 
+    hRefJet_pt_0  = R.TH1D('hRefJet_pt_0',  'hRefJet_pt_0',  100, 0, 400 )
+    hRefJet_eta_0 = R.TH1D('hRefJet_eta_0', 'hRefJet_eta_0', 100, -6, 6 )
+    hRefJet_phi_0 = R.TH1D('hRefJet_phi_0', 'hRefJet_phi_0', 100, -3.14, 3.14 )
 
+    hRefJet_pt_0_1  = R.TH1D('hRefJet_pt_0_1',  'hRefJet_pt_0_1',  100, 0, 400 )
+    hRefJet_eta_0_1 = R.TH1D('hRefJet_eta_0_1', 'hRefJet_eta_0_1', 100, -6, 6 )
+    hRefJet_phi_0_1 = R.TH1D('hRefJet_phi_0_1', 'hRefJet_phi_0_1', 100, -3.14, 3.14 )
+
+    hRefJet_pt_0_1_test = {}
+    hRefJet_eta_0_1_test = {}
+    hRefJet_phi_0_1_test = {}
+    for idx_ in range( nJetFilters + 1 ):
+        hRefJet_pt_0_1_test[idx_]  = R.TH1D('hRefJet_pt_0_1_test_%s' % idx_,  'hRefJet_pt_0_1_test_%s' % idx_,  100, 0, 400 )
+        hRefJet_eta_0_1_test[idx_] = R.TH1D('hRefJet_eta_0_1_test_%s' % idx_, 'hRefJet_eta_0_1_test_%s' % idx_, 100, -6, 6 )
+        hRefJet_phi_0_1_test[idx_] = R.TH1D('hRefJet_phi_0_1_test_%s' % idx_, 'hRefJet_phi_0_1_test_%s' % idx_, 100, -3.14, 3.14 )
+
+    hRefJet_pt_0_2  = R.TH1D('hRefJet_pt_0_2',  'hRefJet_pt_0_2',  100, 0, 400 )
+    hRefJet_eta_0_2 = R.TH1D('hRefJet_eta_0_2', 'hRefJet_eta_0_2', 100, -6, 6 )
+    hRefJet_phi_0_2 = R.TH1D('hRefJet_phi_0_2', 'hRefJet_phi_0_2', 100, -3.14, 3.14 )
+
+    hRefJet_pt_0_3  = R.TH1D('hRefJet_pt_0_3',  'hRefJet_pt_0_3',  100, 0, 400 )
+    hRefJet_eta_0_3 = R.TH1D('hRefJet_eta_0_3', 'hRefJet_eta_0_3', 100, -6, 6 )
+    hRefJet_phi_0_3 = R.TH1D('hRefJet_phi_0_3', 'hRefJet_phi_0_3', 100, -3.14, 3.14 )
+
+    hRefJet_pt_0_4  = R.TH1D('hRefJet_pt_0_4',  'hRefJet_pt_0_4',  100, 0, 400 )
+    hRefJet_eta_0_4 = R.TH1D('hRefJet_eta_0_4', 'hRefJet_eta_0_4', 100, -6, 6 )
+    hRefJet_phi_0_4 = R.TH1D('hRefJet_phi_0_4', 'hRefJet_phi_0_4', 100, -3.14, 3.14 )
+
+    hRefJet_pt_1  = R.TH1D('hRefJet_pt_1',  'hRefJet_pt_1',  100, 0, 400 )
+    hRefJet_eta_1 = R.TH1D('hRefJet_eta_1', 'hRefJet_eta_1', 100, -6, 6 )
+    hRefJet_phi_1 = R.TH1D('hRefJet_phi_1', 'hRefJet_phi_1', 100, -3.14, 3.14 )
+
+    hRefJet_pt_2  = R.TH1D('hRefJet_pt_2',  'hRefJet_pt_2',  100, 0, 400 )
+    hRefJet_eta_2 = R.TH1D('hRefJet_eta_2', 'hRefJet_eta_2', 100, -6, 6 )
+    hRefJet_phi_2 = R.TH1D('hRefJet_phi_2', 'hRefJet_phi_2', 100, -3.14, 3.14 )
     
-    
+    hRefJet_pt_2p01  = R.TH1D('hRefJet_pt_2p01',  'hRefJet_pt_2p01',  100, 0, 400 )
+    hRefJet_eta_2p01 = R.TH1D('hRefJet_eta_2p01', 'hRefJet_eta_2p01', 100, -6, 6 )
+    hRefJet_phi_2p01 = R.TH1D('hRefJet_phi_2p01', 'hRefJet_phi_2p01', 100, -3.14, 3.14 )
+
+    hRefJet_pt_2p02  = R.TH1D('hRefJet_pt_2p02',  'hRefJet_pt_2p02',  100, 0, 400 )
+    hRefJet_eta_2p02 = R.TH1D('hRefJet_eta_2p02', 'hRefJet_eta_2p02', 100, -6, 6 )
+    hRefJet_phi_2p02 = R.TH1D('hRefJet_phi_2p02', 'hRefJet_phi_2p02', 100, -3.14, 3.14 )
+
+    hRefJet_pt_2p03  = R.TH1D('hRefJet_pt_2p03',  'hRefJet_pt_2p03',  100, 0, 400 )
+    hRefJet_eta_2p03 = R.TH1D('hRefJet_eta_2p03', 'hRefJet_eta_2p03', 100, -6, 6 )
+    hRefJet_phi_2p03 = R.TH1D('hRefJet_phi_2p03', 'hRefJet_phi_2p03', 100, -3.14, 3.14 )
+
+
     if PrintLevel >= 1: 
         print("Hitograms booked"); sys.stdout.flush();
     
@@ -1526,6 +1619,7 @@ def run():
             # ----------------------------------------------------------------------------------------------
             
 
+            
 
             
             # nalyze (GEN.nVtx == 0) events from SinglePhoton_EpsilonPU sample to trouble-shoot high SFs in iEta 28 ----
@@ -1551,7 +1645,14 @@ def run():
                     #print(f"Run:LS:Event:  %d:%d:%d   fails GoldenJSON " %(int(Evt_br.run), int(Evt_br.lumi), int(Evt_br.event))); sys.stdout.flush();
                     continue
                 
-            #print(f"Run:LS:Event:  %d:%d:%d   pass GoldenJSON " %(int(Evt_br.run), int(Evt_br.lumi), int(Evt_br.event))); sys.stdout.flush();
+            dataEra = ''
+            if not isMC:
+                for Era_, eraRunRange_ in dataErasRunRange.items():
+                    if int(Evt_br.run) >= eraRunRange_[0] and int(Evt_br.run) <= eraRunRange_[1]:
+                        dataEra = Era_
+                        break
+
+            #print(f"Run:LS:Event:  %d:%d:%d   pass GoldenJSON \t\t dataEra %s " %(int(Evt_br.run), int(Evt_br.lumi), int(Evt_br.event), dataEra)); sys.stdout.flush();
             hStat.Fill(1)
             
             #if VERBOSE and iEvt % PRT_EVT is 0: print '  * Run %d, LS %d, event %d, nVtx %d' % (int(Evt_br.run), int(Evt_br.lumi), int(Evt_br.event), int(Vtx_br.nVtx))
@@ -1620,20 +1721,20 @@ def run():
                 print(f"Jet_br: {Jet_br}"); sys.stdout.flush()
                 print(f"{Jet_br.puppi_nJets = }"); sys.stdout.flush()
             
-            nOffJets = int(Jet_br.nJets)
+            nOffJets  = int(Jet_br.puppi_nJets) if offlinePUPPIJet else int(Jet_br.nJets)
             nOffMuons = int(Muon_br.nMuons)
-            nOffEles = int(Ele_br.nElectrons)
-            nUnpJets = int(Unp_br.nJets)
-            nEmuJets = int(Emu_br.nJets)
-            nUnpHTPs = int(uTP_br.nHCALTP)
-            nEmuHTPs = int(eTP_br.nHCALTP)
-            nUnpETPs = int(uTP_br.nECALTP)
-            nEmuETPs = int(eTP_br.nECALTP)
-            nUnpTTs  = int(uTT_br.nTower)
-            nEmuTTs  = int(eTT_br.nTower)
-            nUnpTCs  = int(uTC_br.nCluster)
-            nEmuTCs  = int(eTC_br.nCluster)
-            nGenJets = int(Gen_br.nJet)
+            nOffEles  = int(Ele_br.nElectrons)
+            nUnpJets  = int(Unp_br.nJets)
+            nEmuJets  = int(Emu_br.nJets)
+            nUnpHTPs  = int(uTP_br.nHCALTP)
+            nEmuHTPs  = int(eTP_br.nHCALTP)
+            nUnpETPs  = int(uTP_br.nECALTP)
+            nEmuETPs  = int(eTP_br.nECALTP)
+            nUnpTTs   = int(uTT_br.nTower)
+            nEmuTTs   = int(eTT_br.nTower)
+            nUnpTCs   = int(uTC_br.nCluster)
+            nEmuTCs   = int(eTC_br.nCluster)
+            nGenJets  = int(Gen_br.nJet)
 
             l1JetRef_br = None
             nRefJets    = 0
@@ -1677,7 +1778,7 @@ def run():
                  nOffMuons, nOffEles))
 
 
-            if PrintLevel >= 3:
+            if PrintLevel >= 5:
                 print("OffMuons (%d)::" %(nOffMuons))
                 for iMu in range(nOffMuons):
                     print(f"  {iMu}: charge {Muon_br.charge[iMu]}, e {Muon_br.e[iMu]}, et {Muon_br.et[iMu]}, pt {Muon_br.pt[iMu]}, eta {Muon_br.eta[iMu]}, phi {Muon_br.phi[iMu]}, mt {Muon_br.mt[iMu]}, met {Muon_br.met[iMu]}, isLooseMuon {Muon_br.isLooseMuon[iMu]}, isMediumMuon {Muon_br.isMediumMuon[iMu]}, isTightMuon {Muon_br.isTightMuon[iMu]}, iso {Muon_br.iso[iMu]}, passesSingleMuon {Muon_br.passesSingleMuon[iMu]}, hlt_mu {Muon_br.hlt_mu[iMu]}, hlt_isomu {Muon_br.hlt_isomu[iMu]}, hlt_deltaR {Muon_br.hlt_deltaR[iMu]}, hlt_isoDeltaR {Muon_br.hlt_isoDeltaR[iMu]} " )
@@ -1691,9 +1792,55 @@ def run():
                 for iHlt in range(Evt_br.hlt.size()):
                     print(f"    {iHlt}: {Evt_br.hlt[iHlt]}")
 
+            
+            if PrintLevel >= 2:
+                print(f"nUnpJets: {nUnpJets}")
+                for iJ in range(nUnpJets):
+                    if Unp_br.jetBx[iJ] != 0: continue
+                    print(f"{' '*4} {iJ}: Et {Unp_br.jetEt[iJ]}, Eta {Unp_br.jetEta[iJ]}, Phi {Unp_br.jetPhi[iJ]}, Bx {Unp_br.jetBx[iJ]},  ")
+
+                print(f"nEmuJets: {nEmuJets}")
+                for iJ in range(nEmuJets):
+                    if Emu_br.jetBx[iJ] != 0: continue
+                    print(f"{' '*4} {iJ}: Et {Emu_br.jetEt[iJ]}, Eta {Emu_br.jetEta[iJ]}, Phi {Emu_br.jetPhi[iJ]}, Bx {Emu_br.jetBx[iJ]},  ")
+
+                print(f"nOffJets: {nOffJets}")
+                for iJ in range(nOffJets):
+                    print(f"{' '*4} {iJ}: Et {Jet_br.puppi_etCorr[iJ]}, Eta {Jet_br.puppi_eta[iJ]}, Phi {Jet_br.puppi_phi[iJ]}, ")
 
             hnVts_vs_nTT_unp.Fill(nVtx, nUnpTTs)
             hnVts_vs_nTT_emu.Fill(nVtx, nEmuTTs)
+
+            nUnpJets_Bx0 = 0
+            for iJ in range(nUnpJets): 
+                if Unp_br.jetBx[iJ] != 0: continue   
+                nUnpJets_Bx0 += 1        
+                hL1JetUnp_Pt_0.Fill(Unp_br.jetEt[iJ])
+                hL1JetUnp_Eta_0.Fill(Unp_br.jetEta[iJ])
+                hL1JetUnp_Phi_0.Fill(Unp_br.jetPhi[iJ])
+            hnL1JetUnp_0.Fill(nUnpJets_Bx0)
+
+            nEmuJets_Bx0 = 0
+            for iJ in range(nEmuJets):
+                if Emu_br.jetBx[iJ] != 0: continue
+                nEmuJets_Bx0 += 1
+                hL1JetEmu_Pt_0.Fill(Emu_br.jetEt[iJ])
+                hL1JetEmu_Eta_0.Fill(Emu_br.jetEta[iJ])
+                hL1JetEmu_Phi_0.Fill(Emu_br.jetPhi[iJ])
+            hnL1JetEmu_0.Fill(nEmuJets_Bx0)
+
+            
+            for iJ in range(nOffJets):
+                if offlinePUPPIJet:
+                    hOfflineJet_Pt_0.Fill(Jet_br.puppi_etCorr[iJ])
+                    hOfflineJet_Eta_0.Fill(Jet_br.puppi_eta[iJ])
+                    hOfflineJet_Phi_0.Fill(Jet_br.puppi_phi[iJ])
+                else:
+                    hOfflineJet_Pt_0.Fill(Jet_br.etCorr[iJ])
+                    hOfflineJet_Eta_0.Fill(Jet_br.eta[iJ])
+                    hOfflineJet_Phi_0.Fill(Jet_br.phi[iJ])                    
+            hnOfflineJet_0.Fill(nOffJets)
+
 
             # TT, TP plots --------------------------------------------------------------------------------------------------------------------
             for src in ['unp','emu']:
@@ -1800,13 +1947,11 @@ def run():
             #for iOff in range(nOffJets):
             for iOff in range(nRefJets):
                 iOff_vec = R.TLorentzVector()
-                #iOff_vec.SetPtEtaPhiM(Jet_br.et[iOff], Jet_br.eta[iOff], Jet_br.phi[iOff], 0)
                 iOff_vec.SetPtEtaPhiM(et_RefJets[iOff], eta_RefJets[iOff], phi_RefJets[iOff], 0)
                 
                 ## Loop over all offline RECO jets with higher pT
                 for jOff in range(iOff):
                     jOff_vec = R.TLorentzVector()
-                    #jOff_vec.SetPtEtaPhiM(Jet_br.et[jOff], Jet_br.eta[jOff], Jet_br.phi[jOff], 0)
                     jOff_vec.SetPtEtaPhiM(et_RefJets[jOff], eta_RefJets[jOff], phi_RefJets[jOff], 0)
 
                     if iOff_vec.DeltaR(jOff_vec) < DR_MIN:
@@ -1815,17 +1960,24 @@ def run():
                         bad_off_jets.append(iOff)
                         break
 
+            isFirstRefJet = True
             ## Loop over all offline RECO jets
             #for iOff in range(nOffJets):
             for iOff in range(nRefJets):
 
                 hStat.Fill(4)
+                hRefJet_pt_0.Fill(et_RefJets[iOff])
+                hRefJet_eta_0.Fill(eta_RefJets[iOff])
+                hRefJet_phi_0.Fill(phi_RefJets[iOff])
                 
                 ## Remove offline jets which overlap other jets
                 if iOff in bad_off_jets: continue
+
+                hRefJet_pt_0_1.Fill(et_RefJets[iOff])
+                hRefJet_eta_0_1.Fill(eta_RefJets[iOff])
+                hRefJet_phi_0_1.Fill(phi_RefJets[iOff])                
                 
                 vOff = R.TLorentzVector()
-                #vOff.SetPtEtaPhiM(Jet_br.etCorr[iOff], Jet_br.eta[iOff], Jet_br.phi[iOff], 0) # Aaron: use jet.etCorr instead of jet.et
                 vOff.SetPtEtaPhiM(et_RefJets[iOff], eta_RefJets[iOff], phi_RefJets[iOff], 0) # Aaron: use jet.etCorr instead of jet.et
 
                 hStat.Fill(5)
@@ -1833,28 +1985,74 @@ def run():
                 if   l1MatchOffline:
                     selectPFJet = True
                     ## PF jet filters as recommended by Aaron: https://github.com/cms-l1t-offline/cms-l1t-analysis/blob/master/cmsl1t/filters/jets.py
-                    abs_eta = abs(Jet_br.eta[iOff])
-                    isInnerJet = abs_eta <= 2.4
-                    isCentralJet = abs_eta <= 2.7
-                    isForwardCentralJet = (abs_eta > 2.7 and abs_eta <= 3.0)
-                    isForwardJet = abs_eta > 3.0
-                    reject_if = [
-                        Jet_br.muMult[iOff] != 0,
-                        isCentralJet and Jet_br.nhef[iOff] >= 0.9,
-                        isCentralJet and Jet_br.nemef[iOff] >= 0.9,
-                        isCentralJet and (Jet_br.cMult[iOff] + Jet_br.nMult[iOff]) <= 1,
-                        isCentralJet and Jet_br.mef[iOff] >= 0.8,
-                        isInnerJet and Jet_br.chef[iOff] <= 0,
-                        isInnerJet and Jet_br.cMult[iOff] <= 0,
-                        isInnerJet and Jet_br.cemef[iOff] >= 0.9,
-                        isForwardCentralJet and Jet_br.nhef[iOff] >= 0.98,
-                        isForwardCentralJet and Jet_br.nemef[iOff] <= 0.01,
-                        isForwardCentralJet and Jet_br.nMult[iOff] <= 2,
-                        isForwardJet and Jet_br.nemef[iOff] >= 0.9,
-                        isForwardJet and Jet_br.nMult[iOff] <= 10
-                    ]
+                    abs_eta = abs(eta_RefJets[iOff])
+                    reject_if = None
+
+                    if dataEra in ['2022F', '2022G']:
+                        # https://twiki.cern.ch/twiki/bin/view/CMS/JetID13p6TeV#Recommendations_for_the_13_6_AN1
+                        # https://github.com/bundocka/cmssw/blob/7d536e034f7dd0773eec3f306508c80c67fb1960/L1Trigger/L1TNtuples/plugins/L1JetRecoTreeProducer.cc#L689-L715
+
+                        isCentralJet          =  abs_eta <= 2.6
+                        isForwardCentralJet_1 = (abs_eta > 2.6 and abs_eta <= 2.7)
+                        isForwardCentralJet_2 = (abs_eta > 2.7 and abs_eta <= 3.0)
+                        isForwardJet          =  abs_eta > 3.0
+
+                        if offlinePUPPIJet:    
+                            reject_if = [
+                                isCentralJet          and Jet_br.puppi_nhef[iOff]  >= 0.99, # neutralHadronEnergyFraction()
+                                isCentralJet          and Jet_br.puppi_nemef[iOff] >= 0.90, # jet_data->puppi_nemef.push_back(it->neutralEmEnergyFraction());
+                                isCentralJet          and (Jet_br.puppi_cMult[iOff] + Jet_br.puppi_nMult[iOff]) <= 1, # jet_data->puppi_cMult.push_back(it->chargedMultiplicity()); jet_data->puppi_nMult.push_back(it->neutralMultiplicity());
+                                isCentralJet          and Jet_br.puppi_mef[iOff]   >= 0.80, # jet_data->puppi_mef.push_back(it->muonEnergyFraction());
+                                isCentralJet          and Jet_br.puppi_chef[iOff]  <= 0.01, # jet_data->puppi_chef.push_back(it->chargedHadronEnergyFraction());
+                                isCentralJet          and Jet_br.puppi_cMult[iOff] == 0, # jet_data->puppi_cMult.push_back(it->chargedMultiplicity());
+                                isCentralJet          and Jet_br.puppi_cemef[iOff] >= 0.80, # jet_data->puppi_cemef.push_back(it->chargedEmEnergyFraction());
+                                
+                                isForwardCentralJet_1 and Jet_br.puppi_nhef[iOff]  >= 0.90, # neutralHadronEnergyFraction()
+                                isForwardCentralJet_1 and Jet_br.puppi_nemef[iOff] >= 0.99, # jet_data->puppi_nemef.push_back(it->neutralEmEnergyFraction());
+                                isForwardCentralJet_1 and Jet_br.puppi_mef[iOff]   >= 0.80, # jet_data->puppi_mef.push_back(it->muonEnergyFraction());
+                                isForwardCentralJet_1 and Jet_br.puppi_cemef[iOff] >= 0.80, # jet_data->puppi_cemef.push_back(it->chargedEmEnergyFraction());
+                                
+                                isForwardCentralJet_2 and Jet_br.puppi_nhef[iOff]  >= 0.9999, # neutralHadronEnergyFraction()                                
+                                
+                                isForwardJet          and Jet_br.puppi_nemef[iOff] >= 0.90, # jet_data->puppi_nemef.push_back(it->neutralEmEnergyFraction());
+                                isForwardJet          and Jet_br.puppi_nMult[iOff] <  2 , # jet_data->puppi_nMult.push_back(it->neutralMultiplicity());
+                            ]
+                        else:
+                            reject_if = [
+                                isCentralJet          and Jet_br.nhef[iOff]  >= 0.99, # neutralHadronEnergyFraction()
+                                isCentralJet          and Jet_br.nemef[iOff] >= 0.90, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());
+                                isCentralJet          and (Jet_br.cMult[iOff] + Jet_br.nMult[iOff]) <= 1, # jet_data->cMult.push_back(it->chargedMultiplicity()); jet_data->nMult.push_back(it->neutralMultiplicity());
+                                isCentralJet          and Jet_br.mef[iOff]   >= 0.80, # jet_data->mef.push_back(it->muonEnergyFraction());
+                                isCentralJet          and Jet_br.chef[iOff]  <= 0.01, # jet_data->chef.push_back(it->chargedHadronEnergyFraction());
+                                isCentralJet          and Jet_br.cMult[iOff] == 0, # jet_data->cMult.push_back(it->chargedMultiplicity());
+                                isCentralJet          and Jet_br.cemef[iOff] >= 0.80, # jet_data->cemef.push_back(it->chargedEmEnergyFraction());
+                                
+                                isForwardCentralJet_1 and Jet_br.nhef[iOff]  >= 0.90, # neutralHadronEnergyFraction()
+                                isForwardCentralJet_1 and Jet_br.nemef[iOff] >= 0.99, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());
+                                isForwardCentralJet_1 and Jet_br.mef[iOff]   >= 0.80, # jet_data->mef.push_back(it->muonEnergyFraction());
+                                isForwardCentralJet_1 and Jet_br.cMult[iOff] == 0, # jet_data->cMult.push_back(it->chargedMultiplicity());
+                                isForwardCentralJet_1 and Jet_br.cemef[iOff] >= 0.80, # jet_data->cemef.push_back(it->chargedEmEnergyFraction());
+                                
+                                isForwardCentralJet_2 and Jet_br.nemef[iOff] >= 0.99, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());                             
+                                isForwardCentralJet_2 and Jet_br.nMult[iOff] <= 1 , # jet_data->nMult.push_back(it->neutralMultiplicity());
+
+                                isForwardJet          and Jet_br.nhef[iOff]  <= 0.20, # neutralHadronEnergyFraction()
+                                isForwardJet          and Jet_br.nemef[iOff] >= 0.90, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());
+                                isForwardJet          and Jet_br.nMult[iOff] <= 10 , # jet_data->nMult.push_back(it->neutralMultiplicity());
+                            ]
+
                     if any(reject_if):
                         selectPFJet = False
+
+
+                    if 1==0:
+                        ## Check all fliters one-by-one
+                        for idx_ in range( nJetFilters + 1 ):
+                            if not any(reject_if[0 : idx_]):
+                                hRefJet_pt_0_1_test[idx_].Fill(et_RefJets[iOff])
+                                hRefJet_eta_0_1_test[idx_].Fill(eta_RefJets[iOff])
+                                hRefJet_phi_0_1_test[idx_].Fill(phi_RefJets[iOff])  
+
 
 
                     if not selectPFJet: continue
@@ -1878,6 +2076,10 @@ def run():
 
                             
                     hStat.Fill(6)
+
+                    hRefJet_pt_0_2.Fill(et_RefJets[iOff])
+                    hRefJet_eta_0_2.Fill(eta_RefJets[iOff])
+                    hRefJet_phi_0_2.Fill(phi_RefJets[iOff])                
 
 
                     # OfflineJet check with OfflineMuon for overlap ---------------------------------------
@@ -1942,13 +2144,22 @@ def run():
 
                     hStat.Fill(7)
 
+                    hRefJet_pt_0_3.Fill(et_RefJets[iOff])
+                    hRefJet_eta_0_3.Fill(eta_RefJets[iOff])
+                    hRefJet_phi_0_3.Fill(phi_RefJets[iOff])                
+
                     if passingJetEleOverlap: continue
 
                     hStat.Fill(8)
+
+                    hRefJet_pt_0_4.Fill(et_RefJets[iOff])
+                    hRefJet_eta_0_4.Fill(eta_RefJets[iOff])
+                    hRefJet_phi_0_4.Fill(phi_RefJets[iOff])                
                     # -------------------------------------------------------------------------------------
 
                 # 2018 data: HE- dead zone (HEM15/16)
                 if not isMC:
+                    # I assume no PUPPI jets were stored in L1Ntuples for run2 data
                     if Evt_br.run > 319077 and Evt_br.run < 340000 and \
                        Jet_br.eta[iOff] > -3.4  and Jet_br.eta[iOff] < -1.17 and \
                        Jet_br.phi[iOff] > -1.97 and Jet_br.phi[iOff] < -0.47:
@@ -2054,6 +2265,64 @@ def run():
 
                                     
                 # -----------------------------------------------------------------------------------------------------------------------------
+                
+
+
+                hRefJet_pt_1.Fill(vOff.Pt())
+                hRefJet_eta_1.Fill(vOff.Eta())
+                hRefJet_phi_1.Fill(vOff.Phi())
+
+                # plot L1Jet pT, eta, phi
+                if isFirstRefJet:
+                    isFirstRefJet = False
+
+                    nUnpJets_Bx0 = 0
+                    for iJ in range(nUnpJets): 
+                        if Unp_br.jetBx[iJ] != 0: continue   
+                        nUnpJets_Bx0 += 1        
+                        hL1JetUnp_Pt_1.Fill(Unp_br.jetEt[iJ])
+                        hL1JetUnp_Eta_1.Fill(Unp_br.jetEta[iJ])
+                        hL1JetUnp_Phi_1.Fill(Unp_br.jetPhi[iJ])
+                    hnL1JetUnp_1.Fill(nUnpJets_Bx0)
+
+                    nEmuJets_Bx0 = 0
+                    for iJ in range(nEmuJets):
+                        if Emu_br.jetBx[iJ] != 0: continue
+                        nEmuJets_Bx0 += 1
+                        hL1JetEmu_Pt_1.Fill(Emu_br.jetEt[iJ])
+                        hL1JetEmu_Eta_1.Fill(Emu_br.jetEta[iJ])
+                        hL1JetEmu_Phi_1.Fill(Emu_br.jetPhi[iJ])
+                    hnL1JetEmu_1.Fill(nEmuJets_Bx0)
+
+                # plot pT, eta, phi of L1JetUnp jet matched to RefJet 
+                idxL1Jet_matchedRefJet = -1
+                L1JetPt_matchedRefJet = 0
+                for iJ in range(nUnpJets): 
+                    if Unp_br.jetBx[iJ] != 0: continue 
+                    vL1Jet_ = R.TLorentzVector()
+                    vL1Jet_.SetPtEtaPhiM(Unp_br.jetEt[iJ], Unp_br.jetEta[iJ], Unp_br.jetPhi[iJ], 0) 
+                    if vL1Jet_.DeltaR(vOff) < DR_MAX and vL1Jet_.Pt() > L1JetPt_matchedRefJet:
+                        idxL1Jet_matchedRefJet = iJ
+                        L1JetPt_matchedRefJet = vL1Jet_.Pt()
+                if idxL1Jet_matchedRefJet >= 0:
+                    hL1JetUnp_Pt_2.Fill(Unp_br.jetEt[idxL1Jet_matchedRefJet])
+                    hL1JetUnp_Eta_2.Fill(Unp_br.jetEta[idxL1Jet_matchedRefJet])
+                    hL1JetUnp_Phi_2.Fill(Unp_br.jetPhi[idxL1Jet_matchedRefJet])                                            
+
+                # plot pT, eta, phi of L1JetEmu jet matched to RefJet 
+                idxL1Jet_matchedRefJet = -1
+                L1JetPt_matchedRefJet = 0
+                for iJ in range(nEmuJets): 
+                    if Emu_br.jetBx[iJ] != 0: continue 
+                    vL1Jet_ = R.TLorentzVector()
+                    vL1Jet_.SetPtEtaPhiM(Emu_br.jetEt[iJ], Emu_br.jetEta[iJ], Emu_br.jetPhi[iJ], 0) 
+                    if vL1Jet_.DeltaR(vOff) < DR_MAX and vL1Jet_.Pt() > L1JetPt_matchedRefJet:
+                        idxL1Jet_matchedRefJet = iJ
+                        L1JetPt_matchedRefJet = vL1Jet_.Pt()
+                if idxL1Jet_matchedRefJet >= 0:
+                    hL1JetEmu_Pt_2.Fill(Emu_br.jetEt[idxL1Jet_matchedRefJet])
+                    hL1JetEmu_Eta_2.Fill(Emu_br.jetEta[idxL1Jet_matchedRefJet])
+                    hL1JetEmu_Phi_2.Fill(Emu_br.jetPhi[idxL1Jet_matchedRefJet])                                            
                 
 
 
@@ -2356,14 +2625,23 @@ def run():
                                     if 'jet_byHand_res_vs_iEta_vs_nVtx' in dists2:
                                         hist2['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo1]['HBEF'        ][iPFJetPtCat][src][iCh].Fill(jetIEta_offlineJet_tmp, nVtx, res_dummy, puWeight)
                                         hist2['jet_byHand_res_vs_iEta_vs_nVtx%s' % (jetShape1)][algo1]['HBEF'        ]['PtAllBins'][src][iCh].Fill(jetIEta_offlineJet_tmp, nVtx, res_dummy, puWeight)
+
+                        hRefJet_pt_2p01.Fill(vOff.Pt())
+                        hRefJet_eta_2p01.Fill(vOff.Eta())
+                        hRefJet_phi_2p01.Fill(vOff.Phi())                                
                         
                         continue 
 
 
                     hStat.Fill(32)
 
+                    hRefJet_pt_2p02.Fill(vOff.Pt())
+                    hRefJet_eta_2p02.Fill(vOff.Eta())
+                    hRefJet_phi_2p02.Fill(vOff.Phi())                                
+
                     # Unpacked L1T jets in L1TNuples have jetEt information stored and not jetRawEt,  jetPUEt etc, hence they can not be used for JEC derivation.
                     # So for JEC derivation, use L1T emulated jets with the same jetEt, jetEta and jetPhi as of the unpacked L1T jet
+                    # Don't apply it when emulating with diffent layer 1 SF as that was used during data taking
                     if not isMC and src == 'emu':
                         isMatchToUnp = False
                         for iUnp in range(nUnpJets):
@@ -2379,12 +2657,14 @@ def run():
                                 isMatchToUnp = True
                                 break
 
-                        if not isMatchToUnp: continue
+                        if not isMatchToUnp and MatchEmulatedJetsWithUnpacked : continue
                             
                         
                     hStat.Fill(33)
 
-                    
+                    hRefJet_pt_2p03.Fill(vOff.Pt())
+                    hRefJet_eta_2p03.Fill(vOff.Eta())
+                    hRefJet_phi_2p03.Fill(vOff.Phi())                                
                         
 
                     if src in ['emu']:
@@ -2407,6 +2687,9 @@ def run():
                     
                     hStat.Fill(34)
 
+                    hRefJet_pt_2.Fill(vOff.Pt())
+                    hRefJet_eta_2.Fill(vOff.Eta())
+                    hRefJet_phi_2.Fill(vOff.Phi())
 
                     vL1Jet = R.TLorentzVector()
                     vL1Jet.SetPtEtaPhiM(l1jet_br.jetEt[l1jet_idx], l1jet_br.jetEta[l1jet_idx], l1jet_br.jetPhi[l1jet_idx], 0) # Aaron: use jet.etCorr instead of jet.et
@@ -3148,6 +3431,64 @@ def run():
         for src in ['unp','emu']:
             hdR_OffJet_L1Jet[src].Write();
         
+
+    hRefJet_pt_0.Write();
+    hRefJet_eta_0.Write();
+    hRefJet_phi_0.Write(); #
+    hRefJet_pt_0_1.Write();
+    hRefJet_eta_0_1.Write();
+    hRefJet_phi_0_1.Write(); #
+    for idx_ in range( nJetFilters + 1 ):
+        hRefJet_pt_0_1_test[idx_].Write()
+        hRefJet_eta_0_1_test[idx_].Write()
+        hRefJet_phi_0_1_test[idx_].Write()
+    hRefJet_pt_0_2.Write();
+    hRefJet_eta_0_2.Write();
+    hRefJet_phi_0_2.Write(); #   
+    hRefJet_pt_0_3.Write();
+    hRefJet_eta_0_3.Write();
+    hRefJet_phi_0_3.Write(); #
+    hRefJet_pt_0_4.Write();
+    hRefJet_eta_0_4.Write();
+    hRefJet_phi_0_4.Write(); #    
+    hRefJet_pt_1.Write();
+    hRefJet_eta_1.Write();
+    hRefJet_phi_1.Write(); #
+    hRefJet_pt_2.Write();
+    hRefJet_eta_2.Write();
+    hRefJet_phi_2.Write(); #
+    hRefJet_pt_2p01.Write();
+    hRefJet_eta_2p01.Write();
+    hRefJet_phi_2p01.Write(); #
+    hRefJet_pt_2p02.Write();
+    hRefJet_eta_2p02.Write();
+    hRefJet_phi_2p02.Write(); #
+    hRefJet_pt_2p03.Write();
+    hRefJet_eta_2p03.Write();
+    hRefJet_phi_2p03.Write(); #
+
+    hL1JetUnp_Pt_0.Write()
+    hL1JetUnp_Eta_0.Write()
+    hL1JetUnp_Phi_0.Write() #
+    hL1JetEmu_Pt_0.Write()
+    hL1JetEmu_Eta_0.Write()
+    hL1JetEmu_Phi_0.Write() #
+    hOfflineJet_Pt_0.Write()
+    hOfflineJet_Eta_0.Write()
+    hOfflineJet_Phi_0.Write() #
+
+    hL1JetUnp_Pt_1.Write()
+    hL1JetUnp_Eta_1.Write()
+    hL1JetUnp_Phi_1.Write() #
+    hL1JetEmu_Pt_1.Write()
+    hL1JetEmu_Eta_1.Write()
+    hL1JetEmu_Phi_1.Write() #
+    hL1JetUnp_Pt_2.Write()
+    hL1JetUnp_Eta_2.Write()
+    hL1JetUnp_Phi_2.Write() #
+    hL1JetEmu_Pt_2.Write()
+    hL1JetEmu_Eta_2.Write()
+    hL1JetEmu_Phi_2.Write() #        
 
     ## Loop over all histograms
     if runMode not in ['CalCalibSF', 'CalibJetByHand', 'makeInputForML'] and len(hist) > 0:
