@@ -1988,6 +1988,60 @@ def run():
                     abs_eta = abs(eta_RefJets[iOff])
                     reject_if = None
 
+                    if dataEra in ['2022B', '2022C', '2022D', '2022E']:
+                        # https://twiki.cern.ch/twiki/bin/view/CMS/JetID13p6TeV#Recommendations_for_the_13_6_AN1
+                        # https://github.com/bundocka/cmssw/blob/7d536e034f7dd0773eec3f306508c80c67fb1960/L1Trigger/L1TNtuples/plugins/L1JetRecoTreeProducer.cc#L689-L715
+
+                        isCentralJet          =  abs_eta <= 2.6
+                        isForwardCentralJet_1 = (abs_eta > 2.6 and abs_eta <= 2.7)
+                        isForwardCentralJet_2 = (abs_eta > 2.7 and abs_eta <= 3.0)
+                        isForwardJet          =  abs_eta > 3.0
+
+                        if offlinePUPPIJet:    
+                            reject_if = [
+                                isCentralJet          and Jet_br.puppi_nhef[iOff]  >= 0.90, # neutralHadronEnergyFraction()
+                                isCentralJet          and Jet_br.puppi_nemef[iOff] >= 0.90, # jet_data->puppi_nemef.push_back(it->neutralEmEnergyFraction());
+                                isCentralJet          and (Jet_br.puppi_cMult[iOff] + Jet_br.puppi_nMult[iOff]) <= 1, # jet_data->puppi_cMult.push_back(it->chargedMultiplicity()); jet_data->puppi_nMult.push_back(it->neutralMultiplicity());
+                                isCentralJet          and Jet_br.puppi_mef[iOff]   >= 0.80, # jet_data->puppi_mef.push_back(it->muonEnergyFraction());
+                                isCentralJet          and Jet_br.puppi_chef[iOff]  <= 0.01, # jet_data->puppi_chef.push_back(it->chargedHadronEnergyFraction());
+                                isCentralJet          and Jet_br.puppi_cMult[iOff] == 0, # jet_data->puppi_cMult.push_back(it->chargedMultiplicity());
+                                isCentralJet          and Jet_br.puppi_cemef[iOff] >= 0.80, # jet_data->puppi_cemef.push_back(it->chargedEmEnergyFraction());
+                                
+                                isForwardCentralJet_1 and Jet_br.puppi_nhef[iOff]  >= 0.90, # neutralHadronEnergyFraction()
+                                isForwardCentralJet_1 and Jet_br.puppi_nemef[iOff] >= 0.99, # jet_data->puppi_nemef.push_back(it->neutralEmEnergyFraction());
+                                isForwardCentralJet_1 and Jet_br.puppi_mef[iOff]   >= 0.80, # jet_data->puppi_mef.push_back(it->muonEnergyFraction());
+                                isForwardCentralJet_1 and Jet_br.puppi_cemef[iOff] >= 0.80, # jet_data->puppi_cemef.push_back(it->chargedEmEnergyFraction());
+                                
+                                isForwardCentralJet_2 and Jet_br.puppi_nhef[iOff]  >= 0.9999, # neutralHadronEnergyFraction()                                
+                                
+                                isForwardJet          and Jet_br.puppi_nemef[iOff] >= 0.90, # jet_data->puppi_nemef.push_back(it->neutralEmEnergyFraction());
+                                isForwardJet          and Jet_br.puppi_nMult[iOff] <  2 , # jet_data->puppi_nMult.push_back(it->neutralMultiplicity());
+                            ]
+                        else:
+                            reject_if = [
+                                isCentralJet          and Jet_br.nhef[iOff]  >= 0.90, # neutralHadronEnergyFraction()
+                                isCentralJet          and Jet_br.nemef[iOff] >= 0.90, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());
+                                isCentralJet          and (Jet_br.cMult[iOff] + Jet_br.nMult[iOff]) <= 1, # jet_data->cMult.push_back(it->chargedMultiplicity()); jet_data->nMult.push_back(it->neutralMultiplicity());
+                                isCentralJet          and Jet_br.mef[iOff]   >= 0.80, # jet_data->mef.push_back(it->muonEnergyFraction());
+                                isCentralJet          and Jet_br.chef[iOff]  <= 0.01, # jet_data->chef.push_back(it->chargedHadronEnergyFraction());
+                                isCentralJet          and Jet_br.cMult[iOff] == 0, # jet_data->cMult.push_back(it->chargedMultiplicity());
+                                isCentralJet          and Jet_br.cemef[iOff] >= 0.80, # jet_data->cemef.push_back(it->chargedEmEnergyFraction());
+                                
+                                isForwardCentralJet_1 and Jet_br.nhef[iOff]  >= 0.90, # neutralHadronEnergyFraction()
+                                isForwardCentralJet_1 and Jet_br.nemef[iOff] >= 0.99, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());
+                                isForwardCentralJet_1 and Jet_br.mef[iOff]   >= 0.80, # jet_data->mef.push_back(it->muonEnergyFraction());
+                                isForwardCentralJet_1 and Jet_br.cMult[iOff] == 0, # jet_data->cMult.push_back(it->chargedMultiplicity());
+                                isForwardCentralJet_1 and Jet_br.cemef[iOff] >= 0.80, # jet_data->cemef.push_back(it->chargedEmEnergyFraction());
+                                
+                                isForwardCentralJet_2 and Jet_br.nemef[iOff] >= 0.99, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());                             
+                                isForwardCentralJet_2 and Jet_br.nMult[iOff] <= 1 , # jet_data->nMult.push_back(it->neutralMultiplicity());
+
+                                isForwardJet          and Jet_br.nhef[iOff]  <= 0.20, # neutralHadronEnergyFraction()
+                                isForwardJet          and Jet_br.nemef[iOff] >= 0.90, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());
+                                isForwardJet          and Jet_br.nMult[iOff] <= 10 , # jet_data->nMult.push_back(it->neutralMultiplicity());
+                            ]
+
+
                     if dataEra in ['2022F', '2022G']:
                         # https://twiki.cern.ch/twiki/bin/view/CMS/JetID13p6TeV#Recommendations_for_the_13_6_AN1
                         # https://github.com/bundocka/cmssw/blob/7d536e034f7dd0773eec3f306508c80c67fb1960/L1Trigger/L1TNtuples/plugins/L1JetRecoTreeProducer.cc#L689-L715
