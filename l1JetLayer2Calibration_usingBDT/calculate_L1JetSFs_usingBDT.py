@@ -1,9 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
+# %%
 import os
 import sys
 import argparse
@@ -59,9 +54,10 @@ if not runLocally:
     args = parser.parse_args()
 else:
     #args = parser.parse_args("--ChunkyDonut --l1MatchGen --MLTarget logGenEt --fracOfDataToUse 0.01".split()) # to run in jupyter-notebook     
-    args = parser.parse_args("--ChunkyDonut --l1MatchGen --MLTarget GenEt --fracOfDataToUse 0.01".split()) # to run in jupyter-notebook     
-    from IPython.display import display, HTML
-    display(HTML("<style>.container { width:100% !important; }</style>"))
+    #args = parser.parse_args("--ChunkyDonut --l1MatchGen --MLTarget GenEt --fracOfDataToUse 0.01".split()) # to run in jupyter-notebook 
+    args = parser.parse_args("--PhiRing     --l1MatchOffline --MLTarget logGenEt         --fracOfDataToUse 1.00".split()) # to run in jupyter-notebook     
+    #from IPython.display import display, HTML
+    #display(HTML("<style>.container { width:100% !important; }</style>"))
 
 l1Jet_ChunkyDonut = args.ChunkyDonut
 l1Jet_PhiRing     = args.PhiRing
@@ -96,9 +92,10 @@ SF_forZeroPt = 1.0
 sL1JetEt  = sL1JetEt_PUS_ChunkyDonut if l1Jet_ChunkyDonut else sL1JetEt_PUS_PhiRing
 sRefJetEt = sOfflineJetEt if l1MatchOffline else sGenJetEt 
 
-version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230403_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
-sIpFileName     = "../data/L1T_Jet_MLInputs_Run3_QCD_Pt15to7000_PFA1p_CMSSW12_6_0_pre1_nVtxAll_20220925.csv"
-sOpFileName_SFs = "../data/L1T_Jet_SFs_2023_QCD_122X_mcRun3_2021_realistic_v9_12_6_0_pre1_20220925_%s.csv" % (version)
+#version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20220925_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230902_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2_l1NtupleChunkyDonut_RefOfflinePUPPIJet_PFA1p_20230902.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2_l1NtupleChunkyDonut_RefOfflinePUPPIJet_PFA1p_20230902_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 
 
@@ -178,30 +175,19 @@ print("sRefJetEt: {}, \t sL1Jet: {}, \t L1JetPtThrsh: {}".format(sRefJetEt, sL1J
 print("l1Jet_ChunkyDonut {}, l1Jet_PhiRing {}, l1MatchOffline {}, l1MatchGen {}".format(
     l1Jet_ChunkyDonut, l1Jet_PhiRing, l1MatchOffline, l1MatchGen)); sys.stdout.flush();    
 
-
-# In[2]:
-
+# %%
 
 data_all = pd.read_csv(sIpFileName)
 
-
-# In[3]:
-
-
+# %%
 print("Original sample: data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
 
-
-# In[4]:
-
-
+# %%
 data_all[sL1JetEt_PUS_ChunkyDonut] = data_all['L1Jet9x9_RawEt'] - data_all['L1Jet9x9_PUEt_ChunkyDonut']
 
 data_all[sL1JetEt_PUS_PhiRing]     = data_all['L1Jet9x9_RawEt'] - (data_all['L1Jet9x9_EtSum7PUTowers'] / 7.0 )
 
-
-# In[5]:
-
-
+# %%
 #%%script false --no-raise-error
 # L1JetEt per iEta bin before data cleaning -------------
 
@@ -232,10 +218,7 @@ if plotPerformancePlots:
         fig.savefig('%s/L1JetEt_ieta_%d.png' % (sOutDir1D_toUse, iEtaBin))
         plt.close(fig) 
 
-
-# In[6]:
-
-
+# %%
 ## data cleaning--------
 
 # Drop entries with L1JetEt < L1JetPtThrsh
@@ -252,28 +235,16 @@ print("\nDoes any of the columns have NaN entries: \ndata_all.isna().sum(): \n{}
 if printLevel >= 5:
     print("\nAfter cleaning, data_all.describe(): \n{}".format(data_all.describe()))
 
-
-# In[7]:
-
-
+# %%
 print("After data cleaning: data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
 
-
-# In[8]:
-
-
+# %%
 data_all = data_all.sample(frac=fracOfDataToUse, random_state=1)
 
-
-# In[9]:
-
-
+# %%
 print("Sample to use: data_all.columns: {}, \ndata_all.shape: {}".format(data_all.columns, data_all.shape))
 
-
-# In[10]:
-
-
+# %%
 #%%script false --no-raise-error
 # L1JetEt per iEta bin after data cleaning -------------
 
@@ -304,10 +275,7 @@ if plotPerformancePlots:
         fig.savefig('%s/L1JetEt_ieta_%d_afterDataCleaning.png' % (sOutDir1D_toUse, iEtaBin))
         plt.close(fig)
 
-
-# In[11]:
-
-
+# %%
 # Closer for Et_to_logEt
 if printLevel >= 15:
     data_all['logRefJetEt_tmp'] = convert_Et_to_logEt( data_all[sRefJetEt] )
@@ -317,10 +285,7 @@ if printLevel >= 15:
     print(f"{data_all[[sRefJetEt, 'logRefJetEt_tmp', 'RefJetEt_recal_tmp', 'closure_logRefJetEt__tmp']] = }")
     print(f"{ np.max(abs(data_all['closure_logRefJetEt__tmp'])) = }")
 
-
-# In[12]:
-
-
+# %%
 # Closer for GenEt_to_GenEtByL1Et
 if printLevel >= 15:
     data_all['GenEtByL1Et_tmp'] = convert_GenEt_to_GenEtByL1Et( data_all[sRefJetEt], data_all[sL1JetEt] )
@@ -330,10 +295,7 @@ if printLevel >= 15:
     print(f"{data_all[[sRefJetEt, sL1JetEt, 'GenEtByL1Et_tmp', 'RefJetEt_recal2_tmp', 'closure_GenEtByL1Et_tmp']] = }")
     print(f"{ np.max(abs(data_all['closure_GenEtByL1Et_tmp'])) = }")
 
-
-# In[13]:
-
-
+# %%
 # Closer for GenEt_to_logGenEtByL1Et
 if printLevel >= 15:
     data_all['logGenEtByL1Et_tmp'] = convert_GenEt_to_logGenEtByL1Et( data_all[sRefJetEt], data_all[sL1JetEt] )
@@ -343,10 +305,7 @@ if printLevel >= 15:
     print(f"{data_all[[sRefJetEt, sL1JetEt, 'logGenEtByL1Et_tmp', 'RefJetEt_recal3_tmp', 'closure_logGenEtByL1Et_tmp']] = }")
     print(f"{ np.max(abs(data_all['closure_logGenEtByL1Et_tmp'])) = }")
 
-
-# In[14]:
-
-
+# %%
 # set trainning and target variables
 
 sL1JetEt_forML  = None
@@ -385,10 +344,7 @@ print("train_vars: {}, \ntarget_var: {}\n".format(train_vars, target_var))
 if printLevel >= 1:
     print("data_all.describe(): \n{}".format(data_all.describe()))
 
-
-# In[15]:
-
-
+# %%
 ## L1Jet response per iEta before JEC
 
 sOutDir_toUse   = sOutDirBeforeJEC
@@ -421,9 +377,7 @@ if plotPerformancePlots:
         plt.close(fig)    
 
 
-# In[16]:
-
-
+# %%
 ## L1Jet response per iEta bin range before JEC
 
 sOutDir_toUse   = sOutDirBeforeJEC
@@ -461,9 +415,7 @@ if plotPerformancePlots:
         plt.close(fig)    
 
 
-# In[17]:
-
-
+# %%
 # L1JetResponse vs Eta before JEC
 
 sOutDir_toUse   = '%s/L1JetResponse_vs_Eta_perPU_perPtEtaCat' % (sOutDirBeforeJEC)
@@ -587,10 +539,7 @@ if plotPerformancePlots:
             plt.close(fig)
         
 
-
-# In[18]:
-
-
+# %%
 # L1Jet response vs RefJetPt before JEC
 
 sOutDir_toUse   = '%s/L1JetResponse_vs_Pt_perPU_perPtEtaCat' % (sOutDirBeforeJEC)
@@ -716,10 +665,7 @@ if plotPerformancePlots:
             fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Resolution.png' % (sOutDir_toUse, PU_category, iEtaBin))
             plt.close(fig)       
 
-
-# In[19]:
-
-
+# %%
 # nEntries per iEta bin 
 
 sOutDir_toUse   = sOutDirBeforeJEC
@@ -739,9 +685,7 @@ if printLevel >= 11:
     
 
 
-# In[20]:
-
-
+# %%
 #%%time
 
 
@@ -863,7 +807,7 @@ for iEta_category, iEtaBinRange in IEta_Cat_forML.items():
                 iEta_category, iEtaBinRange, Pt_category, PtRange, data_all_iEtaBins.describe()))
 
 
-        X = data_all_iEtaBins[train_vars]
+        X = data_all_iEtaBins[train_vars] 
         y = data_all_iEtaBins[target_var]
 
         xgb_rg = train_MLModel_wHyperopt(X, y)
@@ -900,9 +844,7 @@ for iEta_category, iEtaBinRange in IEta_Cat_forML.items():
         print(f"\n\nWrote BDT model to {sBDTModel_fileName = }"); sys.stdout.flush()
 
 
-# In[21]:
-
-
+# %%
 def prepareDataframeForSFs(iEtaBinRange, PtRangeMin=L1JetPtThrsh, PtRangeMax=L1JetPtMax, nVtx=48):
     dict_iEta_Et = OD([ (sL1JetTowerIEtaAbs, []), (sL1JetEt, []) ])
     if snVtx in train_vars:
@@ -934,10 +876,7 @@ def prepareDataframeForSFs(iEtaBinRange, PtRangeMin=L1JetPtThrsh, PtRangeMax=L1J
             
     return data_SFs
 
-
-# In[22]:
-
-
+# %%
 # Change nVertex to evaluate SF here ----------------
 nVtx_forSF = PUForSFComputation
 # ---------------------------------------------------
@@ -990,12 +929,13 @@ if snVtx in train_vars:
 data_SFs.to_csv(sOpFileName_SFs, index=False)
 print("Wrote {}".format(sOpFileName_SFs))                
 
-
-# In[23]:
-
-
+# %%
 sL1JetEt_calib = '%s_calib' % (sL1JetEt)
-dataVars_forL1JetResponsePlots = [sL1JetTowerIEtaAbs, sL1JetEt, sGenJetEt]
+dataVars_forL1JetResponsePlots = [sL1JetTowerIEtaAbs, sL1JetEt]
+if l1MatchGen:
+    dataVars_forL1JetResponsePlots.append( sGenJetEt )
+else:
+    dataVars_forL1JetResponsePlots.append( sOfflineJetEt )
 if snVtx in train_vars: 
     dataVars_forL1JetResponsePlots.append(snVtx)
 
@@ -1017,10 +957,7 @@ data_copy1[sL1JetEt_calib] = data_copy1.apply(lambda row: calibrateJet(row[sL1Je
 if printLevel >= 10:
     print("data_copy1: {}".format(data_copy1))
 
-
-# In[24]:
-
-
+# %%
 # SF vs Et plots ----
 
 sOutDir_toUse   = sOutDirAfterJEC
@@ -1053,10 +990,7 @@ if plotPerformancePlots:
         fig.savefig('%s/SF_vs_Et_%s_ieta_%d_to_%d.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))
         plt.close(fig)
 
-
-# In[25]:
-
-
+# %%
 # L1Jet response per iEta bin range after JEC
 
 sOutDir_toUse   = sOutDirAfterJEC
@@ -1087,10 +1021,7 @@ if plotPerformancePlots:
         fig.savefig('%s/AfterJEC_%s_ieta_%d_to_%d.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))
         plt.close(fig)
 
-
-# In[26]:
-
-
+# %%
 # L1Jet response per iEta bin range per Pt cat after JEC
 
 sOutDir_toUse   = sOutDirAfterJEC
@@ -1126,10 +1057,7 @@ if plotPerformancePlots:
         fig.savefig('%s/AfterJEC_%s_ieta_%d_to_%d_inPtCat.png' % (sOutDir1D_toUse, sL1JetEt, convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[0]), convert_CaloToolMPEta_to_IEta(CaloToolMPEtaRange[-1])))   
         plt.close(fig)
 
-
-# In[27]:
-
-
+# %%
 # L1JetResponse vs Eta after JEC
 
 sOutDir_toUse   = '%s/L1JetResponse_vs_Eta_perPU_perPtEtaCat' % (sOutDirAfterJEC)
@@ -1267,10 +1195,7 @@ if plotPerformancePlots:
             fig.savefig('%s/L1JetResponse_vs_iEta_%s_%s_Resolution.png' % (sOutDir_toUse, PU_category, Pt_category)) 
             plt.close(fig)
 
-
-# In[28]:
-
-
+# %%
 # L1Jet response vs RefJetPt before JEC
 
 sOutDir_toUse   = '%s/L1JetResponse_vs_Pt_perPU_perPtEtaCat' % (sOutDirAfterJEC)
@@ -1399,4 +1324,5 @@ if plotPerformancePlots:
             axs.grid()
             fig.savefig('%s/L1JetResponse_vs_Pt_%s_iEta_%d_Resolution.png' % (sOutDir_toUse, PU_category, iEtaBin))
             plt.close(fig)
+
 
