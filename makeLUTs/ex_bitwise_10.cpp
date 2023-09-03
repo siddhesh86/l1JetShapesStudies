@@ -48,16 +48,15 @@ const int Mode_calculateSFInBits = 1; // 0: calculate 'multiplier' such that 'ad
                                       // 2: calculate 'multiplier' and 'addend' so as to have least (pTCorr - pTCorrTarget). Set 'capLowPtSFAt2 = false'. plot_checkJEC_v6p5. Not working properly.
 const bool capLowPtSFAt2 = true; // if SF(pT<15 GeV) > 2 then SF(pT<15 GeV) = 2 
 
-
-// RawPUS
-std::string sInFile_SFs = "LUTs/Default_RawPUS_SF/lut_calib_2023_v3_ECALZS_decimal.txt"; 
-std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2023_v3_ECALZS.txt"; 
-
 /*
-// RawPUS_phiDefault
-std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v3_ECALZS_decimal.txt"; 
-std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2023_v3_ECALZS.txt"; 
+// RawPUS: Chuncky Donut
+std::string sInFile_SFs = "LUTs/Default_RawPUS_SF/lut_calib_2022G_Layer1SFFromOlivier_v2_ECALZS_decimal.txt"; 
+std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2022G_Layer1SFFromOlivier_v2_ECALZS.txt"; 
 */
+
+// RawPUS_phiDefault: Phi Ring
+std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2022G_Layer1SFFromOlivier_v2_ECALZS_decimal.txt"; 
+std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2022G_Layer1SFFromOlivier_v2_ECALZS.txt"; 
 
 
 

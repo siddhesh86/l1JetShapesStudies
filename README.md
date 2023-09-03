@@ -44,6 +44,34 @@ time awk '
 ' L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_PFA1p_nVtxAll_part*_of_60.csv   > L1T_Jet_MLInputs_Run3_QCD_Pt15to7000_PFA1p_wHCALL1Run2Scheme_nVtxAll_20220626.csv 
 ```
 
+## Stp 3: Train regression BDT to calculate JEC SFs 
+Update 'version', 'sIpFileName', 'sOpFileName_SFs' variables and set 'runLocally = False' in either (a) 'l1JetLayer2Calibration_usingBDT/calculate_L1JetSFs_usingBDT.py' file or (b) 'calculate_L1JetSFs_usingBDT.ipynb' and export it to 'calculate_L1JetSFs_usingBDT.py'.
+Run 'calculate_L1JetSFs_usingBDT.py' on HT Condor by running 'script_condor_gpu_submit.py' script with command:
+```
+python3 l1JetLayer2Calibration_usingBDT/script_condor_gpu_submit.py
+```
+BDT trained model is saved in .data/<name>.pkl
+
+Update 'JEC_SFs_files_dict' variable in 'l1JetLayer2Calibration_usingBDT/compare_JEC_SFs.ipynb' to read input BDT trained model ('JEC_SFs_files_dict["<algorithm>"]["<eta category>"]["PtAll"]') and corresponding "MLTarget" and "PUForSFComputation". Run 'compare_JEC_SFs.ipynb' to produce JEC LUT in .csv format and to produce JEC SFs plots.
+
+## Step 4: Make JEC LUT
+Update 'sipFileCalibSF' variable with JEC SFs .csv file input to 'updateSFPtEtaBins.py'. Update 'sLUTVersion' variable as well.
+Run
+```
+python3 makeLUTs/updateSFPtEtaBins.py
+```
+This will produce pT, eta compression LUT and JEC LUT in decimal format.
+To conver JEC LUT in decimal format to bit-wise format, update 'sInFile_SFs' and 'sOutFile' variables in 'ex_bitwise_10.cpp' and run
+```
+g++ ex_bitwise_10.cpp -o ex_bitwise_10 && ./ex_bitwise_10
+```
+The final JEC LUTs are in LUTs directory: For e.g. \
+lut_calib_2022G_Layer1SFFromOlivier_v2_ECALZS.txt \
+lut_eta_compress_2022G_Layer1SFFromOlivier_v2.txt \
+lut_pt_compress_2022G_Layer1SFFromOlivier_v2.txt
+
+
+
 
 
 
