@@ -94,8 +94,8 @@ sRefJetEt = sOfflineJetEt if l1MatchOffline else sGenJetEt
 
 #version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20220925_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
 version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230902_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
-sIpFileName     = "../data/L1T_Jet_MLInputs_2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2_l1NtupleChunkyDonut_RefOfflinePUPPIJet_PFA1p_20230902.csv"
-sOpFileName_SFs = "../data/L1T_Jet_SFs_2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2_l1NtupleChunkyDonut_RefOfflinePUPPIJet_PFA1p_20230902_%s.csv" % (version)
+sIpFileName     = "../data/L1T_Jet_MLInputs_2022G_Muon_13_1_0_pre4_HCALPaper_PFA2_l1NtupleChunkyDonut_RefOfflinePUPPIJet_20230902.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2022G_Muon_13_1_0_pre4_HCALPaper_PFA2_l1NtupleChunkyDonut_RefOfflinePUPPIJet_20230902_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 
 

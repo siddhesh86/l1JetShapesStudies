@@ -26,7 +26,7 @@ import copy
 
 PrintLevel       = 2
 JetShapes        = ['Default' ]
-PUSAlgosAll      = ['RawPUS_phiDefault'] # ['RawPUS', 'RawPUS_phiDefault']
+PUSAlgosAll      = ['RawPUS', 'RawPUS_phiDefault'] # ['RawPUS', 'RawPUS_phiDefault']
 
 nLinesToRead = -1 # Max line to read from SF.csv file 
 
@@ -37,14 +37,14 @@ calibSFLable = ['SF'][icalibSF]
 sipFileCalibSF = {
     'Default': {
        'RawPUS': { # Chunky donut
-           'fileName': '../data/L1T_Jet_SFs_2023_QCD_122X_mcRun3_2021_realistic_v9_12_6_0_pre1_20220925_L1JetEt_PUS_ChunkyDonut_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv', 
+           'fileName': '../data/L1T_Jet_SFs_2022G_20230902_L1JetEt_PUS_ChunkyDonut_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv', 
            'SFLabel': ['SF'][icalibSF],
            'L1JetPtVarName':'L1JetEt_PUS_ChunkyDonut',
            'additionalCorrForLUT': 1.0,
        },
        
        'RawPUS_phiDefault': {
-           'fileName': '../data/L1T_Jet_SFs_2023_QCD_122X_mcRun3_2021_realistic_v9_12_6_0_pre1_20220925_L1JetEt_PUS_PhiRing_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv',
+           'fileName': '../data/L1T_Jet_SFs_2022G_20230902_L1JetEt_PUS_PhiRing_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv',
            'SFLabel': ['SF'][icalibSF],
            'L1JetPtVarName':'L1JetEt_PUS_PhiRing',
            'additionalCorrForLUT': 8.0/7.0, # 8/7 factor is needed for PhiRing as different PU estimation considered in CMSSW and Andrew's computation
@@ -62,7 +62,7 @@ EtaCompressedLUT = False; #True;
 EtaCompressedLUTVersion = '' # 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged'
 
 
-sLUTVersion = '2023_v3'
+sLUTVersion = '2022G_HCALPaper_PFA2'
 JECSF_boundary = [0.0, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0]
 nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
 makeLUTForIEta29 = [False, 1.0]
