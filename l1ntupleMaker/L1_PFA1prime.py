@@ -99,7 +99,8 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '124X_dataRun3_HLT_v4', '')
+#process.GlobalTag = GlobalTag(process.GlobalTag, '124X_dataRun3_HLT_v4', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, '130X_dataRun3_Prompt_v4', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
@@ -119,10 +120,12 @@ from L1Trigger.Configuration.customiseReEmul import L1TReEmulFromRAWsimHcalTP
 process = L1TReEmulFromRAWsimHcalTP(process)
 
 # Automatic addition of the customisation function from L1Trigger.L1TNtuples.customiseL1Ntuple
-from L1Trigger.L1TNtuples.customiseL1Ntuple import L1NtupleRAWEMU 
+#from L1Trigger.L1TNtuples.customiseL1Ntuple import L1NtupleRAWEMU 
+from L1Trigger.L1TNtuples.customiseL1Ntuple import L1NtupleAODRAWEMU
 
 #call to customisation function L1NtupleAODRAWEMU imported from L1Trigger.L1TNtuples.customiseL1Ntuple
-process = L1NtupleRAWEMU(process)
+#process = L1NtupleRAWEMU(process)
+process = L1NtupleAODRAWEMU(process)
 
 # Automatic addition of the customisation function from L1Trigger.Configuration.customiseSettings
 from L1Trigger.Configuration.customiseSettings import L1TSettingsToCaloParams_2022_v0_6

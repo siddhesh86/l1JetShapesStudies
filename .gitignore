@@ -25,4 +25,6 @@ scripts/plot*/
 */*.png
 */*/*.png
 */*.root
-
+scripts/condor_*.sh
+l1JetLayer2Calibration_usingBDT/condor_*.sh
+l1ntupleMaker/L1TNtuple_13_1_0_pre4_forHCALPaper_PFA1p/
