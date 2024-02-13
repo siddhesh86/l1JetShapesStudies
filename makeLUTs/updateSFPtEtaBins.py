@@ -55,15 +55,16 @@ sipFileCalibSF = {
 }
 
 
-sFilePtCompressedLUT_Ref = '' #'/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v7_20240209/JEC_2024_round1/CMSSW_13_3_0/src/L1Trigger/L1TCalorimeter/data/lut_pt_compress_2017v1.txt' #'/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs_2018/lut_pt_compress_2017v1.txt'
+sFilePtCompressedLUT_Ref = '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v7_20240209/JEC_2024_round1/CMSSW_13_3_0/src/L1Trigger/L1TCalorimeter/data/lut_pt_compress_2017v1.txt' # '' or 'lut_pt_compress_2017v1.txt file'
 
-PtCompressedLUTVersion = '6Bits' # 'v2018' # 'v2018',  'v2022', '6Bits'
-EtaCompressedLUT = False; #True, False;
-EtaCompressedLUTVersion = '' # 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged', ''
+PtCompressedLUTVersion = 'v2018' # 'v2018' # 'v2018',  'v2022', '6Bits'
+EtaCompressedLUT = True; #True, False;
+EtaCompressedLUTVersion = 'v2018' # 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged', ''
 
 
-sLUTVersion = '2024_v0p0_SFGt0_HighGranularity'
+sLUTVersion = '2024_v0p1_SFGt1Lt2' #'2024_v0p1_SFGt0' '2024_v0p1_SFGt0_HighGranularity'
 JECSF_boundary = [0.0, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0]
+JECLUTSF_boundary = [1.0, 2.] # [<lower bound>, <upper bound>] [0.0, 9999.0]
 nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
 makeLUTForIEta29 = [False, 1.0]
 makeLUTForIEta41 = [False] # SFs for iEta=41 are missing in SFv6. Copy SFs from IEta=40
@@ -78,7 +79,7 @@ sFOut_LUT_pt_uncompress  = 'lut_pt_uncompress_%s.txt' % (sLUTVersion)
 sFOut_LUT_eta_uncompress = 'lut_eta_uncompress_%s.txt' % (sLUTVersion)
 sFOut_LUT_calib_uncompress = 'lut_calib_%s_ECALZS_decimal_uncompress.txt' % (sLUTVersion)
 
-nBitsForPtComp = 6 # 4 or 6
+nBitsForPtComp = 4 # 4: for v2018 pT compression,  6: for finer granularity pT compression
 NCompPtBins = int(2**nBitsForPtComp) # 16 # No. of compressed pT bins
 calibSF_L1JetPtRange = [15., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
 LUT_PtRange = [0., 255., 1.] # pT range for SFs for LUT
@@ -1249,6 +1250,9 @@ if __name__ == '__main__':
                     PtMax_iPtQuant = PtQuantile_info['PtMax_iPtQuant']
                     avgPt_iPtQuant = PtQuantile_info['avgPt_iPtQuant']
                     avgSF_iPtQuant = SFs_AvgOverEtaBinsRange[iPtQuant]
+
+                    if avgSF_iPtQuant < JECLUTSF_boundary[0]: avgSF_iPtQuant = JECLUTSF_boundary[0]
+                    if avgSF_iPtQuant > JECLUTSF_boundary[1]: avgSF_iPtQuant = JECLUTSF_boundary[1]
 
                     data_calibSFs_compressedInEtaAndPt[CaloToolMPEtaBin_forLUT][avgPt_iPtQuant] = avgSF_iPtQuant
 
