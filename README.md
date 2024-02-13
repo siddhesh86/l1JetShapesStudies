@@ -52,7 +52,11 @@ Run l1JetLayer2Calibration_usingBDT/compare_JEC_SFs.ipynb to get final JEC_SF.cs
 Run check_L1JetSFs.ipynb to make quality control plots.
 
 ## Step 4: Make LUTs
-d
+cd makeLUTs
+
+Run python3 updateSFPtEtaBins.py
+
+Run g++ ex_bitwise_10.cpp -o ex_bitwise_10 && ./ex_bitwise_10
 
 
 
