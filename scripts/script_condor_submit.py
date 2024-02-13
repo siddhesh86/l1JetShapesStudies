@@ -66,12 +66,17 @@ commands = {
     #"2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v6_20230213/run_4_test2022G/L1Ntuple_2022G_CaloParam_2022v0_6_nEvts28k.root' --sampleName 2022G_Muon_13_1_0_pre4_CaloParam_2022v0_6  --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut  --offlinePUPPIJet ",
 
     # 13_1_0_pre4 HCAL paper study: PFA1p
-    "2022G_Muon_13_1_0_pre4_HCALPaper_PFA1p":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_1_0_pre4_forHCALPaper_PFA1p_Run2022G-ZMu-PromptReco-v1/230903_115740/0000/L1rates_PFA1prime_*.root' --sampleName 2022G_Muon_13_1_0_pre4_HCALPaper_PFA1p  --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut  --offlinePUPPIJet ",
+    #"2022G_Muon_13_1_0_pre4_HCALPaper_PFA1p":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon/L1TNtuple_13_1_0_pre4_forHCALPaper_PFA1p_Run2022G-ZMu-PromptReco-v1/230903_115740/0000/L1rates_PFA1prime_*.root' --sampleName 2022G_Muon_13_1_0_pre4_HCALPaper_PFA1p  --PUrangeTag nVtxAll  --l1MatchOffline --l1NtupleChunkyDonut  --offlinePUPPIJet ",
     
+    # JEC2023v0_13_3_0
+    #"JEC2024v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v7_20240209/JEC_2024_round1/l1JetShapesStudies/l1ntupleMaker/L1Ntuple.root' --sampleName QCD_Winter24  --PUrangeTag nVtxAll  --l1MatchGen  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    "JEC2024v0":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_JEC2023v0_13_3_0_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3/240210_084524/0000/L1Ntuple_*.root' --sampleName QCD_Winter24  --PUrangeTag nVtxAll  --l1MatchGen  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    
+
 } 
 
 runLocally = False
-nSplitsInput = 1 if runLocally else 10
+nSplitsInput = 1 if runLocally else 351
 
 
 
@@ -161,7 +166,8 @@ for PUS, command0 in commands.items():
             '''
             
             #f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v6_20230213/CMSSW_13_0_0_pre4/src   \n")
-            f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v6_20230213/CMSSW_13_1_0_pre4/src   \n")
+            #f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v6_20230213/CMSSW_13_1_0_pre4/src   \n")
+            f.write("cd /afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v7_20240209/JEC_2024_round1/CMSSW_13_3_0/src   \n")
             f.write("pwd   \n")
             f.write("cmsenv   \n")
             f.write('eval `scramv1 runtime -sh` \n') # which is alias for cmsenv

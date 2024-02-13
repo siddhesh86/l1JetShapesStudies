@@ -93,9 +93,10 @@ sL1JetEt  = sL1JetEt_PUS_ChunkyDonut if l1Jet_ChunkyDonut else sL1JetEt_PUS_PhiR
 sRefJetEt = sOfflineJetEt if l1MatchOffline else sGenJetEt 
 
 #version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20220925_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
-version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20230902_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
-sIpFileName     = "../data/L1T_Jet_MLInputs_2022G_Muon_13_1_0_pre4_HCALPaper_PFA1p_l1NtupleChunkyDonut_RefOfflinePUPPIJet_PFA1p_20230902.csv"
-sOpFileName_SFs = "../data/L1T_Jet_SFs_2022G_Muon_13_1_0_pre4_HCALPaper_PFA1p_l1NtupleChunkyDonut_RefOfflinePUPPIJet_20230902_%s.csv" % (version)
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20240209_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_20240209.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_20240209_%s.csv" % (version)
+#sOpFileName_SFs = "../data/L1T_Jet_SFs_2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2_l1NtupleChunkyDonut_RefOfflinePUPPIJet_PFA1p_20230902_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 
 

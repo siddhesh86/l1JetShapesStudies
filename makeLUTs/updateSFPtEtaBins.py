@@ -37,14 +37,14 @@ calibSFLable = ['SF'][icalibSF]
 sipFileCalibSF = {
     'Default': {
        'RawPUS': { # Chunky donut
-           'fileName': '../data/L1T_Jet_SFs_2022G_20230902_L1JetEt_PUS_ChunkyDonut_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv', 
+           'fileName': '../data/L1T_Jet_SFs_2024v0_20240209_L1JetEt_PUS_ChunkyDonut_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv', 
            'SFLabel': ['SF'][icalibSF],
            'L1JetPtVarName':'L1JetEt_PUS_ChunkyDonut',
            'additionalCorrForLUT': 1.0,
        },
        
        'RawPUS_phiDefault': {
-           'fileName': '../data/L1T_Jet_SFs_2022G_20230902_L1JetEt_PUS_PhiRing_v0_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv',
+           'fileName': '../data/L1T_Jet_SFs_2024v0_20240209_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv',
            'SFLabel': ['SF'][icalibSF],
            'L1JetPtVarName':'L1JetEt_PUS_PhiRing',
            'additionalCorrForLUT': 8.0/7.0, # 8/7 factor is needed for PhiRing as different PU estimation considered in CMSSW and Andrew's computation
@@ -55,14 +55,14 @@ sipFileCalibSF = {
 }
 
 
-sFilePtCompressedLUT_Ref = '' #'/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs_2018/lut_pt_compress_2017v1.txt'
+sFilePtCompressedLUT_Ref = '/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v7_20240209/JEC_2024_round1/CMSSW_13_3_0/src/L1Trigger/L1TCalorimeter/data/lut_pt_compress_2017v1.txt' #'/home/siddhesh/Work/CMS/L1_Trigger_Work/L1T_ServiceTask/hcalPUsub/myAna/hcalPUsub_v5_20220311/run_1/makeLUTs/LUTs_2018/lut_pt_compress_2017v1.txt'
 
-PtCompressedLUTVersion = '6Bits' # 'v2018' # 'v2018',  'v2022', '6Bits'
-EtaCompressedLUT = False; #True;
-EtaCompressedLUTVersion = '' # 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged'
+PtCompressedLUTVersion = 'v2018' # 'v2018' # 'v2018',  'v2022', '6Bits'
+EtaCompressedLUT = True; #True, False;
+EtaCompressedLUTVersion = 'v2018' # 'v2018' # 'v2018', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged'
 
 
-sLUTVersion = '2022G_HCALPaper_PFA1p'
+sLUTVersion = '2024_v0p0_SFGt0'
 JECSF_boundary = [0.0, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0]
 nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
 makeLUTForIEta29 = [False, 1.0]
@@ -78,7 +78,7 @@ sFOut_LUT_pt_uncompress  = 'lut_pt_uncompress_%s.txt' % (sLUTVersion)
 sFOut_LUT_eta_uncompress = 'lut_eta_uncompress_%s.txt' % (sLUTVersion)
 sFOut_LUT_calib_uncompress = 'lut_calib_%s_ECALZS_decimal_uncompress.txt' % (sLUTVersion)
 
-nBitsForPtComp = 6 # 4 or 6
+nBitsForPtComp = 4 # 4 or 6
 NCompPtBins = int(2**nBitsForPtComp) # 16 # No. of compressed pT bins
 calibSF_L1JetPtRange = [15., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
 LUT_PtRange = [0., 255., 1.] # pT range for SFs for LUT

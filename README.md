@@ -44,6 +44,15 @@ time awk '
 ' L1T_HCALL2Calib_stage1_l1NtupleChunkyDonut_PFA1p_nVtxAll_part*_of_60.csv   > L1T_Jet_MLInputs_Run3_QCD_Pt15to7000_PFA1p_wHCALL1Run2Scheme_nVtxAll_20220626.csv 
 ```
 
+## Step 3: BDT trainning
+Run l1JetLayer2Calibration_usingBDT/calculate_L1JetSFs_usingBD.ipynb by running l1JetLayer2Calibration_usingBDT/script_condor_gpu_submit.py
+
+Run l1JetLayer2Calibration_usingBDT/compare_JEC_SFs.ipynb to get final JEC_SF.csv file.
+
+Run check_L1JetSFs.ipynb to make quality control plots.
+
+## Step 4: Make LUTs
+d
 
 
 
