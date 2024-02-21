@@ -39,14 +39,14 @@ using namespace std;
 const int printLevel = 2;
 const int nLineToRead = -1;
 const int nColsToRead = 7; // No. of columns to read from input lut_SFInDecimal file. File format: <col0: IEtaBin> <col1: QuantileMinPtInGeV> <col2: QuantileMaxPtInGeV> <col3: CalibrationAtPtInGeV> <col4: IEtaBin_forLUT> <col5: Pt_forLUT> <col6: SF_Decimal>
-const unsigned int nBitsCompBin = 11; // 11: for 16 pT compression bins,    12: for 64 pT compression bins
-const unsigned int nBitsPtComp  =  4; // pT compression bits:: 4: : for 16 pT compression bins, 6: for 64 pT compression bins 
+const unsigned int nBitsCompBin = 12; // 11: for 16 pT compression bins,    12: for 64 pT compression bins
+const unsigned int nBitsPtComp  =  6; // pT compression bits:: 4: : for 16 pT compression bins, 6: for 64 pT compression bins 
 
 const int IEtaBinOffsetForEtaCompressedLUT = 0; // 0: IEtaBin_forLUT = IEtaBin = [1, 41];  -1: IEtaBin_forLUT = IEtaBin - 1 = [0, 40]. # 0 give correct calibration.
 const int Mode_calculateSFInBits = 1; // 0: calculate 'multiplier' such that 'addend' need not be zero ,
                                       // 1: calculate 'multiplier' such that 'addend=0'. Best performer with capLowPtSFAt2 = true;
                                       // 2: calculate 'multiplier' and 'addend' so as to have least (pTCorr - pTCorrTarget). Set 'capLowPtSFAt2 = false'. plot_checkJEC_v6p5. Not working properly.
-const bool capLowPtSFAt2 = true; // if SF(pT<15 GeV) > 2 then SF(pT<15 GeV) = 2 
+const bool capLowPtSFAt2 = false; // true; // if SF(pT<15 GeV) > 2 then SF(pT<15 GeV) = 2 
 
 /*
 // RawPUS
@@ -55,8 +55,10 @@ std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2024_v0p0_SFGt0_High
 */
 
 // RawPUS_phiDefault
-std::string sInFile_SFs = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p1_SFGt1Lt2_ECALZS_decimal.txt"; 
-std::string sOutFile    = "LUTs/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p1_SFGt1Lt2_ECALZS.txt"; 
+//std::string sInFile_SFs = "LUTs_2024_v0p1_SFGt1Lt2/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p1_SFGt1Lt2_ECALZS_decimal.txt"; 
+//std::string sOutFile    = "LUTs_2024_v0p1_SFGt1Lt2/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p1_SFGt1Lt2_ECALZS.txt"; 
+std::string sInFile_SFs = "LUTs_2024_v0p0_SFGt1Lt2p1_HighGranularity/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p0_SFGt1Lt2p1_HighGranularity_ECALZS_decimal.txt"; 
+std::string sOutFile    = "LUTs_2024_v0p0_SFGt1Lt2p1_HighGranularity/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p0_SFGt1Lt2p1_HighGranularity_ECALZS.txt"; 
 
 
 
@@ -75,6 +77,41 @@ unsigned int nCompBinMax = pow(2, nBitsCompBin);  // pow(2, 11) = 2048;  pow(2, 
 int8_t calculateAddend(unsigned int jet_hwPt, unsigned int multiplier, unsigned int jet_calibPt_target);
 
 
+void replace_first(
+    std::string& s,
+    std::string const& toReplace,
+    std::string const& replaceWith
+) {
+    std::size_t pos = s.find(toReplace);
+    if (pos == std::string::npos) return;
+    s.replace(pos, toReplace.length(), replaceWith);
+}
+
+void replace_all(
+    std::string& s,
+    std::string const& toReplace,
+    std::string const& replaceWith
+) {
+    std::string buf;
+    std::size_t pos = 0;
+    std::size_t prevPos;
+
+    // Reserves rough estimate of final size of string.
+    buf.reserve(s.size());
+
+    while (true) {
+        prevPos = pos;
+        pos = s.find(toReplace, pos);
+        if (pos == std::string::npos)
+            break;
+        buf.append(s, prevPos, pos - prevPos);
+        buf += replaceWith;
+        pos += toReplace.size();
+    }
+
+    buf.append(s, prevPos, s.size() - prevPos);
+    s.swap(buf);
+}
 
 unsigned int calculateAddPlusMult(unsigned int multiplier, int8_t addend) {
   // addPlusMult_0 is calculated for 32-bit. The following procedure is done to calculate addPlusMult in 18-bits
@@ -551,7 +588,12 @@ int main ()
 	    << std::endl;
   
 
+  std::string sOutFile_TroubleShoot = sOutFile;
+  replace_all(sOutFile_TroubleShoot, ".txt", "_troubleshoot.txt");
+
+
   std::ofstream outfile(sOutFile.c_str());
+  std::ofstream outfile_TroubleShoot(sOutFile_TroubleShoot.c_str());
 
 
   // LUT JEC header --------------------------------------------
@@ -566,6 +608,16 @@ int main ()
 	  << "#<header> v1 " << nBitsCompBin << " 18 </header>\n";
     ;
 
+  outfile_TroubleShoot << "# address to addend+multiplicative factor LUT\n"
+    //<< "# maps 11 bits to 18 bits\n"
+	  << "# maps " << nBitsCompBin << " bits to 18 bits\n"
+	  << "# 18 bits = (addend<<10) + multiplier)\n"
+	  << "# addend is signed 8 bits, multiplier is 10 bits\n"
+	  << "# anything after # is ignored with the exception of the header\n"
+	  << "# the header is first valid line starting with #<header> versionStr nrBitsAddress nrBitsData </header>\n"
+    //<< "#<header> v1 11 18 </header>\n";
+	  << "#<header> v1 " << nBitsCompBin << " 18 </header>\n";
+    ;
   // -----------------------------------------------------------
   
 
@@ -607,15 +659,15 @@ int main ()
 
     unsigned int SFInBits_0 = SFInBits;
     std::string sComment1 = "";
-    if ( capLowPtSFAt2 && (ptBin == 0) ) {
+    if ( capLowPtSFAt2 && (ptBin <= 1) ) {
       unsigned int addPlusMult = SFInBits;
       unsigned int multiplier = addPlusMult & 0x3ff; //  0x3ff = 1023 = 11 1111 1111
       int8_t addend = (addPlusMult >> 10);
       if (multiplier == (MaxMultiplier - 1) && (addend > 0)) {
-	//addend = 0;
-	//SFInBits = multiplier; // Cap SFInBits at (MaxMultiplier - 1)=1023
-	SFInBits = 2047; // Cap SFInBits at 2047, which is SF=2.008665 with multiplier=1023  and addend=1 
-	sComment1 = "  >>> cap SF to 2: SFInBits: " + std::to_string(SFInBits_0) + " --> " + std::to_string(SFInBits) + ", ";
+        //addend = 0;
+        //SFInBits = multiplier; // Cap SFInBits at (MaxMultiplier - 1)=1023
+        SFInBits = 2047; // Cap SFInBits at 2047, which is SF=2.008665 with multiplier=1023  and addend=1 
+        sComment1 = "  >>> cap SF to 2: SFInBits: " + std::to_string(SFInBits_0) + " --> " + std::to_string(SFInBits) + ", ";
       }
     }
 
@@ -644,6 +696,14 @@ int main ()
 	    << sComment.c_str()
 	    << "\n";
 
+    outfile_TroubleShoot << compBin 
+	    << " " << SFInBits
+      << " \t " << SFInDecimal << " " << getMultiplier(SFInBits) << " " << static_cast<int16_t>(getAddend(SFInBits))
+      << " \t " << Pt << " " << PtMin_iQuant << " " << PtMax_iQuant 
+	    << " " << sComment.c_str()
+	    << "\n";
+
+
     compBin_last = compBin;
   }
 
@@ -660,6 +720,7 @@ int main ()
   }
 
   outfile.close();
+  outfile_TroubleShoot.close();
 
   printf("\nlut_calib %s is being produced!!\n", sOutFile.c_str());
 
