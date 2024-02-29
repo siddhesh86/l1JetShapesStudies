@@ -57,8 +57,8 @@ std::string sOutFile    = "LUTs/Default_RawPUS_SF/lut_calib_2024_v0p0_SFGt0_High
 // RawPUS_phiDefault
 //std::string sInFile_SFs = "LUTs_2024_v0p1_SFGt1Lt2/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p1_SFGt1Lt2_ECALZS_decimal.txt"; 
 //std::string sOutFile    = "LUTs_2024_v0p1_SFGt1Lt2/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p1_SFGt1Lt2_ECALZS.txt"; 
-std::string sInFile_SFs = "LUTs_2024_v0p0_SFGt1Lt2p1_HighGranularity/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p0_SFGt1Lt2p1_HighGranularity_ECALZS_decimal.txt"; 
-std::string sOutFile    = "LUTs_2024_v0p0_SFGt1Lt2p1_HighGranularity/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p0_SFGt1Lt2p1_HighGranularity_ECALZS.txt"; 
+std::string sInFile_SFs = "LUTs_2024_v0p2_13_3_0_L1SFvOlivier20240219_SFGt1Lt2_HighGranularity/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p2_13_3_0_L1SFvOlivier20240219_SFGt1Lt2_HighGranularity_ECALZS_decimal.txt"; 
+std::string sOutFile    = "LUTs_2024_v0p2_13_3_0_L1SFvOlivier20240219_SFGt1Lt2_HighGranularity/Default_RawPUS_phiDefault_SF/lut_calib_2024_v0p2_13_3_0_L1SFvOlivier20240219_SFGt1Lt2_HighGranularity_ECALZS.txt"; 
 
 
 

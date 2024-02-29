@@ -58,7 +58,7 @@ Run python3 updateSFPtEtaBins.py
 
 Run g++ ex_bitwise_10.cpp -o ex_bitwise_10 && ./ex_bitwise_10
 
-
+Run check_L1TJetSFs.ipynb to make performance plots using the new JEC LUTs
 
 
 Scripts for l1ntuple making and

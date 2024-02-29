@@ -92,13 +92,32 @@ SF_forZeroPt = 1.0
 sL1JetEt  = sL1JetEt_PUS_ChunkyDonut if l1Jet_ChunkyDonut else sL1JetEt_PUS_PhiRing
 sRefJetEt = sOfflineJetEt if l1MatchOffline else sGenJetEt 
 
+''' 
+# 2024_v0
 #version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20220925_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
 version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20240209_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
 sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_20240209.csv"
 sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_20240209_%s.csv" % (version)
 #sOpFileName_SFs = "../data/L1T_Jet_SFs_2022G_Muon_13_1_0_pre4_Layer1SFFromOlivier_v2_l1NtupleChunkyDonut_RefOfflinePUPPIJet_PFA1p_20230902_%s.csv" % (version)
+# L1T_Jet_SFs_2024_QCD_Winter24_JEC2024v0_13_3_0_20240209
 sOutDir         = "./plots_%s" % (version)
+'''
 
+'''
+# 2024_v0p1 ZSHF3p5GeV
+#version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20220925_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p1_13_3_0_ZSHF3p5GeV_20240219_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_ZSHF3p5GeV_20240219.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0p1_13_3_0_ZSHF3p5GeV_20240219_%s.csv" % (version)
+sOutDir         = "./plots_%s" % (version)
+'''
+
+# 2024_v0p1 ZSHF3p5GeV JEC2024v0_13_3_0_L1SFvOlivier20240219_20240219
+#version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20220925_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p2_13_3_0_L1SFvOlivier20240219_20240219_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_L1SFvOlivier20240219_20240219.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
+sOutDir         = "./plots_%s" % (version)
 
 #sOpFileName_SFs = sOpFileName_SFs.replace('.csv', '_%s.csv' % (sL1JetEt))
 #sOutDir = '%s_%s' % (sOutDir, sL1JetEt)

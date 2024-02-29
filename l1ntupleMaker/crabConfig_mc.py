@@ -14,14 +14,18 @@ from CRABClient.UserUtilities import config
 config = config()
 
 #config.General.requestName = 
-#config.General.workArea = 'L1TNtuple_JEC2023v0_13_3_0'
-config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0_ZSHF3p5GeV' 
+#config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0'
+#config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0_ZSHF3p5GeV
+#config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0_L1SFvOlivier20240219'
+config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0_L1SFvOlivier20240226'
 config.General.transferOutputs = True
 config.General.transferLogs = False
 
 config.JobType.pluginName = 'Analysis'
 #config.JobType.psetName = 'l1ntuple_maker_2024_mc_13_3_0.py'
-config.JobType.psetName = 'l1ntuple_maker_2024_mc_13_3_0_ZSHF3p5GeV.py'
+#config.JobType.psetName = 'l1ntuple_maker_2024_mc_13_3_0_ZSHF3p5GeV.py'
+#config.JobType.psetName = 'l1ntuple_maker_2024_mc_13_3_0_L1SFvOlivier20240219.py'
+config.JobType.psetName = 'l1ntuple_maker_2024_mc_13_3_0_L1SFvOlivier20240226.py'
 #config.JobType.pyCfgParams = ['maxEvt=-1', 'prtEvt=10000', 'nVtxMin=50', 'HCALPFA=%s' % (scheme)] 
 #config.JobType.outputFiles = ['L1Ntuple_HCAL.root']
 
