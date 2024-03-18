@@ -76,9 +76,14 @@ commands = {
     #"JEC2024v0_13_3_0_ZSHF3p5GeV":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_JEC2024v0_13_3_0_ZSHF3p5GeV_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3/240216_133937/0000/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_ZSHF3p5GeV_QCD_Winter24  --PUrangeTag nVtxAll  --l1MatchGen  --l1NtuplePhiRing  --offlinePUPPIJet ",
     
     # JEC2024v0_13_3_0_L1SFvOlivier20240219 
-    "JEC2024v0_13_3_0_L1SFvOlivier20240219":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_JEC2024v0_13_3_0_L1SFvOlivier20240219_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3/240221_182117/0000/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_ZSHF3p5GeV_QCD_Winter24  --PUrangeTag nVtxAll  --l1MatchGen  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    #"JEC2024v0_13_3_0_L1SFvOlivier20240219":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_JEC2024v0_13_3_0_L1SFvOlivier20240219_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3/240221_182117/0000/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_ZSHF3p5GeV_QCD_Winter24  --PUrangeTag nVtxAll  --l1MatchGen  --l1NtuplePhiRing  --offlinePUPPIJet ",
+
+    # JEC2024v0_13_3_0_L1SFLLR20240304
+    "JEC2024v0_13_3_0_L1SFLLR20240304":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240304_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3/240308_084332/0000/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_L1SFLLR20240304_QCD_Winter24  --PUrangeTag nVtxAll  --l1MatchGen  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    
     
 
+    
 } 
 
 runLocally = False

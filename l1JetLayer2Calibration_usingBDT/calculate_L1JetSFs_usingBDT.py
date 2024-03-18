@@ -111,13 +111,20 @@ sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_
 sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0p1_13_3_0_ZSHF3p5GeV_20240219_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 '''
-
-# 2024_v0p1 ZSHF3p5GeV JEC2024v0_13_3_0_L1SFvOlivier20240219_20240219
+'''
+# JEC2024v0p2_13_3_0_L1SFvOlivier20240219_20240219
 #version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_20220925_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
 version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p2_13_3_0_L1SFvOlivier20240219_20240219_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
 sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_L1SFvOlivier20240219_20240219.csv"
 sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
+'''
+# JEC2024v0p3_13_3_0_L1SFLLR20240304
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p3_13_3_0_L1SFLLR20240304_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_L1SFLLR20240304.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
+sOutDir         = "./plots_%s" % (version)
+
 
 #sOpFileName_SFs = sOpFileName_SFs.replace('.csv', '_%s.csv' % (sL1JetEt))
 #sOutDir = '%s_%s' % (sOutDir, sL1JetEt)
