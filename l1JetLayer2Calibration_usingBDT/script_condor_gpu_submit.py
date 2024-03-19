@@ -116,7 +116,13 @@ commands = {
     #"PhiRing_GenEtByL1Et_1.00":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 1.00",
     #"PhiRing_logGenEtByL1Et_1.00":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00",    
 
-    # JEC2024v0p3_13_3_0_L1SFLLR20240304 
+    # JEC2024v0p3_13_3_0_L1SFLLR20240311woZSHF 
+    #"PhiRing_GenEt_1.00":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 1.00",
+    #"PhiRing_logGenEt_1.00":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 1.00",
+    #"PhiRing_GenEtByL1Et_1.00":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 1.00",
+    #"PhiRing_logGenEtByL1Et_1.00":     "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEtByL1Et   --fracOfDataToUse 1.00",    
+
+    # JEC2024v0p3_13_3_0_L1SFLLR20240311wZSHF4p5GeV 
     "PhiRing_GenEt_1.00":              "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEt            --fracOfDataToUse 1.00",
     "PhiRing_logGenEt_1.00":           "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget logGenEt         --fracOfDataToUse 1.00",
     "PhiRing_GenEtByL1Et_1.00":        "time /afs/cern.ch/work/s/ssawant/private/softwares/anaconda3/envs/ana_htoaa/bin/python3 calculate_L1JetSFs_usingBDT.py --PhiRing     --l1MatchGen --MLTarget GenEtByL1Et      --fracOfDataToUse 1.00",

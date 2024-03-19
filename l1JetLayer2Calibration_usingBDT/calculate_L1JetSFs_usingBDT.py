@@ -46,7 +46,7 @@ parseGroup2 = parser.add_mutually_exclusive_group(required=True)
 parseGroup2.add_argument('--l1MatchOffline', action='store_true')
 parseGroup2.add_argument('--l1MatchGen',     action='store_true')
 
-runLocally = False
+runLocally = False # False
 
 args = None
 if not runLocally:
@@ -81,6 +81,9 @@ L1JetPtMax               = 255.0 # GeV
 RefJetPtLowThrsh         = 10.0 # GeV
 RefJetPtHighThrsh        = 999999 #400.0 # GeV
 snVtx                    = 'nVertexReco'
+UsePUCapping             = False # True
+MaxEt7PUTT               = 999999.0 # 200 # GeV
+iEtaBinsForPUCapping     = [i for i in range(1, 21) if i!=29] # https://indico.cern.ch/event/1387215/contributions/5831385/attachments/2808676/4902041/jets.pdf#page=11
 
 NCompPtBins = 16 # 16 # No. of compressed pT bins
 calibSF_L1JetPtRange = [15., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
@@ -119,9 +122,23 @@ sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_
 sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 '''
+'''
 # JEC2024v0p3_13_3_0_L1SFLLR20240304
 version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p3_13_3_0_L1SFLLR20240304_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
 sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_L1SFLLR20240304.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
+sOutDir         = "./plots_%s" % (version)
+'''
+'''
+# JEC2024v0p3_13_3_0_L1SFLLR20240311woZSHF
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p4_13_3_0_L1SFLLR20240311woZSHF_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_L1SFLLR20240311woZSHF.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
+sOutDir         = "./plots_%s" % (version)
+'''
+# JEC2024v0p3_13_3_0_L1SFLLR20240311woZSHF
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p5_13_3_0_L1SFLLR20240311wZSHF4p5GeV_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV.csv"
 sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 
@@ -212,7 +229,56 @@ print("Original sample: data_all.columns: {}, \ndata_all.shape: {}".format(data_
 # %%
 data_all[sL1JetEt_PUS_ChunkyDonut] = data_all['L1Jet9x9_RawEt'] - data_all['L1Jet9x9_PUEt_ChunkyDonut']
 
-data_all[sL1JetEt_PUS_PhiRing]     = data_all['L1Jet9x9_RawEt'] - (data_all['L1Jet9x9_EtSum7PUTowers'] / 7.0 )
+#data_all[sL1JetEt_PUS_PhiRing]     = data_all['L1Jet9x9_RawEt'] - (data_all['L1Jet9x9_EtSum7PUTowers'] / 7.0 )
+data_all['PUEt_PhiRing'] = (data_all['L1Jet9x9_EtSum7PUTowers'] / 7.0 )
+if UsePUCapping:
+    # PU capping: https://indico.cern.ch/event/1387215/contributions/5831385/attachments/2808676/4902041/jets.pdf#page=11
+    # In |iEta| < 20, (Maximum Phi-Ring Et) = RawEt + 200 GeV  i.e. (Maximu EtSum7PUTowers) = 200 
+    data_all['PUEt_PhiRing'].where( # Where cond is True, keep the original value. Where False, replace with corresponding value from other.
+        ((~data_all['L1JetTowerIEtaAbs'].isin(iEtaBinsForPUCapping)) | 
+        ( data_all['L1Jet9x9_EtSum7PUTowers'] < MaxEt7PUTT) ),
+        (MaxEt7PUTT / 7.0),
+        inplace = True 
+    )
+data_all[sL1JetEt_PUS_PhiRing] = data_all['L1Jet9x9_RawEt'] - data_all['PUEt_PhiRing']
+
+# %%
+# Check PU vs iEta
+puMean_list = []
+puMax_list  = []
+puCappedMean_list = []
+puCappedMax_list  = []
+for iEta in iEtaBins:
+    puMean = (data_all[data_all[sL1JetTowerIEtaAbs] == iEta]['L1Jet9x9_EtSum7PUTowers'] / 7.0).mean()
+    puMax  = (data_all[data_all[sL1JetTowerIEtaAbs] == iEta]['L1Jet9x9_EtSum7PUTowers'] / 7.0).max()
+    puCappedMean = data_all[data_all[sL1JetTowerIEtaAbs] == iEta]['PUEt_PhiRing'].mean()
+    puCappedMax  = data_all[data_all[sL1JetTowerIEtaAbs] == iEta]['PUEt_PhiRing'].max()
+    puMean_list.append( puMean )
+    puMax_list.append(  puMax  )
+    puCappedMean_list.append( puCappedMean )
+    puCappedMax_list.append(  puCappedMax  )    
+
+# %%
+fig, axs = plt.subplots()
+axs.plot(iEtaBins, puMean_list, label='PU Et mean')
+axs.plot(iEtaBins, puMax_list, label='PU Et max')
+axs.plot(iEtaBins, puCappedMean_list, label='Capped PU Et mean')
+axs.plot(iEtaBins, puCappedMax_list, label='Capped PU Et max')
+axs.set_xlabel('iEta'); axs.set_ylabel('PU Et [GeV]')
+axs.legend(loc='best')
+axs.axis('tight')
+axs.grid()
+#fig.show()
+
+# %%
+data_all.loc[data_all['PUEt_PhiRing'].argmax()]
+
+# %%
+#data_all.loc[data_all['PUEt_PhiRing'].argmax()]['L1JetTowerIEtaAbs'].isin(iEtaBinsForPUCapping)
+data_all[~data_all['L1JetTowerIEtaAbs'].isin(iEtaBinsForPUCapping)].describe()
+
+# %%
+data_all[(data_all['L1JetTowerIEtaAbs'].isin(iEtaBinsForPUCapping) & ( data_all['L1Jet9x9_EtSum7PUTowers'] > MaxEt7PUTT) )]
 
 # %%
 #%%script false --no-raise-error
