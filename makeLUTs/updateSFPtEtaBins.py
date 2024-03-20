@@ -63,9 +63,9 @@ sipFileCalibSF = {
 ## 2024v0p4_L1SFLLR20240311woZSHF
 #sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0p4_13_3_0_L1SFLLR20240311woZSHF_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
 ## 2024v0p5_13_3_0_L1SFLLR20240311wZSHF4p5GeV
-sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0p5_13_3_0_L1SFLLR20240311wZSHF4p5GeV_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
+#sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0p5_13_3_0_L1SFLLR20240311wZSHF4p5GeV_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
 ## 2024v0p6_13_3_0_JECMultiplierMax4
-#sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0_20240209_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
+sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0_20240209_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
 
 sFilePtCompressedLUT_Ref = '' #'/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v7_20240209/JEC_2024_round1/CMSSW_13_3_0/src/L1Trigger/L1TCalorimeter/data/lut_pt_compress_2017v1.txt' # '' or 'lut_pt_compress_2017v1.txt file'
 
@@ -74,7 +74,7 @@ EtaCompressedLUT = False; #True, False;
 EtaCompressedLUTVersion = '' # 'v2018' # 'v2018', '', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged', ''
 
 
-sLUTVersion = '2024_v0p5_13_3_0_L1SFLLR20240311wZSHF4p5GeV_HighGranularity' # '2024_v0p0_SFGt0' '2024_v0p0_SFGt0_HighGranularity' '2024_v0p0_SFGt1Lt2' '2024_v0p0_SFGt1Lt2p0_HighGranularity' '2024_v0p1_ZSHF3p5GeV_SFGt1Lt2_HighGranularity'
+sLUTVersion = '2024_v0p6_13_3_0_JECMultiplierMax4_HighGranularity' # '2024_v0p0_SFGt0' '2024_v0p0_SFGt0_HighGranularity' '2024_v0p0_SFGt1Lt2' '2024_v0p0_SFGt1Lt2p0_HighGranularity' '2024_v0p1_ZSHF3p5GeV_SFGt1Lt2_HighGranularity'
 JECSF_boundary = [0.0, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0]
 JECLUTSF_boundary = [0.0, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0] [1.0, 2.]
 nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
@@ -107,7 +107,7 @@ nBitsPtComp  = nBitsForPtComp # 6; # pT compression bits:: 4: : for 16 pT compre
 UnitySFInBits = 512;
 # 1./512 = 0.0019531250 = least count of SF
 nBitsJECSF = 18
-nBitsJECMultiplier = 10 # 10 (default): multiplier_max=2, 11: multiplier_max:4 ### <<<<<<<<<<<<<<<<<<< IMPORTANT setting <<<<<<<<<<<<<<<<<<
+nBitsJECMultiplier = 11 # 10 (default): multiplier_max=2, 11: multiplier_max:4 ### <<<<<<<<<<<<<<<<<<< IMPORTANT setting <<<<<<<<<<<<<<<<<<
 nBitsJECAdded      = nBitsJECSF - nBitsJECMultiplier # Default: 8
 MaxAdded      = pow(2, nBitsJECAdded);      # 8: 256, 7: 128
 MaxMultiplier = pow(2, nBitsJECMultiplier); # 10: 1024, 11: 2048
