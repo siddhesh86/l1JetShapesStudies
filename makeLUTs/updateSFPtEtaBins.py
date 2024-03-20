@@ -59,7 +59,11 @@ sipFileCalibSF = {
 ## 2024v0p1_ZSHF3p5GeV
 #sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0p1_13_3_0_ZSHF3p5GeV_20240219_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
 ## 2024v0p2_13_3_0_L1SFvOlivier20240219
-sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0p2_13_3_0_L1SFvOlivier20240219_20240219_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
+#sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0p2_13_3_0_L1SFvOlivier20240219_20240219_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
+## 2024v0p4_L1SFLLR20240311woZSHF
+sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0p4_13_3_0_L1SFLLR20240311woZSHF_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
+## 2024v0p5_13_3_0_L1SFLLR20240311wZSHF4p5GeV
+#sipFileCalibSF['Default']['RawPUS_phiDefault']['fileName'] = '../data/L1T_Jet_SFs_2024v0p5_13_3_0_L1SFLLR20240311wZSHF4p5GeV_L1JetEt_PUS_PhiRing_HBE_logGenEtByL1Et_atPU33_HF_GenEtByL1Et_atPU33.csv'
 
 
 sFilePtCompressedLUT_Ref = '' #'/afs/cern.ch/work/s/ssawant/private/L1T_ServiceTasks/hcalPUsub_v7_20240209/JEC_2024_round1/CMSSW_13_3_0/src/L1Trigger/L1TCalorimeter/data/lut_pt_compress_2017v1.txt' # '' or 'lut_pt_compress_2017v1.txt file'
@@ -69,17 +73,18 @@ EtaCompressedLUT = False; #True, False;
 EtaCompressedLUTVersion = '' # 'v2018' # 'v2018', '', 'v2022ChunkyDonut', 'v2022PhiRing', 'v2022Merged', ''
 
 
-sLUTVersion = '2024_v0p2_13_3_0_L1SFvOlivier20240219_SFGt1Lt2_HighGranularity' # '2024_v0p0_SFGt0' '2024_v0p0_SFGt0_HighGranularity' '2024_v0p0_SFGt1Lt2' '2024_v0p0_SFGt1Lt2p0_HighGranularity' '2024_v0p1_ZSHF3p5GeV_SFGt1Lt2_HighGranularity'
+sLUTVersion = '2024_v0p4_13_3_0_L1SFLLR20240311woZSHF_HighGranularity' # '2024_v0p0_SFGt0' '2024_v0p0_SFGt0_HighGranularity' '2024_v0p0_SFGt1Lt2' '2024_v0p0_SFGt1Lt2p0_HighGranularity' '2024_v0p1_ZSHF3p5GeV_SFGt1Lt2_HighGranularity'
 JECSF_boundary = [0.0, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0]
-JECLUTSF_boundary = [1.0, 2.0] # [<lower bound>, <upper bound>] [0.0, 9999.0] [1.0, 2.]
+JECLUTSF_boundary = [0.0, 9999.0] # [<lower bound>, <upper bound>] [0.0, 9999.0] [1.0, 2.]
 nBinsMaxForEtaCompressionLUT = 64 # no. of lines in eta compression LUT
 makeLUTForIEta29 = [False, 1.0]
 makeLUTForIEta41 = [False] # SFs for iEta=41 are missing in SFv6. Copy SFs from IEta=40
 separatePtBinForLowPt = True # True: Use separate pT bin quantile for 0 < pT <= 15 GeV where SFs are truckated. NOT APPLICABLE when using firmware-fixed pT binning
 IEtaBinOffsetForEtaCompressedLUT = 0 # 0: IEtaBin_forLUT = IEtaBin = [1, 41];  -1: IEtaBin_forLUT = IEtaBin - 1 = [0, 40]. # 0 give correct calibration.
-sFOut_LUT_pt_compress    = 'lut_pt_compress_%s.txt' % (sLUTVersion)
-sFOut_LUT_eta_compress   = 'lut_eta_compress_%s.txt' % (sLUTVersion)
-sFOut_LUT_calib_compress = 'lut_calib_%s_ECALZS_decimal.txt' % (sLUTVersion)
+sFOut_LUT_pt_compress        = 'lut_pt_compress_%s.txt' % (sLUTVersion)
+sFOut_LUT_eta_compress       = 'lut_eta_compress_%s.txt' % (sLUTVersion)
+sFOut_LUT_calib_compress_HEX = 'lut_calib_%s_ECALZS.txt' % (sLUTVersion)
+sFOut_LUT_calib_compress     = 'lut_calib_%s_ECALZS_decimal.txt' % (sLUTVersion)
 
 makeLUTsInUncompressedBins = False # True # make LUTs without compressing Pt and Eta bins
 sFOut_LUT_pt_uncompress  = 'lut_pt_uncompress_%s.txt' % (sLUTVersion)
@@ -91,7 +96,26 @@ NCompPtBins = int(2**nBitsForPtComp) # 16 # No. of compressed pT bins
 calibSF_L1JetPtRange = [15., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
 LUT_PtRange = [0., 255., 1.] # pT range for SFs for LUT
 SF_forZeroPt = 1.0
- 
+
+
+## Settings for JEC LUT --------
+MakeJECLUT = True
+nBitsCompBin = 12 if nBitsForPtComp==6 else 4 # 12; # 11: for 16 pT compression bins,    12: for 64 pT compression bins
+nBitsPtComp  = nBitsForPtComp # 6; # pT compression bits:: 4: : for 16 pT compression bins, 6: for 64 pT compression bins
+
+UnitySFInBits = 512;
+# 1./512 = 0.0019531250 = least count of SF
+nBitsJECSF = 18
+nBitsJECMultiplier = 10 # 10 (default): multiplier_max=2, 11: multiplier_max:4 ### <<<<<<<<<<<<<<<<<<< IMPORTANT setting <<<<<<<<<<<<<<<<<<
+nBitsJECAdded      = nBitsJECSF - nBitsJECMultiplier # Default: 8
+MaxAdded      = pow(2, nBitsJECAdded);      # 8: 256, 7: 128
+MaxMultiplier = pow(2, nBitsJECMultiplier); # 10: 1024, 11: 2048
+int8_t_Min = -128;
+int8_t_Max =  127;
+
+nCompBinMax = pow(2, nBitsCompBin);  # pow(2, 11) = 2048;  pow(2, 12) = 4096
+## ------------------------------
+
 
 if PtCompressedLUTVersion == 'v2018':
     separatePtBinForLowPt = False
@@ -637,6 +661,127 @@ def convert_CaloToolMPEta_to_IEta(CaloToolMPEta):
         
     
 
+
+def calculateSFInBits_addendZero(jet_hwPt, SFInDecimal):
+    if (PrintLevel >= 20):
+        print("calculateSFInBits_addendZero():: \n");
+  
+    jet_calibPt_target = int( ( float(jet_hwPt) * SFInDecimal ) + 0.5); # 0.5 to round off fractional part of the number
+    if (PrintLevel >= 4):
+        print("calculateSFInBits_addendZero():: {}, {}, PtCorr: {} / {} ".format(float(jet_hwPt), SFInDecimal, ( float(jet_hwPt) * SFInDecimal ), jet_calibPt_target))
+  
+  
+    multiplier = int(SFInDecimal * float(UnitySFInBits));
+    # multiplier is 10-bit, which is Power(2,10) = 1024 = MaxMultiplier
+    if (multiplier >= MaxMultiplier ): # { # truncate multiplier to 1023
+        multiplier = MaxMultiplier - 1;
+    
+    multiplier_0 = multiplier;
+
+    if (PrintLevel >= 2): # {
+        print(f"{multiplier_0 = }")
+    
+
+    if (jet_hwPt == 0 and abs(SFInDecimal - 1) < 0.000001):
+        addPlusMult = multiplier_0; # multiplier=512 for SFInDecimal==1
+        return addPlusMult;
+  
+  
+    multiplier_wAddendZero = []
+    #for (m_i = 0; m_i < MaxMultiplier; m_i++) {
+    for m_i in range(MaxMultiplier):
+        m_tmp = multiplier + m_i;
+        if (m_tmp >= MaxMultiplier): break;
+
+        a_i = calculateAddend(jet_hwPt, m_tmp, jet_calibPt_target);
+        if (a_i == 0): multiplier_wAddendZero.append( m_tmp );
+
+        if (a_i < 0): break;
+    
+
+    if (PrintLevel >= 2):
+        print("multiplier_wAddendZero:: {}".format(multiplier_wAddendZero))
+ 
+    #addPlusMult;    
+    if ( len(multiplier_wAddendZero) > 0 ): # {
+        idx_multiplier = int( len(multiplier_wAddendZero) / 2 );
+        multiplier = multiplier_wAddendZero[idx_multiplier];
+        addend = 0;
+        
+        jetPtCorr = ((jet_hwPt * multiplier) >> 9) + addend;
+        addPlusMult = (addend << nBitsJECMultiplier) + multiplier;  # (addend << 10) + multiplier;
+  
+    else: 
+  
+        multiplier = multiplier_0;
+  
+        absDPt_Min = 99999;
+        addend = 0;
+        #for (int8_t addend_i = 0; addend_i < 127; addend_i++) { // int8_t range [-128, 127]
+        for addend_i in range(int8_t_Max):
+            jetPtCorr_i = ((jet_hwPt * multiplier) >> 9) + addend_i;
+            dPt = int(jetPtCorr_i) - int(jet_calibPt_target);
+            absDPt = abs(dPt);
+            if (absDPt < absDPt_Min): # {
+                addend = addend_i;
+                absDPt_Min = absDPt;
+      
+
+            if (dPt == 0): # {
+	            break;
+
+
+        addPlusMult = (addend << nBitsJECMultiplier) + multiplier;  # (addend << 10) + multiplier;
+  
+    
+    return addPlusMult;  
+  
+
+def calculateAddend(jet_hwPt, multiplier, jet_calibPt_target):
+    addend = 0;
+    jetPtCorr_i = ((jet_hwPt * multiplier) >> 9) + addend;
+    dPt = int(jetPtCorr_i) - int(jet_calibPt_target);
+    if (dPt == 0): # {
+        return addend;
+    elif (dPt < 0): # {
+        absDPt_Min = 99999;
+        addend = 0;
+        for addend_i in range(int8_t_Max): # int8_t_Max: 127
+            jetPtCorr_i = ((jet_hwPt * multiplier) >> 9) + addend_i;
+            dPt = int(jetPtCorr_i) - int(jet_calibPt_target);
+            absDPt = abs(dPt);
+            if (absDPt < absDPt_Min):
+                addend = addend_i;
+                absDPt_Min = absDPt;
+        return addend;
+
+    elif (dPt > 0): # {
+        absDPt_Min = 99999;
+        addend = 0;
+        for addend_i in range(-1, int8_t_Min, -1): # int8_t_Min: -128
+            jetPtCorr_i = ((jet_hwPt * multiplier) >> 9) + addend_i;
+            dPt = int(jetPtCorr_i) - int(jet_calibPt_target);
+            absDPt = abs(dPt);
+            if (absDPt < absDPt_Min): # {
+                addend = addend_i;
+                absDPt_Min = absDPt;             
+        return addend;
+    
+    return addend;
+
+
+def calibrateJet(jet_hwPt, addPlusMult, printLevel_i=0):
+  if (printLevel_i >= 2):
+    print("calibrateJet():: \n");
+  
+  # multiplier = addPlusMult & 0x3ff; #  0x3ff = 1023 = 11 1111 1111
+  # addend = (addPlusMult >> 10);
+  multiplier = addPlusMult & 0x7ff if nBitsJECMultiplier == 11 else addPlusMult & 0x3ff # hex(2**10-1): 0x3ff,  hex(2**11-1): 0x7ff
+  addend = (addPlusMult >> nBitsJECMultiplier);
+  jetPtCorr = ((jet_hwPt * multiplier) >> 9) + addend;
+
+  return jetPtCorr;
+
 if __name__ == '__main__':
 
 
@@ -1070,9 +1215,10 @@ if __name__ == '__main__':
             if not os.path.exists(sDir_LUT):
                 os.makedirs(sDir_LUT)
 
-            fOut_LUT_pt_compress    = open("%s/%s" % (sDir_LUT, sFOut_LUT_pt_compress),    'w')
-            fOut_LUT_eta_compress   = open("%s/%s" % (sDir_LUT, sFOut_LUT_eta_compress),   'w')
-            fOut_LUT_calib_compress = open("%s/%s" % (sDir_LUT, sFOut_LUT_calib_compress), 'w')
+            fOut_LUT_pt_compress        = open("%s/%s" % (sDir_LUT, sFOut_LUT_pt_compress),        'w')
+            fOut_LUT_eta_compress       = open("%s/%s" % (sDir_LUT, sFOut_LUT_eta_compress),       'w')
+            fOut_LUT_calib_compress_HEX = open("%s/%s" % (sDir_LUT, sFOut_LUT_calib_compress_HEX), 'w')
+            fOut_LUT_calib_compress     = open("%s/%s" % (sDir_LUT, sFOut_LUT_calib_compress),     'w')
 
             # write headers
             fOut_LUT_eta_compress.write('# MP ieta compression LUT\n')
@@ -1093,6 +1239,16 @@ if __name__ == '__main__':
             fOut_LUT_pt_compress.write('# the header is first valid line starting with #<header> versionStr nrBitsAddress nrBitsData </header>\n')
             #fOut_LUT_pt_compress.write('#<header> v1 8 4 </header>\n')
             fOut_LUT_pt_compress.write('#<header> v1 8 %d </header>\n' % (nBitsForPtComp))
+
+            if MakeJECLUT:
+                fOut_LUT_calib_compress_HEX.write("# address to addend+multiplicative factor LUT\n")
+                fOut_LUT_calib_compress_HEX.write("# maps " + str(nBitsCompBin) + " bits to 18 bits\n")
+                fOut_LUT_calib_compress_HEX.write("# 18 bits = (addend<<%d) + multiplier)\n" % (nBitsJECMultiplier))
+                fOut_LUT_calib_compress_HEX.write("# addend is signed 8 bits, multiplier is 10 bits\n")
+                fOut_LUT_calib_compress_HEX.write("# anything after # is ignored with the exception of the header\n")
+                fOut_LUT_calib_compress_HEX.write("# the header is first valid line starting with #<header> versionStr nrBitsAddress nrBitsData </header>\n")
+                fOut_LUT_calib_compress_HEX.write("#<header> v1 " + str(nBitsCompBin) + " 18 </header>\n")
+
 
 
             ## Update SFs in each IEta bin to have in pT_quantiles --------------------------------
@@ -1286,14 +1442,52 @@ if __name__ == '__main__':
                     data_calibSFs_compressedInEtaAndPt[CaloToolMPEtaBin_forLUT][avgPt_iPtQuant] = avgSF_iPtQuant
 
                     PtBin_forLUT = iPtQuant 
-                    sComments = ""
+                    sComments  = ""
+                    sSFClosure = ""
                     if iPtQuant == 0:
                         #sComments = "   # ieta %d, pt %d" % (IEtaBin, PtBin_forLUT)
                         sComments = "   # ieta {}, pt {}".format(CaloToolMPEtaRange, PtBin_forLUT)
                         if int(CaloToolMPEtaBin_forLUT) == 0:
                             fOut_LUT_calib_compress.write('# columns \n')
                             fOut_LUT_calib_compress.write('# %s %s %s %s %s %s %s\n' % ('CaloToolMPEtaBin', 'PtMin', 'PtMax', 'avgPt', 'IEtaBin_forLUT_col1', 'PtBin_forLUT', 'SF' ))
-                    fOut_LUT_calib_compress.write('%d %d %d %d %d %d %f%s\n' % (int(CaloToolMPEtaBin_forLUT), int(PtMin_iPtQuant + 0.5), int(PtMax_iPtQuant + 0.5), int(avgPt_iPtQuant + 0.5), int(IEtaBin_forLUT_col1), int(PtBin_forLUT), avgSF_iPtQuant, sComments ))
+                    #fOut_LUT_calib_compress.write('%d %d %d %d %d %d %f%s\n' % (int(CaloToolMPEtaBin_forLUT), int(PtMin_iPtQuant + 0.5), int(PtMax_iPtQuant + 0.5), int(avgPt_iPtQuant + 0.5), int(IEtaBin_forLUT_col1), int(PtBin_forLUT), avgSF_iPtQuant, sComments ))
+
+                    ## Calculate JEC SFs in HEX
+                    if MakeJECLUT:
+                        iEta_ = int(CaloToolMPEtaBin_forLUT)
+                        PtMin_iQuant_ = int(PtMin_iPtQuant + 0.5)
+                        PtMax_iQuant_ = int(PtMax_iPtQuant + 0.5)
+                        Pt_ = int(avgPt_iPtQuant + 0.5)
+
+                        etaBin_ = int(IEtaBin_forLUT_col1) # 4
+                        ptBin_  = int(PtBin_forLUT)  # 5
+                        compBin_       = (etaBin_ << nBitsPtComp) | ptBin_;
+
+                        SFInDecimal_ = avgSF_iPtQuant
+
+                        jetHwPt_       = Pt_ * 2; # jetHwPt = 2*jetPtInGeV https://github.com/cms-sw/cmssw/blob/master/L1Trigger/L1TCalorimeter/src/firmware/Stage2Layer2JetAlgorithmFirmwareImp1.cc#L717 . Applying a factor of 2 does not affect SFInDecimal --> SFInBits calculation here.
+                        jetHwPtMin_    = PtMin_iQuant_ * 2; 
+                        jetHwPtMax_    = PtMax_iQuant_ * 2;
+
+                        SFInBits_    = calculateSFInBits_addendZero(jetHwPt_, SFInDecimal_);
+
+                        jetHwPtCorr_ = calibrateJet(jetHwPt_, SFInBits_)
+                        SFInDecimal_fromJECLUT_ = jetHwPtCorr_ / jetHwPt_ if jetHwPt_ > 0 else 1
+
+
+                        sComment_JECLUTHEX_ = ""
+                        if ptBin_ == 0:
+                            sComment_JECLUTHEX_ = "  # compresses ieta bin " + str(etaBin_) + ", pt " + str(ptBin_)
+                        sSFClosure = "    %d %f %f    " % (SFInBits_, SFInDecimal_fromJECLUT_, SFInDecimal_fromJECLUT_ / SFInDecimal_)
+
+                        fOut_LUT_calib_compress_HEX.write('%d %d%s\n' % (compBin_, SFInBits_, sComment_JECLUTHEX_))
+
+                        compBin_last_JECLUT = compBin_
+
+                    # JEc LUT Decimal
+                    fOut_LUT_calib_compress.write('%d %d %d %d %d %d %f%s%s\n' % (int(CaloToolMPEtaBin_forLUT), int(PtMin_iPtQuant + 0.5), int(PtMax_iPtQuant + 0.5), int(avgPt_iPtQuant + 0.5), int(IEtaBin_forLUT_col1), int(PtBin_forLUT), avgSF_iPtQuant, sSFClosure,sComments ))
+
+                
 
 
                 ax.plot(data_calibSFs_compressedInEtaAndPt[CaloToolMPEtaBin_forLUT].keys(), data_calibSFs_compressedInEtaAndPt[CaloToolMPEtaBin_forLUT].values(),
@@ -1335,14 +1529,23 @@ if __name__ == '__main__':
                 fOut_LUT_eta_compress.write('%d %d\n' % (int(IEtaBin_forLUT_col0), int(0)))
                 IEtaBin_forLUT_col0 += 1
 
+            # dummy bins for JEC LUTs
+            if MakeJECLUT:
+                compBin_last_JECLUT = compBin_last_JECLUT + 1
+                while compBin_last_JECLUT < nCompBinMax:
+                    fOut_LUT_calib_compress_HEX.write('%d 0 # dummy\n' % (compBin_last_JECLUT))
+                    compBin_last_JECLUT = compBin_last_JECLUT + 1
+
             
             fOut_LUT_pt_compress.close()
             fOut_LUT_eta_compress.close()
+            if MakeJECLUT: fOut_LUT_calib_compress_HEX.close()
             fOut_LUT_calib_compress.close()
 
-            print("Wrote %s/%s, %s/%s, %s/%s" % (
+            print("Wrote %s/%s, %s/%s, %s/%s, %s/%s" % (
                 sDir_LUT, sFOut_LUT_pt_compress,
                 sDir_LUT, sFOut_LUT_eta_compress,
+                sDir_LUT, sFOut_LUT_calib_compress_HEX,
                 sDir_LUT, sFOut_LUT_calib_compress
             ))
 

@@ -81,9 +81,9 @@ L1JetPtMax               = 255.0 # GeV
 RefJetPtLowThrsh         = 10.0 # GeV
 RefJetPtHighThrsh        = 999999 #400.0 # GeV
 snVtx                    = 'nVertexReco'
-UsePUCapping             = False # True
-MaxEt7PUTT               = 999999.0 # 200 # GeV
-iEtaBinsForPUCapping     = [i for i in range(1, 21) if i!=29] # https://indico.cern.ch/event/1387215/contributions/5831385/attachments/2808676/4902041/jets.pdf#page=11
+UsePUCapping             = True # False
+MaxEt7PUTT               = 200 # GeV
+iEtaBinsForPUCapping     = [i for i in range(1, 20) if i!=29] # https://indico.cern.ch/event/1387215/contributions/5831385/attachments/2808676/4902041/jets.pdf#page=11
 
 NCompPtBins = 16 # 16 # No. of compressed pT bins
 calibSF_L1JetPtRange = [15., 255., 1.] # [<lowest pT>,  <hightest pT>,  <pT bin width>] # pT range for SFs to read from Syed's SF.csv file
@@ -130,15 +130,23 @@ sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythi
 sOutDir         = "./plots_%s" % (version)
 '''
 '''
-# JEC2024v0p3_13_3_0_L1SFLLR20240311woZSHF
+# JEC2024v0p4_13_3_0_L1SFLLR20240311woZSHF
 version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p4_13_3_0_L1SFLLR20240311woZSHF_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
 sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_L1SFLLR20240311woZSHF.csv"
 sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 '''
-# JEC2024v0p3_13_3_0_L1SFLLR20240311woZSHF
+'''
+# JEC2024v0p5_13_3_0_L1SFLLR20240311woZSHF
 version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p5_13_3_0_L1SFLLR20240311wZSHF4p5GeV_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
 sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV.csv"
+sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
+sOutDir         = "./plots_%s" % (version)
+'''
+
+# JEC2024v0p6_13_3_0_PUEtCapAt200GeV
+version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p6_13_3_0_PUEtCapAt200GeV_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
+sIpFileName     = "../data/L1T_Jet_MLInputs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_JEC2024v0_13_3_0_20240209.csv"
 sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythia8_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
 
