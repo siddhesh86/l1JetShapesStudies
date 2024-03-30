@@ -85,13 +85,16 @@ commands = {
     #"JEC2024v0_13_3_0_L1SFLLR20240311woZSHF":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311woZSHF_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3/240318_134551/0000/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_L1SFLLR20240311woZSHF_QCD_Winter24  --PUrangeTag nVtxAll  --l1MatchGen  --l1NtuplePhiRing  --offlinePUPPIJet ",
     
     # JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV MC
-    "JEC2024v0_13_3_0_L1SFLLR20240311woZSHF":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3/240318_142538/0000/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_QCD_Winter24  --PUrangeTag nVtxAll  --l1MatchGen  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    #"JEC2024v0_13_3_0_L1SFLLR20240311woZSHF":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/QCD_PT-15to7000_TuneCP5_13p6TeV_pythia8/L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Run3Winter24Digi-FlatPU0to80_133X_mcRun3_2024_realistic_v8-v3/240318_142538/0000/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_QCD_Winter24  --PUrangeTag nVtxAll  --l1MatchGen  --l1NtuplePhiRing  --offlinePUPPIJet ",
     
+    # JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV Data2023D
+    #"JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Run2023D-ZMu-PromptReco-v2/240319_074000/0000/L1Ntuple_9.root' --sampleName JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Data2023D  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    "JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Data2023D":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Run2023D-ZMu-PromptReco-v*/240319_*/*/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Data2023D  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
     
 } 
 
 runLocally = False
-nSplitsInput = 1 if runLocally else 176 #352
+nSplitsInput = 1 if runLocally else 138 # 176 #352
 
 
 

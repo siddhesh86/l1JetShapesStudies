@@ -15,19 +15,25 @@ config = config()
 
 #config.General.requestName = 
 #config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240304'
-config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV' 
+#config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV'
+#config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0'
+#config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0_ZSHF4p5GeV'
+config.General.workArea = 'L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311woZSHF' 
 config.General.transferOutputs = True
 config.General.transferLogs = False
 
 config.JobType.pluginName = 'Analysis'
 #config.JobType.psetName = 'l1ntuple_maker_2023_data_13_3_0_L1SFLLR20240304.py'
-config.JobType.psetName = 'l1ntuple_maker_2023_data_13_3_0_L1SFLLR20240311wZSHF4p5GeV.py'
+#config.JobType.psetName = 'l1ntuple_maker_2023_data_13_3_0_L1SFLLR20240311wZSHF4p5GeV.py'
+#config.JobType.psetName = 'l1ntuple_maker_2023_data_13_3_0.py'
+#config.JobType.psetName = 'l1ntuple_maker_2023_data_13_3_0_ZSHF4p5GeV.py'
+config.JobType.psetName = 'l1ntuple_maker_2023_data_13_3_0_L1SFLLR20240311woZSHF.py'
 #config.JobType.pyCfgParams = ['maxEvt=-1', 'prtEvt=10000', 'nVtxMin=50', 'HCALPFA=%s' % (scheme)] 
 #config.JobType.outputFiles = ['L1Ntuple_HCAL.root']
 
 #config.Data.inputDataset = '/Muon0/Run2023B-ZMu-PromptReco-v1/RAW-RECO' # '/Muon/Run2022G-ZMu-PromptReco-v1/RAW-RECO' #'/Muon/Run2022G-PromptReco-v1/AOD'
-config.Data.inputDataset = '/Muon0/Run2023D-ZMu-PromptReco-v1/RAW-RECO'
-#config.Data.inputDataset = '/Muon0/Run2023D-ZMu-PromptReco-v2/RAW-RECO'
+#config.Data.inputDataset = '/Muon0/Run2023D-ZMu-PromptReco-v1/RAW-RECO'
+config.Data.inputDataset = '/Muon0/Run2023D-ZMu-PromptReco-v2/RAW-RECO'
 #config.Data.secondaryInputDataset = '/Muon/Run2022G-v1/RAW' #/Muon/Run2022G-ZMu-PromptReco-v1/RAW-RECO'
 
 config.General.requestName = config.Data.inputDataset.split('/')[2]

@@ -50,7 +50,7 @@ HLT_Triggers_Required = [
 TrigThshs_OffMuPt = [ 24 ] # For e.g. for IsoMu24: [ 24 ], for DiMu24: [24, 24], for Mu24_Mu20: [24, 20]
 
 #GoldenJSONForData_list=["Cert_Collisions2022_eraG_362433_362760_Golden.json"]
-GoldenJSONForData_list=["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json"] #["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_eraG_362433_362760_Golden.json"]
+GoldenJSONForData_list= ["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions23/Cert_Collisions2023_366442_370790_Golden.json"] #["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_355100_362760_Golden.json"] #["https://cms-service-dqmdc.web.cern.ch/CAF/certification/Collisions22/Cert_Collisions2022_eraG_362433_362760_Golden.json"]
 useCutGenNVtxEq0 = False # Set False. Only for troubleshoot perfose. When set True: analyze (GEN.nVtx == 0) events from SinglePhoton_EpsilonPU sample to trouble-shoot high SFs in iEta 28
 #offlineJetType = 'PUPPI' # 'CHS', 'PUPPI'  offlineCHSJet, offlinePUPPIJet. Set it as a command line argument 
 nJetFilters = 14
@@ -72,6 +72,10 @@ dataErasRunRange = {
     '2022E': [359045, 360327], 
     '2022F': [360335, 362167], 
     '2022G': [362362, 362760], 
+    #
+    '2023B': [366386, 367079],
+    '2023C': [367094, 369802],
+    '2023D': [369827, 371227],
 }
 
 L1TEffiTurnOn_TrigThrshs = [12.0, 35.0, 60.0, 90.0, 120.0, 180.0] # L1T eT threshold for L1T efficiency turn-on curve
@@ -2043,7 +2047,7 @@ def run():
                             ]
 
 
-                    if dataEra in ['2022F', '2022G']:
+                    if dataEra in ['2022F', '2022G', '2023B', '2023C', '2023D', ]:
                         # https://twiki.cern.ch/twiki/bin/view/CMS/JetID13p6TeV#Recommendations_for_the_13_6_AN1
                         # https://github.com/bundocka/cmssw/blob/7d536e034f7dd0773eec3f306508c80c67fb1960/L1Trigger/L1TNtuples/plugins/L1JetRecoTreeProducer.cc#L689-L715
 
@@ -2067,9 +2071,9 @@ def run():
                                 isForwardCentralJet_1 and Jet_br.puppi_mef[iOff]   >= 0.80, # jet_data->puppi_mef.push_back(it->muonEnergyFraction());
                                 isForwardCentralJet_1 and Jet_br.puppi_cemef[iOff] >= 0.80, # jet_data->puppi_cemef.push_back(it->chargedEmEnergyFraction());
                                 
-                                isForwardCentralJet_2 and Jet_br.puppi_nhef[iOff]  >= 0.9999, # neutralHadronEnergyFraction()                                
+                                isForwardCentralJet_2 and Jet_br.puppi_nhef[iOff]  >= 0.99, # neutralHadronEnergyFraction()           
                                 
-                                isForwardJet          and Jet_br.puppi_nemef[iOff] >= 0.90, # jet_data->puppi_nemef.push_back(it->neutralEmEnergyFraction());
+                                isForwardJet          and Jet_br.puppi_nemef[iOff] >= 0.40, # jet_data->puppi_nemef.push_back(it->neutralEmEnergyFraction());
                                 isForwardJet          and Jet_br.puppi_nMult[iOff] <  2 , # jet_data->puppi_nMult.push_back(it->neutralMultiplicity());
                             ]
                         else:
@@ -2091,8 +2095,8 @@ def run():
                                 isForwardCentralJet_2 and Jet_br.nemef[iOff] >= 0.99, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());                             
                                 isForwardCentralJet_2 and Jet_br.nMult[iOff] <= 1 , # jet_data->nMult.push_back(it->neutralMultiplicity());
 
-                                isForwardJet          and Jet_br.nhef[iOff]  <= 0.20, # neutralHadronEnergyFraction()
-                                isForwardJet          and Jet_br.nemef[iOff] >= 0.90, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());
+                                ##isForwardJet          and Jet_br.nhef[iOff]  <= 0.20, # neutralHadronEnergyFraction()
+                                isForwardJet          and Jet_br.nemef[iOff] >= 0.40, # jet_data->nemef.push_back(it->neutralEmEnergyFraction());
                                 isForwardJet          and Jet_br.nMult[iOff] <= 10 , # jet_data->nMult.push_back(it->neutralMultiplicity());
                             ]
 
