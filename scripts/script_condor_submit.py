@@ -89,7 +89,13 @@ commands = {
     
     # JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV Data2023D
     #"JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Run2023D-ZMu-PromptReco-v2/240319_074000/0000/L1Ntuple_9.root' --sampleName JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Data2023D  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
-    "JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Data2023D":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Run2023D-ZMu-PromptReco-v*/240319_*/*/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Data2023D  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    #"JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Data2023D":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Run2023D-ZMu-PromptReco-v*/240319_*/*/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV_Data2023D  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    
+    # JEC2024v0_13_3_0_Data2023D
+    #"JEC2024v0_13_3_0_Data2023D":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024v0_13_3_0_Run2023D-ZMu-PromptReco-v*/240329_*/*/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_Data2023D  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    
+    # JEC2024v0_13_3_0_ZSHF4p5GeV_Data2023D
+    "JEC2024v0_13_3_0_ZSHF4p5GeV_Data2023D":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024v0_13_3_0_ZSHF4p5GeV_Run2023D-ZMu-PromptReco-v*/240329_*/*/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_ZSHF4p5GeV_Data2023D  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
     
 } 
 

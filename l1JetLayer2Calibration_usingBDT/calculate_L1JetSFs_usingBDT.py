@@ -39,6 +39,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--MLTarget',           type=str,   dest='MLTarget',  default='logGenEt', choices=['GenEt', 'logGenEt', 'GenEtByL1Et', 'logGenEtByL1Et'])
 parser.add_argument('--PUForSFComputation', type=int,   dest='PUForSFComputation', help="PU at which SFs to compute", default='33')
 parser.add_argument('--fracOfDataToUse',    type=float, dest='fracOfDataToUse', help="fraction of data to use", default='1.0')
+parser.add_argument('--version',            type=str,   dest='version',   default='versionTmp')
+parser.add_argument('--ipFile',             type=str,   dest='ipFile',    default='ipFileTmp.csv')
 parseGroup1 = parser.add_mutually_exclusive_group(required=True)
 parseGroup1.add_argument('--ChunkyDonut',    action='store_true')
 parseGroup1.add_argument('--PhiRing',        action='store_true')
@@ -59,14 +61,15 @@ else:
     #from IPython.display import display, HTML
     #display(HTML("<style>.container { width:100% !important; }</style>"))
 
-l1Jet_ChunkyDonut = args.ChunkyDonut
-l1Jet_PhiRing     = args.PhiRing
-l1MatchOffline    = args.l1MatchOffline
-l1MatchGen        = args.l1MatchGen
-fracOfDataToUse   = args.fracOfDataToUse
-MLTarget          = args.MLTarget
+l1Jet_ChunkyDonut  = args.ChunkyDonut
+l1Jet_PhiRing      = args.PhiRing
+l1MatchOffline     = args.l1MatchOffline
+l1MatchGen         = args.l1MatchGen
+fracOfDataToUse    = args.fracOfDataToUse
+MLTarget           = args.MLTarget
 PUForSFComputation = args.PUForSFComputation
-
+version0           = args.version
+sIpFileName        = args.ipFile
 
 
 printLevel = PrintLevel = 5
@@ -151,16 +154,18 @@ sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_QCD_Pt15to7000_TuneCP5_13p6TeV_pythi
 sOutDir         = "./plots_%s" % (version)
 '''
 
+'''
 # JEC2024v0p7_13_3_0_L1SFLLR20240311wZSHF4p5GeV_w2023Ddata
 version         = "v%s_%s_MLTarget_%s_dataFrac%.2f_JEC2024v0p7_13_3_0_L1SFLLR20240311wZSHF4p5GeV_w2023Ddata_wRefJetPtHighThrsh%gGeV_wOptimizedHyperparams" % (sL1JetEt, sRefJetEt, MLTarget, fracOfDataToUse, RefJetPtHighThrsh) 
 sIpFileName     = "../data/L1T_Jet_MLInputs_2024_Muon_Run2023D-ZMu-PromptReco_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV.csv"
 sOpFileName_SFs = "../data/L1T_Jet_SFs_2024_Muon_Run2023D-ZMu-PromptReco_%s.csv" % (version)
 sOutDir         = "./plots_%s" % (version)
+'''
 
-
-
-
-
+##sIpFileName     = "../data/L1T_Jet_MLInputs_2024_Muon_Run2023D-ZMu-PromptReco_JEC2024v0_13_3_0_L1SFLLR20240311wZSHF4p5GeV.csv"
+version         = "v%s_%s_MLTarget_%s_%s" % (sL1JetEt, sRefJetEt, MLTarget, version0) 
+sOpFileName_SFs = "../data/L1T_Jet_SFs_tmp_%s.csv" % (version)
+sOutDir         = "./plots_%s" % (version)
 
 
 #sOpFileName_SFs = sOpFileName_SFs.replace('.csv', '_%s.csv' % (sL1JetEt))
