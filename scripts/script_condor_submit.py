@@ -98,7 +98,10 @@ commands = {
     #"JEC2024v0_13_3_0_ZSHF4p5GeV_Data2023D":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024v0_13_3_0_ZSHF4p5GeV_Run2023D-ZMu-PromptReco-v*/240329_*/*/L1Ntuple_*.root' --sampleName JEC2024v0_13_3_0_ZSHF4p5GeV_Data2023D  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
     
     # JEC2024Ev0_DCSOnlyJSON_14_0_7
-    "JEC2024Ev0_DCSOnlyJSON_14_0_7":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024Ev0_DCSOnlyJSON_14_0_7_Run2024E-ZMu-PromptReco-v1/240605_203829/0000/L1Ntuple_*.root' --sampleName JEC2024Ev0_DCSOnlyJSON_14_0_7  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    #"JEC2024Ev0_DCSOnlyJSON_14_0_7":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024Ev0_DCSOnlyJSON_14_0_7_Run2024E-ZMu-PromptReco-v1/240605_203829/0000/L1Ntuple_*.root' --sampleName JEC2024Ev0_DCSOnlyJSON_14_0_7  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
+    
+    # JEC2024Ev0_DCSOnlyJSON_14_0_7_ZSHF3p5GeV
+    "JEC2024Ev0_DCSOnlyJSON_14_0_7_ZSHF3p5GeV":  "time python3 L1T_HCALL2Calib_stage1.py  --HcalPUS PFA1p   --l1ntuple '/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/ssawant/Muon0/L1TNtuple_JEC2024Ev0_DCSOnlyJSON_14_0_7_ZSHF3p5GeV_Run2024E-ZMu-PromptReco-v1/240619_161440/0000/L1Ntuple_*.root' --sampleName JEC2024Ev0_DCSOnlyJSON_14_0_7_ZSHF3p5GeV  --PUrangeTag nVtxAll  --l1MatchOffline  --l1NtuplePhiRing  --offlinePUPPIJet ",
     
 } 
 

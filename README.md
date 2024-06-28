@@ -45,7 +45,10 @@ time awk '
 ```
 
 ## Step 3: BDT trainning
-Run l1JetLayer2Calibration_usingBDT/calculate_L1JetSFs_usingBD.ipynb by running l1JetLayer2Calibration_usingBDT/script_condor_gpu_submit.py
+Calibration JEC SF computation script is l1JetLayer2Calibration_usingBDT/calculate_L1JetSFs_usingBD.ipynb. 
+In case you have updated l1JetLayer2Calibration_usingBDT/calculate_L1JetSFs_usingBD.ipynb , export l1JetLayer2Calibration_usingBDT/calculate_L1JetSFs_usingBD.ipynb as l1JetLayer2Calibration_usingBDT/calculate_L1JetSFs_usingBD.py.
+Update input files in l1JetLayer2Calibration_usingBDT/script_condor_gpu_submit.py and run 
+python3 l1JetLayer2Calibration_usingBDT/script_condor_gpu_submit.py
 
 Run l1JetLayer2Calibration_usingBDT/compare_JEC_SFs.ipynb to get final JEC_SF.csv file.
 
@@ -55,8 +58,6 @@ Run check_L1JetSFs.ipynb to make quality control plots.
 cd makeLUTs
 
 Run python3 updateSFPtEtaBins.py
-
-Run g++ ex_bitwise_10.cpp -o ex_bitwise_10 && ./ex_bitwise_10
 
 Run check_L1TJetSFs.ipynb to make performance plots using the new JEC LUTs
 
